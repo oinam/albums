@@ -15,7 +15,7 @@ export interface Rendition {
 }
 
 export function originalUrl(cfg: SiteConfig, slug: string, file: string): string {
-  const base = cfg.media.local ? "/media" : `https://${cfg.media.host}`;
+  const base = cfg.media.local ? "/_media" : `https://${cfg.media.host}`;
   return `${base}/${cfg.media.prefix}/${slug}/${file}`;
 }
 

@@ -57,11 +57,12 @@ function readRedirects(): Map<string, string> {
 }
 
 /**
- * Local media stands in for R2 plus the edge. `/media/<prefix>/<slug>/<file>`
- * maps to the staged original in `_incoming/<slug>/<file>`.
+ * Local media stands in for R2 plus the edge. `/_media/<prefix>/<slug>/<file>`
+ * maps to the staged original in `_incoming/<slug>/<file>`. The underscore keeps
+ * it clear of the public `/media/` route.
  */
 function mediaPath(pathname: string): string | null {
-  const prefix = `/media/${cfg.media.prefix}/`;
+  const prefix = `/_media/${cfg.media.prefix}/`;
   if (!pathname.startsWith(prefix)) return null;
   return within(STAGING, pathname.slice(prefix.length));
 }

@@ -3,7 +3,7 @@ import { dirname, join } from "node:path";
 import type { SiteConfig } from "./config.ts";
 import type { Album, Item } from "./albums.ts";
 import { loadAlbums } from "./albums.ts";
-import { renderAlbum, renderIndex, renderPhoto, renderStream } from "./templates.ts";
+import { renderAlbum, renderIndex, renderItem, renderStream } from "./templates.ts";
 
 export const OUT = "dist";
 
@@ -30,9 +30,10 @@ function assertUniqueIds(albums: Album[]): void {
 }
 
 function redirects(albums: Album[]): string {
-  const lines = ["/albums/ / 301"];
+  const lines = ["/albums/ / 301", "/album/ / 301", "/photos/ /media/ 301"];
   for (const album of albums) {
-    lines.push(`/${album.slug}/ /albums/${album.slug}/ 301`);
+    lines.push(`/${album.slug}/ /album/${album.slug}/ 301`);
+    lines.push(`/albums/${album.slug}/ /album/${album.slug}/ 301`);
   }
   return `${lines.join("\n")}\n`;
 }
@@ -50,15 +51,15 @@ export function buildSite(cfg: SiteConfig): BuildResult {
   mkdirSync(OUT, { recursive: true });
 
   write("index.html", renderIndex(cfg, albums));
-  write("photos/index.html", renderStream(cfg, albums));
+  write("media/index.html", renderStream(cfg, albums));
 
   let items = 0;
   for (const album of albums) {
-    write(`albums/${album.slug}/index.html`, renderAlbum(cfg, album));
+    write(`album/${album.slug}/index.html`, renderAlbum(cfg, album));
     album.items.forEach((item: Item, index: number) => {
       write(
-        `photos/${item.id}/index.html`,
-        renderPhoto(cfg, album, item, album.items[index - 1], album.items[index + 1]),
+        `media/${item.id}/index.html`,
+        renderItem(cfg, album, item, album.items[index - 1], album.items[index + 1]),
       );
       items += 1;
     });
@@ -73,10 +74,10 @@ export function buildSite(cfg: SiteConfig): BuildResult {
     "sitemap.txt",
     `${[
       `https://${cfg.site.host}/`,
-      `https://${cfg.site.host}/photos/`,
-      ...albums.map((a) => `https://${cfg.site.host}/albums/${a.slug}/`),
+      `https://${cfg.site.host}/media/`,
+      ...albums.map((a) => `https://${cfg.site.host}/album/${a.slug}/`),
       ...albums.flatMap((a) =>
-        a.items.map((i) => `https://${cfg.site.host}/photos/${i.id}/`),
+        a.items.map((i) => `https://${cfg.site.host}/media/${i.id}/`),
       ),
     ].join("\n")}\n`,
   );

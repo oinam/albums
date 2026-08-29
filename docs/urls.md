@@ -12,14 +12,34 @@ so repeating the name only lengthens every URL.
 
 | Flickr                               | Here                                       |
 | ------------------------------------ | ------------------------------------------ |
-| `/photos/{user}/`                    | `/photos/` — everything, newest first      |
-| `/photos/{user}/albums/`             | `/albums/` → redirects to `/`              |
-| `/photos/{user}/albums/{id}`         | `/albums/2005-06-14-macromedia-lego-team/` |
-| `/photos/{user}/{photo-id}`          | `/photos/7hKp2mQ4x/`                       |
+| `/photos/{user}/`                    | `/` — every album, newest year first       |
+| `/photos/{user}/albums/{id}`         | `/album/2005-06-14-macromedia-lego-team/`  |
+| `/photos/{user}/{photo-id}`          | `/media/7hKp2mQ4x/`                        |
+| —                                    | `/media/` — everything, newest first       |
 | `live.staticflickr.com/…_{size}.jpg` | `media.oinam.com/cdn-cgi/image/{params}/…` |
 
-The build also emits a redirect per album from the bare slug, so
-`/2005-06-14-macromedia-lego-team/` still resolves.
+Segments are singular where the page shows one thing, and `media` is a mass noun,
+so nothing in the scheme needs a plural. `/media/` is the whole stream and
+`/media/{id}/` is one item in it — the same segment, so a typo cannot land between
+the two.
+
+### Why one route for photos, video, and audio
+
+`/photo/{id}/`, `/video/{id}/` and `/audio/{id}/` would each be self-describing, and
+that is the obvious design. It was rejected for one reason: **it puts the media type
+inside the permalink.** Re-encode a `.mov` as an `.mp4`, or replace a clip with the
+still you actually wanted, and the id survives but the URL moves. A permalink that
+depends on a file's current encoding is not a permalink.
+
+`/media/{id}/` costs a little description — you cannot tell from the URL what kind
+of thing you are about to see — and buys an address that never moves. The id was
+already opaque, so the loss is smaller than it first looks.
+
+### Redirects
+
+The build emits, per album, a redirect from the bare slug and from the older
+`/albums/{slug}/` form. Three fixed rules cover the rest: `/albums/` and `/album/`
+land on `/`, and `/photos/` lands on `/media/`.
 
 ## The size ladder
 

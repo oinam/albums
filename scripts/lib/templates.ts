@@ -47,11 +47,16 @@ ${body}
 }
 
 function albumPath(album: Album): string {
-  return `/albums/${album.slug}/`;
+  return `/album/${album.slug}/`;
 }
 
-function photoPath(item: Item): string {
-  return `/photos/${item.id}/`;
+/**
+ * One route for every kind of item. Keeping the media type out of the path is
+ * what makes the id a permalink: re-encoding a clip or swapping a still for a
+ * video moves nothing.
+ */
+function itemPath(item: Item): string {
+  return `/media/${item.id}/`;
 }
 
 function altFor(item: Item): string {
@@ -59,7 +64,7 @@ function altFor(item: Item): string {
 }
 
 function tile(cfg: SiteConfig, album: Album, item: Item): string {
-  const href = photoPath(item);
+  const href = itemPath(item);
   const alt = esc(altFor(item));
 
   if (item.kind === "audio") {
@@ -171,7 +176,7 @@ export function renderStream(cfg: SiteConfig, albums: Album[]): string {
     cfg,
     title: `Photostream — ${cfg.site.title}`,
     description: `Everything in ${cfg.site.title}, newest first.`,
-    path: "/photos/",
+    path: "/media/",
     body: `<p class="crumb"><a href="/">${esc(cfg.site.title)}</a></p>
 <h1>Photostream</h1>
 ${body}`,
@@ -216,7 +221,7 @@ ${rows.map(([k, v]) => `<dt>${esc(k)}</dt><dd>${k === "Original" ? v : esc(v)}</
 </dl>`;
 }
 
-export function renderPhoto(
+export function renderItem(
   cfg: SiteConfig,
   album: Album,
   item: Item,
@@ -233,7 +238,7 @@ export function renderPhoto(
     cfg,
     title: `${title} — ${cfg.site.title}`,
     description: item.caption ?? item.alt ?? title,
-    path: photoPath(item),
+    path: itemPath(item),
     body: `<p class="crumb"><a href="/">${esc(cfg.site.title)}</a> / <a href="${albumPath(album)}">${esc(album.meta.title)}</a></p>
 <h1>${esc(title)}</h1>
 ${stage(cfg, album, item)}
@@ -241,9 +246,9 @@ ${item.caption ? `<p class="caption">${esc(item.caption)}</p>` : ""}
 ${tags}
 ${exif(cfg, album, item)}
 <nav class="pager">
-<span>${prev ? `<a href="${photoPath(prev)}">&larr; Previous</a>` : ""}</span>
+<span>${prev ? `<a href="${itemPath(prev)}">&larr; Previous</a>` : ""}</span>
 <span><a href="${albumPath(album)}">Back to ${esc(album.meta.title)}</a></span>
-<span>${next ? `<a href="${photoPath(next)}">Next &rarr;</a>` : ""}</span>
+<span>${next ? `<a href="${itemPath(next)}">Next &rarr;</a>` : ""}</span>
 </nav>`,
   });
 }
