@@ -38,6 +38,7 @@ Then commit and push. Cloudflare Pages does the rest.
 - [Adding an album](/workflow/) — the everyday loop.
 - [Album metadata](/album-metadata/) — every field you can edit by hand.
 - [URLs and sizes](/urls/) — the Flickr-shaped routes and the size ladder.
+- [Design](/design/) — grayscale chrome, fluid width, the lattice.
 - [Architecture](/architecture/) — why each piece is where it is.
 - [Deploying](/deploy/) — Cloudflare setup, start to finish.
 - [What it costs](/costs/) — the bill, with the arithmetic shown.

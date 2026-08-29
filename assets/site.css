@@ -55,10 +55,10 @@ html {
 }
 
 body {
-  margin: var(--space) auto;
-  padding: 0 2%;
+  margin: 0;
+  padding-block: clamp(1.5rem, 3vw, 3.25rem);
+  padding-inline: clamp(1rem, 3vw, 3.25rem);
   width: 100%;
-  max-width: 1600px;
   font-family:
     system-ui,
     -apple-system,
@@ -128,11 +128,29 @@ video {
 }
 
 .masthead {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: var(--space-small) var(--space);
-  margin-bottom: var(--space);
+  margin-bottom: var(--space-large);
+}
+
+.masthead h1 {
+  font-size: clamp(1.6rem, 3.2vw, 2.4rem);
+  border-bottom: none;
+  padding-bottom: 0;
+  margin-bottom: 0.2rem;
+  letter-spacing: -0.01em;
+}
+
+.masthead .tagline {
+  margin: 0;
+  font-size: 1.05rem;
+  color: var(--text-color);
+}
+
+.masthead .stat {
+  margin: var(--space-small) 0 0 0;
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
 }
 
 .masthead p {
@@ -147,7 +165,7 @@ video {
   margin-bottom: var(--space-small);
 }
 
-.year {
+.section-head {
   margin-top: var(--space-large);
   font-size: 0.85rem;
   letter-spacing: 0.12em;
@@ -165,8 +183,10 @@ video {
 
 .album-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  /* Same 320px as a wide tile, so covers line up with the lattice above. */
+  grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 320px));
   gap: var(--space);
+  justify-content: start;
   margin-top: var(--space-small);
 }
 
@@ -190,7 +210,7 @@ video {
   grid-auto-rows: var(--cell);
   grid-auto-flow: row dense;
   gap: 0;
-  justify-content: center;
+  justify-content: start;
   margin-top: var(--space-small);
   margin-inline: calc(-1 * var(--gutter));
 }
@@ -284,7 +304,8 @@ video {
   width: auto;
 }
 
-.caption {
+.caption,
+.masthead .tagline {
   max-width: 68ch;
   margin: 0 0 var(--space) 0;
 }
@@ -343,5 +364,18 @@ video {
   * {
     transition: none !important;
     scroll-behavior: auto !important;
+  }
+}
+
+@media (max-width: 620px) {
+  body {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 400px) {
+  /* A wide tile spans four cells; shrink the lattice so it still fits. */
+  :root {
+    --cell: 64px;
   }
 }

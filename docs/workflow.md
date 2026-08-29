@@ -85,7 +85,7 @@ npm run dev
 ```
 
 Then open <http://localhost:8788>. The whole site is there — album pages, photo
-pages, the photostream, and the redirects — with live rebuilds when you edit
+pages, the album pages, and the redirects — with live rebuilds when you edit
 `albums/` or `assets/`, and a full restart when you edit `scripts/`.
 
 **Media works offline.** Production reads renditions from `/cdn-cgi/image/` on

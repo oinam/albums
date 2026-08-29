@@ -30,5 +30,5 @@ Work Claude tracks. Anything needing Brajeshwar's hands or credentials lives in
 - **`/photo/`, `/video/`, `/audio/` routes.** Self-describing, but they put the
   media type inside the permalink. One `/media/{id}/` keeps the address stable when
   a file is re-encoded. See `docs/urls.md`.
-- **A 4:3 album cover rendition.** Covers reuse the square contact size instead, so
-  the size ladder stays at three rungs and covers cost no extra transformation.
+- **Per-orientation album covers.** Covers are always wide, so the album list stays
+  a uniform grid and shares the wide thumbnail every landscape photo already uses.

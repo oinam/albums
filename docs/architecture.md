@@ -52,16 +52,20 @@ genuinely changes the experience. Media Transformations itself caps at 100 MB an
 
 ```
 scripts/
-  build.ts        renders dist/ from committed metadata
-  ingest.ts       _incoming/ → EXIF → R2 → photos.json
-  describe.ts     photos.json → Claude → photos.json
+  build.ts        entry point — loads config, calls buildSite
+  dev.ts          local preview server: static files, renditions, watch
+  ingest.ts       _incoming/ → dimensions + EXIF → R2 → photos.json
+  describe.ts     photos.json → Claude → titles, alt text, captions
   lib/
-    albums.ts     album.md + photos.json loading, date formatting
+    albums.ts     album.md + photos.json loading, ordering, orientation
     config.ts     site.config.json and environment
     dimensions.ts pixel dimensions from file headers
-    ids.ts        stable base58 photo ids
+    env.ts        .env loading
+    ids.ts        stable base58 media ids
     media.ts      every media URL the site emits
+    mime.ts       content types, shared by R2 upload and the dev server
     r2.ts         S3-compatible R2 client
+    site.ts       the build itself — every page written into dist/
     templates.ts  HTML
 assets/site.css   the whole stylesheet
 ```

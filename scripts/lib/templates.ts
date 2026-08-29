@@ -145,6 +145,22 @@ function albumCard(cfg: SiteConfig, album: Album): string {
 </li>`;
 }
 
+function archiveSummary(albums: Album[]): string {
+  const items = albums.reduce((total, album) => total + album.items.length, 0);
+  const years = albums.map((album) => album.meta.date.slice(0, 4)).sort();
+  const first = years[0];
+  const last = years[years.length - 1];
+
+  const parts = [
+    items === 1 ? "1 item" : `${items} items`,
+    albums.length === 1 ? "1 album" : `${albums.length} albums`,
+  ];
+  if (first !== undefined && last !== undefined) {
+    parts.push(first === last ? first : `${first}–${last}`);
+  }
+  return parts.join(" &middot; ");
+}
+
 export function renderHome(
   cfg: SiteConfig,
   albums: Album[],
@@ -153,7 +169,7 @@ export function renderHome(
   const highlightSection =
     highlights.length === 0
       ? ""
-      : `<h2 class="year">Highlights</h2>
+      : `<h2 class="section-head">Highlights</h2>
 <ul class="grid">
 ${highlights.map((e) => tile(cfg, e.album, e.item)).join("\n")}
 </ul>`;
@@ -161,7 +177,7 @@ ${highlights.map((e) => tile(cfg, e.album, e.item)).join("\n")}
   const albumSection =
     albums.length === 0
       ? `<p class="empty">No albums yet. Add one under <code>albums/</code> and run <code>npm run build</code>.</p>`
-      : `<h2 class="year">Albums</h2>
+      : `<h2 class="section-head">Albums</h2>
 <ul class="album-grid">
 ${albums.map((album) => albumCard(cfg, album)).join("\n")}
 </ul>`;
@@ -173,7 +189,8 @@ ${albums.map((album) => albumCard(cfg, album)).join("\n")}
     path: "/",
     body: `<header class="masthead">
 <h1>${esc(cfg.site.title)}</h1>
-<p>${esc(cfg.site.tagline)}</p>
+<p class="tagline">${esc(cfg.site.tagline)}</p>
+${albums.length > 0 ? `<p class="stat">${archiveSummary(albums)}</p>` : ""}
 </header>
 ${highlightSection}
 ${albumSection}`,

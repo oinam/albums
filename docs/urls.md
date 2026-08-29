@@ -38,7 +38,7 @@ section is omitted entirely — the home page is then just albums.
 ### Album covers
 
 `cover:` in `album.md` names the file; without it the first item is used. Covers
-are rendered at the same square contact size as grid tiles, so they add no
+are rendered at the same wide 4:3 size as landscape grid tiles, so they add no
 transformation beyond the three rungs below.
 
 ### Pagination

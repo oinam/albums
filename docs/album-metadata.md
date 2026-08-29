@@ -61,17 +61,17 @@ The ingest script writes this file once and never touches it again.
 }
 ```
 
-| Field                                 | Written by        | Notes                                                                              |
-| ------------------------------------- | ----------------- | ---------------------------------------------------------------------------------- |
-| `id`                                  | ingest, once      | **A permalink.** Never change it after publishing — `/photos/<id>/` depends on it. |
-| `file`                                | ingest            | The R2 object name within the album.                                               |
-| `kind`                                | ingest            | `photo`, `video`, or `audio`, from the extension.                                  |
-| `bytes`, `width`, `height`            | ingest, every run | Read from the file header, not EXIF.                                               |
-| `taken`, `camera`, `lens`, `settings` | ingest            | From EXIF, omitted when absent.                                                    |
-| `title`, `alt`, `caption`, `keywords` | describe          | Yours to overwrite.                                                                |
-| `generated`                           | describe          | Marks machine-written wording.                                                     |
-| `edited`                              | you               | Set `true` to freeze an item against regeneration.                                 |
-| `highlight`                           | you               | Set `true` to surface it on the home page.                                         |
+| Field                                 | Written by        | Notes                                                                             |
+| ------------------------------------- | ----------------- | --------------------------------------------------------------------------------- |
+| `id`                                  | ingest, once      | **A permalink.** Never change it after publishing — `/media/<id>/` depends on it. |
+| `file`                                | ingest            | The R2 object name within the album.                                              |
+| `kind`                                | ingest            | `photo`, `video`, or `audio`, from the extension.                                 |
+| `bytes`, `width`, `height`            | ingest, every run | Read from the file header, not EXIF.                                              |
+| `taken`, `camera`, `lens`, `settings` | ingest            | From EXIF, omitted when absent.                                                   |
+| `title`, `alt`, `caption`, `keywords` | describe          | Yours to overwrite.                                                               |
+| `generated`                           | describe          | Marks machine-written wording.                                                    |
+| `edited`                              | you               | Set `true` to freeze an item against regeneration.                                |
+| `highlight`                           | you               | Set `true` to surface it on the home page.                                        |
 
 ## About the id
 
