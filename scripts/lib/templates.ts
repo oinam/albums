@@ -48,8 +48,6 @@ const ICON = {
   random: `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 7h3l4 10h5M4 17h3l4-10h5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M17 4l3 3-3 3M17 14l3 3-3 3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
 } as const;
 
-const LOGO = `<img class="logo" src="/oinam-logo.svg" alt="" width="24" height="24" decoding="async">`;
-
 /**
  * Applied before the first paint, so a chosen theme never flashes the other one.
  * Three states: an explicit light or dark, or auto, which follows the system and
@@ -71,28 +69,16 @@ function paint(v){b.innerHTML=icons[v];b.title="Theme: "+v;b.setAttribute("aria-
 paint(current());
 b.addEventListener("click",function(){var v=order[(order.indexOf(current())+1)%3];try{localStorage.setItem("theme",v)}catch(e){}paint(v)})})()`;
 
-function chromeLinks(): { header: string; footer: string } {
-  const links = chromePages.map(
-    (page) => `<a href="/${page.slug}/">${esc(page.title)}</a>`,
-  );
-  return {
-    header: links.join(""),
-    footer: [`<a href="/feed.xml">RSS</a>`, ...links].join(""),
-  };
-}
-
-function siteHeader(cfg: SiteConfig): string {
-  return `<header class="bar site-header">
-<a class="brand" href="/">${LOGO}<span>${esc(cfg.site.title)}</span></a>
-<nav class="bar-nav">${chromeLinks().header}${THEME_TOGGLE}</nav>
-</header>`;
-}
-
 function siteFooter(cfg: SiteConfig): string {
-  const year = new Date().getFullYear();
+  const links = [
+    `<a href="/feed.xml">RSS</a>`,
+    ...chromePages.map((page) => `<a href="/${page.slug}/">${esc(page.title)}</a>`),
+    `<a href="https://oinam.com/">oinam.com</a>`,
+  ].join("");
+
   return `<footer class="bar site-footer">
-<p>&copy; ${year}. All Rights Reserved by <a href="https://oinam.com/">${esc(cfg.site.author.split(" ").pop() ?? "Oinam")}</a>.</p>
-<nav class="bar-nav">${chromeLinks().footer}</nav>
+<a class="brand" href="/">${esc(cfg.site.title)}</a>
+<nav class="bar-nav">${links}${THEME_TOGGLE}</nav>
 </footer>`;
 }
 
@@ -123,7 +109,6 @@ export function layout({
 ${head}<script>${THEME_SCRIPT}</script>
 </head>
 <body>
-${siteHeader(cfg)}
 <main>
 ${body}
 </main>

@@ -156,10 +156,6 @@ video {
   border-block: 1px solid var(--border-color);
 }
 
-.site-header {
-  border-top: none;
-}
-
 .site-footer {
   margin-top: auto;
   border-bottom: none;
@@ -178,12 +174,6 @@ video {
   gap: var(--space-small);
   font-size: 1rem;
   color: var(--text-strong);
-}
-
-.logo {
-  width: 1.1em;
-  height: 1.1em;
-  flex: none;
 }
 
 .bar-nav {
@@ -332,7 +322,8 @@ main {
   aspect-ratio: 4 / 3;
 }
 
-.tile {
+/* Album covers are always wide, whatever the cover picture's own shape. */
+.album-item .tile {
   aspect-ratio: 4 / 3;
 }
 

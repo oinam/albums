@@ -63,15 +63,26 @@ This replaced a column-based masonry, which filled the width but flowed top-to-
 bottom down each column. The justified layout reads left to right, the way the
 items are actually ordered.
 
-## Header and footer
+## No header; one footer
 
-One row each, on the alternate ground, and neither is fixed — the page scrolls
-normally and the footer is pushed down by `margin-top: auto` rather than pinned.
+There is no header bar. A page opens with its content — pictures on the home page,
+the album's own title on an album page — because a bar carrying the site name above
+every one of them repeated what the tab title and the footer already say.
 
-The theme toggle has three states, not two. `auto` stamps nothing on the document
+The footer is the only chrome: the site name on the left, and RSS, About, Contact,
+oinam.com and the theme control on the right. It sits on the page background with a
+border doing the separating, and it is not fixed — `margin-top: auto` pushes it
+down rather than pinning it.
+
+The theme control has three states, not two. `auto` stamps nothing on the document
 and lets `prefers-color-scheme` decide; light and dark set `data-theme` explicitly
 and win over the system in both directions. The stored choice is applied by a small
 script in the head, before first paint, so a chosen theme never flashes the other.
+
+Colours are `oklch(L% 0 0)` — plain numbers rather than percentage chroma and a
+degree hue. Both of those are valid CSS and both are the least widely implemented
+corners of `oklch()`, and a token that fails to parse leaves a background unpainted.
+Chroma is zero throughout, so the hue never carried any information anyway.
 
 ## Images load eagerly above the fold
 
