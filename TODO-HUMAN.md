@@ -10,53 +10,17 @@ Things only you can do. Claude cannot: touch your Cloudflare dashboard, force-pu
 - [x] **R2 API token + `mise.local.toml`.** Read and write both confirmed against the live bucket.
 - [x] **Pages project exists** and already serves `albums.oinam.com` from the repo.
 
-## Change the Pages build settings BEFORE pushing
+## Live
 
-The project currently has no build step — it served the repo root, where the old
-`index.html` lived. That file is gone; the site is generated into `dist/` now. Push
-without changing this and Pages serves an empty root.
+`albums.oinam.com` is serving the new build. Verified end to end: the routes and
+redirects answer correctly, `/nope/` is a real 404, thumbnails come off the edge at
+about 17 KB from 5 MB originals, and all 11 demo files are in `oinam-media`.
 
-**Workers & Pages → the project → Settings → Builds & deployments:**
+Pages settings, for the record — Framework preset `None`, build command
+`npm run build`, output `dist`, `NODE_VERSION` `22`. Nothing else, and no secrets:
+the build reads only the repository.
 
-| Setting                | Value           |
-| ---------------------- | --------------- |
-| Framework preset       | None            |
-| Build command          | `npm run build` |
-| Build output directory | `dist`          |
-| Root directory         | (leave empty)   |
-
-**Settings → Environment variables**, for Production _and_ Preview:
-
-| Name           | Value |
-| -------------- | ----- |
-| `NODE_VERSION` | `22`  |
-
-No secrets. The build reads only the repository — that is deliberate, and it is why
-nothing else belongs here. Keep `NODE_VERSION` matching `[tools] node` in `mise.toml`.
-
-Changing settings does not trigger a rebuild, so the current site stays up until you
-push.
-
-## Then, in this order
-
-1. `mise run ingest` — uploads the 11 demo files. Until the bucket has them, every
-   image on the deployed site 404s: the HTML is fine, the media simply is not there.
-2. Force-push (below). Pages builds and deploys.
-3. `mise run doctor` to confirm the whole chain once more.
-
-## Force-push required
-
-History was rewritten to strip ~21 MB of committed photos, so local and
-`origin/main` have diverged. Nothing is pushed automatically:
-
-```bash
-git fetch origin                       # filter-repo dropped the tracking refs
-git push --force-with-lease origin main
-```
-
-- [ ] Run that when you are ready.
-- [ ] A full backup of the pre-rewrite repository and the original photos is at
-      `~/Desktop/albums.oinam.com-backup-2026-08-29/`. Delete it once you are happy.
+Deploying from here is just `git push`.
 
 ## Decisions I did not make for you
 
