@@ -114,10 +114,10 @@ hand in `photos.json` when the picture carries meaning the title does not.
 
 ## Keyboard shortcuts sit on top of the links
 
-`←` and `→` follow the pager, `R` takes the random link. They are a shortcut over
-hrefs that are already on the page, not a second way to navigate: every target is a
-real `<a>`, so Tab and Enter reach all of them with no script at all, and the script
-only saves the tabbing.
+`←` and `→` follow the pager, `R` takes the random link, `H` goes home. They are a
+shortcut over hrefs that are already on the page, not a second way to navigate:
+every target is a real `<a>`, so Tab and Enter reach all of them with no script at
+all, and the script only saves the tabbing.
 
 Bare keys, no modifier. That is what Flickr, Google Photos and every lightbox use,
 and it is what a visitor tries first. The modified forms are the ones to leave alone

@@ -73,7 +73,7 @@ const THEME_TOGGLE = `<button type="button" class="theme-toggle" data-theme-togg
  * these shortcuts are useful.
  */
 const KEYS_SCRIPT = `(function(){
-var map={ArrowLeft:'[rel=prev]',ArrowRight:'[rel=next]',r:'.pager .icon[href="/random/"]',R:'.pager .icon[href="/random/"]'};
+var map={ArrowLeft:'[rel=prev]',ArrowRight:'[rel=next]',r:'.pager .icon[href="/random/"]',R:'.pager .icon[href="/random/"]',h:'.brand a',H:'.brand a'};
 document.addEventListener('keydown',function(e){
 if(e.metaKey||e.ctrlKey||e.altKey||e.shiftKey)return;
 var t=e.target;
@@ -99,7 +99,7 @@ function siteFooter(cfg: SiteConfig): string {
   const year = new Date().getFullYear();
 
   return `<footer class="bar site-footer">
-<p class="brand">&copy; ${year}. All Rights Reserved. <a href="/">${esc(cfg.site.title)}</a>.</p>
+<p class="brand">&copy; ${year}. All Rights Reserved. <a href="/" title="Home (H)">${esc(cfg.site.title)}</a>.</p>
 <nav class="bar-nav">${links}${THEME_TOGGLE}</nav>
 </footer>`;
 }
