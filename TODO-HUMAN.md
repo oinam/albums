@@ -22,6 +22,23 @@ the build reads only the repository.
 
 Deploying from here is just `git push`.
 
+## Purge the cache once
+
+The eleven demo objects are deleted from R2 and the demo album is gone from the
+site, but Cloudflare still serves both from cache — they were uploaded with a
+one-year `immutable` header, so they will keep answering 200 at their old URLs.
+Nothing links to them; it is stale, not broken.
+
+**Caching → Configuration → Purge Everything**, once. Future uploads carry a
+one-day TTL instead, so this will not recur.
+
+## Set a real date on the Random album
+
+`albums/1111-11-11-random/album.md` says `date: 1111-11-11`, so the home page reads
+_Nov 11, 1111_ and the archive summary says _1111–1945_. The ten files carry capture
+dates from **2022-08-13 to 2026-02-20** if that helps. Edit the file — nothing
+re-reads the folder name, so the folder can keep its name.
+
 ## Decisions I did not make for you
 
 - [ ] **Images paid plan.** The free plan hard-stops at 5,000 transformations a

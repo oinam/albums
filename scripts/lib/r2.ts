@@ -3,6 +3,18 @@ import { HeadObjectCommand, PutObjectCommand, S3Client } from "@aws-sdk/client-s
 import { requireEnv } from "./config.ts";
 import { contentType } from "./mime.ts";
 
+/**
+ * One day, and deliberately not `immutable`.
+ *
+ * These objects are addressed by path, not by a content hash, so the same URL can
+ * legitimately hold different bytes tomorrow. A year-long immutable TTL meant a
+ * replaced — or deleted — photo kept being served from the edge long after the
+ * bucket had moved on, with nothing short of a manual purge to stop it. Egress is
+ * free and a re-fetch costs a Class B operation, so a shorter TTL buys correctness
+ * for almost nothing.
+ */
+const CACHE_CONTROL = "public, max-age=86400";
+
 export interface Bucket {
   client: S3Client;
   name: string;
@@ -66,7 +78,7 @@ export async function upload(
       Body: createReadStream(path),
       ContentLength: bytes,
       ContentType: contentType(key),
-      CacheControl: "public, max-age=31536000, immutable",
+      CacheControl: CACHE_CONTROL,
     }),
   );
   return "uploaded";
