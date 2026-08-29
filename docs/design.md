@@ -92,10 +92,36 @@ degree hue. Both of those are valid CSS and both are the least widely implemente
 corners of `oklch()`, and a token that fails to parse leaves a background unpainted.
 Chroma is zero throughout, so the hue never carried any information anyway.
 
+## The home page opens on a full screen
+
+Twelve highlights in a 4 x 3 grid, exactly one viewport tall, every cell filled.
+
+The justified grid cannot promise that, and it is worth being clear about why.
+Flexbox chooses its own row breaks from the aspect ratios it is given, at layout
+time, using the viewport width. Neither the build nor the stylesheet can know how
+many rows will result or whether the last one will be full, and there is no CSS
+that can ask. Filling the viewport with no ragged final row means either measuring
+in JavaScript, the way Flickr and Google Photos do, or giving up the natural crops.
+
+This gives up the crops. A fixed grid of `minmax(0, 1fr)` rows and columns is
+deterministic — the count is known, the row count is known, and `object-fit: cover`
+does the rest. `minmax(0, …)` rather than a bare `1fr` is what keeps it honest: a
+bare `1fr` floors at the content's own height, and the pictures push the rows back
+out to uneven heights.
+
+Phones are the exception. Nine cells stretched down a phone's viewport are nine
+vertical slivers, so there the mosaic keeps its nine pictures and takes its natural
+height instead — three rows of squares. Viewport-filling is a big-screen idea.
+
+Below twelve marked highlights the page returns to the justified grid. A mosaic
+with holes in it is worse than no mosaic.
+
 ## Images load eagerly above the fold
 
 The first eight tiles carry `loading="eager"`, the first of each grid also
-`fetchpriority="high"`, and everything past that is lazy.
+`fetchpriority="high"`, and everything past that is lazy. Every tile in the home
+page mosaic is eager, all twelve of them: the whole thing is above the fold by
+construction, so there is nothing there to defer.
 
 Marking every tile lazy is the obvious default and it is wrong twice over. It delays
 the largest contentful paint for no saving, since those images are needed

@@ -38,6 +38,10 @@ Set `"highlight": true` on any item in `photos.json`. The home page shows the mo
 recent `site.highlights` of them (default 12), newest first. Mark none and the
 section is omitted entirely — the home page is then just albums.
 
+Twelve is not an arbitrary default: it is the 4 x 3 mosaic the home page opens
+with. Mark fewer than twelve and the page falls back to the justified grid rather
+than leaving holes — see [Design](/design/).
+
 ### Album covers
 
 `cover:` in `album.md` names the file; without it the first item is used. Covers

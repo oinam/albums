@@ -320,6 +320,66 @@ main {
   flex: var(--ar) 1 calc(var(--ar) * var(--row));
 }
 
+/*
+ * The home page opens on a mosaic that fills the screen exactly.
+ *
+ * The justified grid above cannot promise that. Flexbox picks its own row breaks
+ * from the aspect ratios, so neither the number of rows nor the fullness of the
+ * last one is knowable — in CSS or at build time. A fixed 4 x 3 grid trades the
+ * natural crops for the guarantee: every cell filled, no half-empty final row,
+ * the whole thing one viewport tall.
+ *
+ * The phone is the exception. Nine cells stretched over a phone's viewport height
+ * are nine vertical slivers, so there the mosaic keeps its 9 pictures but takes
+ * its natural height as three rows of squares.
+ */
+.hero {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--gap);
+  margin-inline: calc(var(--gap) - var(--edge));
+}
+
+.hero-cell {
+  aspect-ratio: 1;
+  min-width: 0;
+  min-height: 0;
+}
+
+.hero-cell:nth-child(n + 10) {
+  display: none;
+}
+
+.hero .tile {
+  width: 100%;
+  height: 100%;
+  aspect-ratio: auto;
+}
+
+.hero .audio-tile {
+  height: 100%;
+  aspect-ratio: auto;
+}
+
+@media (min-width: 640px) {
+  .hero {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    /* minmax(0, …) or the pictures' own height wins and the rows stop being equal. */
+    grid-template-rows: repeat(3, minmax(0, 1fr));
+    /* svh is the honest one on a phone-sized window; vh is the fallback. */
+    height: calc(100vh - 2 * var(--gap));
+    height: calc(100svh - 2 * var(--gap));
+  }
+
+  .hero-cell {
+    aspect-ratio: auto;
+  }
+
+  .hero-cell:nth-child(n + 10) {
+    display: revert;
+  }
+}
+
 /* When the grid opens the page there is nothing above it to separate from. */
 main > .grid:first-child {
   margin-top: 0;

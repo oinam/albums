@@ -68,14 +68,16 @@ export function thumbSize(
     : { width: short, height: long };
 }
 
-/** Cropped thumbnail for grids — 4:3 or 3:4, never anything else. */
-export function thumbUrl(
+/** Cropped rendition at an explicit long edge — 4:3 or 3:4, never anything else. */
+export function croppedUrl(
   cfg: SiteConfig,
   slug: string,
   file: string,
   orientation: Orientation,
+  long: number,
 ): string {
-  const { width, height } = thumbSize(cfg, orientation);
+  const short = Math.round((long * 3) / 4);
+  const [width, height] = orientation === "wide" ? [long, short] : [short, long];
   return transform(cfg, slug, file, {
     width,
     height,
@@ -83,6 +85,16 @@ export function thumbUrl(
     quality: CONTACT_QUALITY,
     format: "auto",
   });
+}
+
+/** Cropped thumbnail for grids. */
+export function thumbUrl(
+  cfg: SiteConfig,
+  slug: string,
+  file: string,
+  orientation: Orientation,
+): string {
+  return croppedUrl(cfg, slug, file, orientation, cfg.sizes.thumb);
 }
 
 /** Width-constrained rendition used as a srcset candidate. */

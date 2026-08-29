@@ -2,6 +2,7 @@ import type { SiteConfig } from "./config.ts";
 import type { Album, Item, StreamEntry } from "./albums.ts";
 import { coverOf, formatDate, orientationOf } from "./albums.ts";
 import {
+  croppedUrl,
   originalUrl,
   posterThumbUrl,
   posterUrl,
@@ -244,15 +245,77 @@ function albumCard(cfg: SiteConfig, album: Album, index: number): string {
 </li>`;
 }
 
+/**
+ * The mosaic is 4 x 3 and the phone shows the first 9 of them. Both numbers live
+ * in the hero rules in `site.css` as well; they have to agree, which is why the
+ * home page falls back to the justified grid when there are not enough marked.
+ */
+const HERO_TILES = 12;
+
+/**
+ * A hero tile fills a grid cell rather than carrying its own shape, so it needs a
+ * bigger crop than the contact-sheet thumbnail: a cell is a quarter of the viewport
+ * wide, which is past 640px on any large screen.
+ *
+ * Every one of them loads eagerly. The whole mosaic is above the fold by
+ * construction, and `loading="lazy"` on a visible image is the deferral bug that
+ * already cost this site its largest contentful paint once.
+ */
+function heroTile(cfg: SiteConfig, album: Album, item: Item, index: number): string {
+  const href = itemPath(item);
+  const orientation = orientationOf(item);
+
+  if (item.kind === "audio") {
+    return `<li class="hero-cell"><div class="audio-tile">
+<span>${esc(item.title ?? item.file)}</span>
+<audio controls preload="none" src="${esc(originalUrl(cfg, album.slug, item.file))}"></audio>
+<a href="${href}">Details</a>
+</div></li>`;
+  }
+
+  const poster = item.kind === "video";
+  const src = poster
+    ? posterThumbUrl(cfg, album.slug, item.file, orientation)
+    : croppedUrl(cfg, album.slug, item.file, orientation, cfg.sizes.thumb);
+  // The descriptor has to be the candidate's real pixel width, which for a portrait
+  // crop is three quarters of the long edge. Label a 480px image 640w and the
+  // browser hands a 470px cell the small one.
+  const pixelWidth = (long: number) =>
+    orientation === "wide" ? long : Math.round((long * 3) / 4);
+  const candidates = poster
+    ? ""
+    : ` srcset="${esc(
+        [cfg.sizes.thumb, cfg.sizes.thumb * 2]
+          .map(
+            (long) =>
+              `${croppedUrl(cfg, album.slug, item.file, orientation, long)} ${pixelWidth(long)}w`,
+          )
+          .join(", "),
+      )}" sizes="(min-width: 640px) 25vw, 33vw"`;
+  const badge = poster ? `<span class="badge">Video</span>` : "";
+
+  return `<li class="hero-cell"><a class="tile" href="${href}">
+<img src="${esc(src)}"${candidates} alt="${esc(altFor(item))}" loading="eager"${index === 0 ? ' fetchpriority="high"' : ""} decoding="async">
+${badge}
+</a></li>`;
+}
+
 export function renderHome(
   cfg: SiteConfig,
   albums: Album[],
   highlights: StreamEntry[],
 ): string {
   const highlightSection =
-    highlights.length === 0
-      ? ""
-      : `<ul class="grid">
+    highlights.length >= HERO_TILES
+      ? `<ul class="hero">
+${highlights
+  .slice(0, HERO_TILES)
+  .map((e, index) => heroTile(cfg, e.album, e.item, index))
+  .join("\n")}
+</ul>`
+      : highlights.length === 0
+        ? ""
+        : `<ul class="grid">
 ${highlights.map((e, index) => tile(cfg, e.album, e.item, index)).join("\n")}
 </ul>`;
 
