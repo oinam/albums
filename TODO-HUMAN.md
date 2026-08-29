@@ -14,12 +14,15 @@ or spend money on the API without asking.
 
 ## Force-push required
 
-- [ ] History was rewritten to strip ~21 MB of committed photos, so local and
-      `origin/main` have diverged. Nothing is pushed automatically:
+History was rewritten to strip ~21 MB of committed photos, so local and
+`origin/main` have diverged. Nothing is pushed automatically:
 
-      git push --force-with-lease origin main
+```bash
+git push --force-with-lease origin main
+```
 
-      A full backup of the pre-rewrite repository and the original photos is at
+- [ ] Run that when you are ready.
+- [ ] A full backup of the pre-rewrite repository and the original photos is at
       `~/Desktop/albums.oinam.com-backup-2026-08-29/`. Delete it once you are happy.
 
 ## Decisions I did not make for you
@@ -38,6 +41,8 @@ or spend money on the API without asking.
 
 - [ ] Add the Deploy button to `README.md` — yours to edit, so I left it alone:
 
-      [![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/oinam/albums)
+```markdown
+[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/oinam/albums)
+```
 
 - [ ] Confirm `LICENSE` (MIT) is what you want before making the repo public.

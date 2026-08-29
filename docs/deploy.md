@@ -50,12 +50,12 @@ never needs them, which is why Pages can build with no secrets configured.
 
 **Workers & Pages → Create → Pages → Connect to Git**, pick the repository, then:
 
-| Setting | Value |
-| --- | --- |
-| Framework preset | None |
-| Build command | `npm run build` |
-| Build output directory | `dist` |
-| Node version | 22 or later |
+| Setting                | Value           |
+| ---------------------- | --------------- |
+| Framework preset       | None            |
+| Build command          | `npm run build` |
+| Build output directory | `dist`          |
+| Node version           | 22 or later     |
 
 Every push to the default branch rebuilds and deploys. Add `albums.oinam.com` as a
 custom domain under the project's **Custom domains** tab.

@@ -10,12 +10,12 @@ description: The Flickr-shaped routes, and the three-rung size ladder behind the
 The grammar is Flickr's, minus the `/{user}/` segment — one host serves one person,
 so repeating the name only lengthens every URL.
 
-| Flickr | Here |
-| --- | --- |
-| `/photos/{user}/` | `/photos/` — everything, newest first |
-| `/photos/{user}/albums/` | `/albums/` → redirects to `/` |
-| `/photos/{user}/albums/{id}` | `/albums/2005-06-14-macromedia-lego-team/` |
-| `/photos/{user}/{photo-id}` | `/photos/7hKp2mQ4x/` |
+| Flickr                               | Here                                       |
+| ------------------------------------ | ------------------------------------------ |
+| `/photos/{user}/`                    | `/photos/` — everything, newest first      |
+| `/photos/{user}/albums/`             | `/albums/` → redirects to `/`              |
+| `/photos/{user}/albums/{id}`         | `/albums/2005-06-14-macromedia-lego-team/` |
+| `/photos/{user}/{photo-id}`          | `/photos/7hKp2mQ4x/`                       |
 | `live.staticflickr.com/…_{size}.jpg` | `media.oinam.com/cdn-cgi/image/{params}/…` |
 
 The build also emits a redirect per album from the bare slug, so
@@ -28,12 +28,12 @@ calendar month it is requested. Flickr publishes about thirteen sizes per photo;
 copying that would multiply the bill for no perceptible gain. Three rungs plus the
 untouched original covers every screen.
 
-| Rung | Width | Serves |
-| --- | --- | --- |
-| Contact | 400 | Album grid tiles — 400px covers 200 CSS px at 2× |
-| Phone | 800 | First `srcset` candidate |
-| Desktop | 1600 | Second `srcset` candidate — tablets, desktops, Retina |
-| Original | — | Download link, straight from R2. No transformation, no egress charge. |
+| Rung     | Width | Serves                                                                |
+| -------- | ----- | --------------------------------------------------------------------- |
+| Contact  | 400   | Album grid tiles — 400px covers 200 CSS px at 2×                      |
+| Phone    | 800   | First `srcset` candidate                                              |
+| Desktop  | 1600  | Second `srcset` candidate — tablets, desktops, Retina                 |
+| Original | —     | Download link, straight from R2. No transformation, no egress charge. |
 
 Widths come from `site.config.json` under `sizes`.
 

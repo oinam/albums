@@ -29,7 +29,7 @@ not.
 
 ## Why not the hosted Images product
 
-Cloudflare also sells storage *inside* Images, served from
+Cloudflare also sells storage _inside_ Images, served from
 `imagedelivery.net/{hash}/{image-id}/{variant}`. It would replace album folders with
 opaque image ids, which destroys the organizing principle this whole thing is built
 on, and it adds a per-image storage charge for files already stored in R2. Zone

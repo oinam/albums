@@ -11,13 +11,13 @@ static HTML, generated on your machine and deployed by pushing to GitHub.
 
 ## The shape of it
 
-| Layer | What holds it |
-| --- | --- |
-| Originals — photos, video, audio | R2, in `albums/<slug>/` keys |
-| Photo renditions | Images transformations, `/cdn-cgi/image/` |
-| Video posters | Media Transformations, `/cdn-cgi/media/` |
-| Album and photo metadata | `album.md` + `photos.json`, committed to this repo |
-| The site | Static HTML built into `dist/`, served by Cloudflare Pages |
+| Layer                            | What holds it                                              |
+| -------------------------------- | ---------------------------------------------------------- |
+| Originals — photos, video, audio | R2, in `albums/<slug>/` keys                               |
+| Photo renditions                 | Images transformations, `/cdn-cgi/image/`                  |
+| Video posters                    | Media Transformations, `/cdn-cgi/media/`                   |
+| Album and photo metadata         | `album.md` + `photos.json`, committed to this repo         |
+| The site                         | Static HTML built into `dist/`, served by Cloudflare Pages |
 
 Nothing is generated at upload time and no derivative is ever written back into R2.
 The edge cache is the derivative store, and it refills itself on demand.

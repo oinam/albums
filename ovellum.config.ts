@@ -7,18 +7,18 @@
 //
 // `import type` is erased when the config loads, so this file has no runtime
 // dependency on `ovellum` resolving here — it's purely for editor autocomplete.
-import type { OvellumUserConfig } from 'ovellum';
+import type { OvellumUserConfig } from "ovellum";
 
 export default {
-  name: 'albums-oinam-com',
+  name: "albums-oinam-com",
   // version: 'auto', // 'auto' reads package.json#version; or a literal like '1.2.0'
-  mode: 'manual', // 'manual' | 'auto' | 'hybrid'
-  input: 'docs', // the documentation this project relies on
-  output: '.docs-site', // kept out of dist/ — that belongs to the album site
+  mode: "manual", // 'manual' | 'auto' | 'hybrid'
+  input: "docs", // the documentation this project relies on
+  output: ".docs-site", // kept out of dist/ — that belongs to the album site
   // defaultFormat: 'md', // 'md' | 'mdx'
 
   site: {
-    title: 'albums.oinam.com',
+    title: "albums.oinam.com",
     // description: 'One-line summary used in <meta> and the footer.',
     // logo: '/public/logo.svg', // brand mark before the title (theme-flipping monochrome); unset = title only
     // favicon: '/favicon.ico',  // default: a root-level favicon.ico
@@ -30,7 +30,7 @@ export default {
     // language picker. Codes are BCP 47 (en-US, ja, zh-Hans). See the i18n guide.
     // defaultLocale: 'en-US',
     // locales: [{ code: 'en-US', label: 'English' }, { code: 'ja', label: '日本語' }],
-    defaultTheme: 'auto', // 'auto' | 'light' | 'dark'
+    defaultTheme: "auto", // 'auto' | 'light' | 'dark'
     // palette: 'default',       // 'default' | 'nord' | 'flexoki' | 'solarized' | 'eink'
     // accent: 'oklch(57% 0.16 255)', // primary color (CTA buttons, links, focus); any CSS color
     // font: 'sans',             // 'sans' | 'serif' (system) | 'inter' | 'geist' (bundled, lazy)
@@ -59,5 +59,4 @@ export default {
   },
 
   // update: { check: true, intervalHours: 24 }, // CLI "update available" notice (auto-off in CI / non-TTY)
-
 } satisfies OvellumUserConfig;

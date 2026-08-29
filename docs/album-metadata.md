@@ -23,13 +23,13 @@ cover: dsc_0142.jpg
 The week we built half the office out of Lego. Nobody got any work done.
 ```
 
-| Field | Required | Notes |
-| --- | --- | --- |
-| `title` | yes | Shown everywhere. Nothing derives from the folder name after the first ingest. |
-| `date` | yes | `YYYY-MM-DD`. Sorts the album on the home page and supplies its year heading. |
-| `date_end` | no | Makes it a range. Rendered as `Jun 14–17, 2005`. |
-| `location` | no | Free text, shown under the title. |
-| `cover` | no | Filename of the album's representative item. |
+| Field      | Required | Notes                                                                          |
+| ---------- | -------- | ------------------------------------------------------------------------------ |
+| `title`    | yes      | Shown everywhere. Nothing derives from the folder name after the first ingest. |
+| `date`     | yes      | `YYYY-MM-DD`. Sorts the album on the home page and supplies its year heading.  |
+| `date_end` | no       | Makes it a range. Rendered as `Jun 14–17, 2005`.                               |
+| `location` | no       | Free text, shown under the title.                                              |
+| `cover`    | no       | Filename of the album's representative item.                                   |
 
 Everything below the frontmatter is Markdown and is rendered on the album page.
 The ingest script writes this file once and never touches it again.
@@ -61,16 +61,16 @@ The ingest script writes this file once and never touches it again.
 }
 ```
 
-| Field | Written by | Notes |
-| --- | --- | --- |
-| `id` | ingest, once | **A permalink.** Never change it after publishing — `/photos/<id>/` depends on it. |
-| `file` | ingest | The R2 object name within the album. |
-| `kind` | ingest | `photo`, `video`, or `audio`, from the extension. |
-| `bytes`, `width`, `height` | ingest, every run | Read from the file header, not EXIF. |
-| `taken`, `camera`, `lens`, `settings` | ingest | From EXIF, omitted when absent. |
-| `title`, `alt`, `caption`, `keywords` | describe | Yours to overwrite. |
-| `generated` | describe | Marks machine-written wording. |
-| `edited` | you | Set `true` to freeze an item against regeneration. |
+| Field                                 | Written by        | Notes                                                                              |
+| ------------------------------------- | ----------------- | ---------------------------------------------------------------------------------- |
+| `id`                                  | ingest, once      | **A permalink.** Never change it after publishing — `/photos/<id>/` depends on it. |
+| `file`                                | ingest            | The R2 object name within the album.                                               |
+| `kind`                                | ingest            | `photo`, `video`, or `audio`, from the extension.                                  |
+| `bytes`, `width`, `height`            | ingest, every run | Read from the file header, not EXIF.                                               |
+| `taken`, `camera`, `lens`, `settings` | ingest            | From EXIF, omitted when absent.                                                    |
+| `title`, `alt`, `caption`, `keywords` | describe          | Yours to overwrite.                                                                |
+| `generated`                           | describe          | Marks machine-written wording.                                                     |
+| `edited`                              | you               | Set `true` to freeze an item against regeneration.                                 |
 
 ## About the id
 
