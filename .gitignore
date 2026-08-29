@@ -1,0 +1,16 @@
+node_modules/
+dist/
+.env
+.env.*
+!.env.example
+.DS_Store
+*.log
+
+# Unprocessed originals never enter the repo. They are staged here, uploaded
+# to R2 by `npm run ingest`, and only their metadata is committed.
+_incoming/
+
+# Ovellum build artefacts. Source markdown in docs/ is committed.
+.docs-site/
+.ovellum/
+.orphans/

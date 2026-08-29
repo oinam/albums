@@ -1,0 +1,22 @@
+{
+  "site": {
+    "title": "Oinam’s Album",
+    "tagline": "Pictures, Audio, and Videos.",
+    "host": "albums.oinam.com",
+    "author": "Brajeshwar Oinam",
+    "locale": "en"
+  },
+  "media": {
+    "host": "media.oinam.com",
+    "prefix": "albums"
+  },
+  "sizes": {
+    "contact": 400,
+    "phone": 800,
+    "desktop": 1600
+  },
+  "describe": {
+    "model": "claude-opus-5",
+    "effort": "medium"
+  }
+}
