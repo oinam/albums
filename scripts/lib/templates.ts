@@ -99,8 +99,10 @@ function siteFooter(cfg: SiteConfig): string {
     `<a href="https://oinam.com/">oinam.com</a>`,
   ].join("");
 
+  const year = new Date().getFullYear();
+
   return `<footer class="bar site-footer">
-<a class="brand" href="/">${esc(cfg.site.title)}</a>
+<p class="brand">&copy; ${year}. All Rights Reserved. <a href="/">${esc(cfg.site.title)}</a>.</p>
 <nav class="bar-nav">${links}${THEME_TOGGLE}</nav>
 </footer>`;
 }

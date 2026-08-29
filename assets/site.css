@@ -177,10 +177,10 @@ video {
 }
 
 .brand {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-small);
-  font-size: 1rem;
+  color: var(--text-muted);
+}
+
+.brand a {
   color: var(--text-strong);
 }
 
