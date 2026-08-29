@@ -1,7 +1,15 @@
 import type { SiteConfig } from "./config.ts";
 import type { Album, Item, StreamEntry } from "./albums.ts";
-import { coverOf, formatDate } from "./albums.ts";
-import { contactUrl, originalUrl, posterUrl, scaledUrl, srcset } from "./media.ts";
+import { coverOf, formatDate, orientationOf } from "./albums.ts";
+import {
+  originalUrl,
+  posterThumbUrl,
+  posterUrl,
+  scaledUrl,
+  srcset,
+  thumbSize,
+  thumbUrl,
+} from "./media.ts";
 
 export function esc(value: string): string {
   return value
@@ -71,32 +79,37 @@ function altFor(item: Item): string {
   return item.alt ?? item.title ?? item.file;
 }
 
+/** Album covers are always wide, so the album list stays a tidy uniform grid. */
 function coverImage(cfg: SiteConfig, album: Album, item: Item): string {
   return item.kind === "video"
-    ? posterUrl(cfg, album.slug, item.file)
-    : contactUrl(cfg, album.slug, item.file);
+    ? posterThumbUrl(cfg, album.slug, item.file, "wide")
+    : thumbUrl(cfg, album.slug, item.file, "wide");
 }
 
 function tile(cfg: SiteConfig, album: Album, item: Item): string {
   const href = itemPath(item);
   const alt = esc(altFor(item));
 
+  const orientation = orientationOf(item);
+  const cell = `cell cell--${orientation}`;
+
   if (item.kind === "audio") {
-    return `<li class="audio-tile">
+    return `<li class="${cell}"><div class="audio-tile">
 <span>${esc(item.title ?? item.file)}</span>
 <audio controls preload="none" src="${esc(originalUrl(cfg, album.slug, item.file))}"></audio>
 <a href="${href}">Details</a>
-</li>`;
+</div></li>`;
   }
 
+  const { width, height } = thumbSize(cfg, orientation);
   const src =
     item.kind === "video"
-      ? esc(posterUrl(cfg, album.slug, item.file))
-      : esc(contactUrl(cfg, album.slug, item.file));
+      ? esc(posterThumbUrl(cfg, album.slug, item.file, orientation))
+      : esc(thumbUrl(cfg, album.slug, item.file, orientation));
   const badge = item.kind === "video" ? `<span class="badge">Video</span>` : "";
 
-  return `<li><a class="tile" href="${href}">
-<img src="${src}" alt="${alt}" width="${cfg.sizes.contact}" height="${cfg.sizes.contact}" loading="lazy" decoding="async">
+  return `<li class="${cell}"><a class="tile" href="${href}">
+<img src="${src}" alt="${alt}" width="${width}" height="${height}" loading="lazy" decoding="async">
 ${badge}
 </a></li>`;
 }
@@ -122,7 +135,7 @@ function albumCard(cfg: SiteConfig, album: Album): string {
   const cover = coverOf(album);
   const href = albumPath(album);
   const art = cover
-    ? `<img src="${esc(coverImage(cfg, album, cover))}" alt="${esc(cover.alt ?? album.meta.title)}" width="${cfg.sizes.contact}" height="${cfg.sizes.contact}" loading="lazy" decoding="async">`
+    ? `<img src="${esc(coverImage(cfg, album, cover))}" alt="${esc(cover.alt ?? album.meta.title)}" width="${thumbSize(cfg, "wide").width}" height="${thumbSize(cfg, "wide").height}" loading="lazy" decoding="async">`
     : "";
 
   return `<li class="album-item">

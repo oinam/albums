@@ -12,7 +12,7 @@
     "prefix": "albums"
   },
   "sizes": {
-    "contact": 400,
+    "thumb": 640,
     "phone": 800,
     "desktop": 1600
   },

@@ -1,4 +1,5 @@
 import type { SiteConfig } from "./config.ts";
+import type { Orientation } from "./albums.ts";
 
 const QUALITY = 82;
 const CONTACT_QUALITY = 80;
@@ -52,11 +53,32 @@ function transform(
   return `https://${cfg.media.host}/cdn-cgi/image/${params.join(",")}/${cfg.media.prefix}/${slug}/${file}`;
 }
 
-/** Square crop for album grids. */
-export function contactUrl(cfg: SiteConfig, slug: string, file: string): string {
+/**
+ * Thumbnail dimensions for one orientation. The configured size is the long
+ * edge; the short edge is three quarters of it, giving 4:3 and 3:4 exactly.
+ */
+export function thumbSize(
+  cfg: SiteConfig,
+  orientation: Orientation,
+): { width: number; height: number } {
+  const long = cfg.sizes.thumb;
+  const short = Math.round((long * 3) / 4);
+  return orientation === "wide"
+    ? { width: long, height: short }
+    : { width: short, height: long };
+}
+
+/** Cropped thumbnail for grids — 4:3 or 3:4, never anything else. */
+export function thumbUrl(
+  cfg: SiteConfig,
+  slug: string,
+  file: string,
+  orientation: Orientation,
+): string {
+  const { width, height } = thumbSize(cfg, orientation);
   return transform(cfg, slug, file, {
-    width: cfg.sizes.contact,
-    height: cfg.sizes.contact,
+    width,
+    height,
     fit: "cover",
     quality: CONTACT_QUALITY,
     format: "auto",
@@ -107,4 +129,17 @@ export function visionUrl(
     quality: QUALITY,
     format: "jpeg",
   });
+}
+
+/** Video still cropped to a grid thumbnail. */
+export function posterThumbUrl(
+  cfg: SiteConfig,
+  slug: string,
+  file: string,
+  orientation: Orientation,
+): string {
+  if (cfg.media.local) return LOCAL_POSTER;
+  const { width, height } = thumbSize(cfg, orientation);
+  const source = originalUrl(cfg, slug, file);
+  return `https://${cfg.media.host}/cdn-cgi/media/mode=frame,time=1s,width=${width},height=${height},fit=cover,format=jpg/${source}`;
 }

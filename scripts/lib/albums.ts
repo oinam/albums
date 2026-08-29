@@ -4,6 +4,7 @@ import matter from "gray-matter";
 import { marked } from "marked";
 
 export type MediaKind = "photo" | "video" | "audio";
+export type Orientation = "wide" | "tall";
 
 export interface Item {
   id: string;
@@ -190,4 +191,16 @@ export function highlightsOf(albums: Album[], limit: number): StreamEntry[] {
   return chronological(albums)
     .filter((entry) => entry.item.highlight === true)
     .slice(0, limit);
+}
+
+/**
+ * Every thumbnail is 4:3 or 3:4 — nothing else. Only a photo taller than it is
+ * wide gets the tall crop; video and audio are always wide.
+ */
+export function orientationOf(item: Item): Orientation {
+  if (item.kind !== "photo") return "wide";
+  if (item.width !== undefined && item.height !== undefined) {
+    return item.height > item.width ? "tall" : "wide";
+  }
+  return "wide";
 }

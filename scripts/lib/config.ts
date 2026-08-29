@@ -10,7 +10,7 @@ export interface SiteConfig {
     highlights: number;
   };
   media: { host: string; prefix: string; local?: boolean };
-  sizes: { contact: number; phone: number; desktop: number };
+  sizes: { thumb: number; phone: number; desktop: number };
   describe: { model: string; effort: "low" | "medium" | "high" | "xhigh" | "max" };
 }
 

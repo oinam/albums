@@ -68,21 +68,71 @@ already opaque, so the loss is smaller than it first looks.
 build emits a redirect from the bare slug and from the older `/albums/{slug}/`
 form, so nothing published earlier breaks.
 
+## Thumbnails: two ratios, nothing else
+
+Every thumbnail is **4:3 (wide)** or **3:4 (tall)** — no other shape exists.
+A photo taller than it is wide gets the tall crop; everything else, including
+every video and audio item, is wide.
+
+| Orientation | Rendition | Displayed |
+| ----------- | --------- | --------- |
+| Wide (4:3)  | 640 × 480 | 320 × 240 |
+| Tall (3:4)  | 480 × 640 | 240 × 320 |
+
+The rendition is **twice** the display size, so thumbnails stay sharp on a 2×
+screen. `sizes.thumb` in `site.config.json` is the long edge of the rendition; the
+short edge is three quarters of it, which is what makes both ratios exact.
+
+Wide and tall have identical area — 320 × 240 and 240 × 320 are both 76,800 px —
+so a portrait carries the same visual weight as a landscape beside it. Each item
+needs exactly one of the two, so having two shapes costs no more than having one.
+
+## The masonry lattice
+
+The two shapes share a factor of 80, which is what makes a pure-CSS masonry
+possible: 320 = 4 × 80 and 240 = 3 × 80. So the album grid is an 80px lattice
+where a wide tile spans 4 columns × 3 rows and a tall tile spans 3 × 4.
+
+```css
+.grid {
+  grid-template-columns: repeat(auto-fill, var(--cell));
+  grid-auto-rows: var(--cell);
+  grid-auto-flow: row dense;
+}
+.cell--wide {
+  grid-column: span 4;
+  grid-row: span 3;
+}
+.cell--tall {
+  grid-column: span 3;
+  grid-row: span 4;
+}
+```
+
+No JavaScript, no column-major reading order, and no library. Two details make it
+work: `gap` is zero and the gutter is padding _inside_ each cell, so a span stays
+an exact multiple of the cell; and `dense` backfills holes a mixed run of shapes
+would otherwise leave.
+
+`dense` is the one trade. It lets a later item slot into an earlier gap, so the
+visual order can differ slightly from the file order. For an album grid that reads
+as a wall rather than a sequence, packing is worth more than strict order.
+
+Album covers are the exception: they are always wide, so the album list stays a
+tidy uniform grid rather than a ragged one.
+
 ## The size ladder
 
-Every distinct width is a separate transformation, and each one bills once per
+Every distinct size is a separate transformation, and each one bills once per
 calendar month it is requested. Flickr publishes about thirteen sizes per photo;
-copying that would multiply the bill for no perceptible gain. Three rungs plus the
-untouched original covers every screen.
+copying that would multiply the bill for no perceptible gain.
 
-| Rung     | Width | Serves                                                                |
-| -------- | ----- | --------------------------------------------------------------------- |
-| Contact  | 400   | Album grid tiles — 400px covers 200 CSS px at 2×                      |
-| Phone    | 800   | First `srcset` candidate                                              |
-| Desktop  | 1600  | Second `srcset` candidate — tablets, desktops, Retina                 |
-| Original | —     | Download link, straight from R2. No transformation, no egress charge. |
-
-Widths come from `site.config.json` under `sizes`.
+| Rung      | Size                   | Serves                                                                |
+| --------- | ---------------------- | --------------------------------------------------------------------- |
+| Thumbnail | 640 × 480 or 480 × 640 | Grid tiles and album covers                                           |
+| Phone     | 800 wide               | First `srcset` candidate                                              |
+| Desktop   | 1600 wide              | Second `srcset` candidate — tablets, desktops, Retina                 |
+| Original  | —                      | Download link, straight from R2. No transformation, no egress charge. |
 
 ## How one file becomes every screen
 
