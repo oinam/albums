@@ -81,13 +81,27 @@ function altFor(item: Item): string {
 }
 
 /** Album covers are always wide, so the album list stays a tidy uniform grid. */
+/**
+ * How many tiles load eagerly. Anything plausibly above the fold must not be
+ * lazy: the browser defers it until layout says it is near the viewport, and
+ * that decision is unreliable — content blockers and some engines never make
+ * it at all, leaving visible tiles permanently blank.
+ */
+const EAGER_TILES = 8;
+
+function loadingAttrs(index: number): string {
+  return index < EAGER_TILES
+    ? ` loading="eager"${index === 0 ? ' fetchpriority="high"' : ""}`
+    : ` loading="lazy"`;
+}
+
 function coverImage(cfg: SiteConfig, album: Album, item: Item): string {
   return item.kind === "video"
     ? posterThumbUrl(cfg, album.slug, item.file, "wide")
     : thumbUrl(cfg, album.slug, item.file, "wide");
 }
 
-function tile(cfg: SiteConfig, album: Album, item: Item): string {
+function tile(cfg: SiteConfig, album: Album, item: Item, index: number): string {
   const href = itemPath(item);
   const alt = esc(altFor(item));
 
@@ -110,7 +124,7 @@ function tile(cfg: SiteConfig, album: Album, item: Item): string {
   const badge = item.kind === "video" ? `<span class="badge">Video</span>` : "";
 
   return `<li class="${cell}"><a class="tile" href="${href}">
-<img src="${src}" alt="${alt}" width="${width}" height="${height}" loading="lazy" decoding="async">
+<img src="${src}" alt="${alt}" width="${width}" height="${height}"${loadingAttrs(index)} decoding="async">
 ${badge}
 </a></li>`;
 }
@@ -120,7 +134,7 @@ function grid(cfg: SiteConfig, album: Album, items: Item[]): string {
     return `<p class="empty">Nothing here yet.</p>`;
   }
   return `<ul class="grid">
-${items.map((item) => tile(cfg, album, item)).join("\n")}
+${items.map((item, index) => tile(cfg, album, item, index)).join("\n")}
 </ul>`;
 }
 
@@ -132,11 +146,11 @@ function albumSubtitle(album: Album): string {
   return parts.join(" &middot; ");
 }
 
-function albumCard(cfg: SiteConfig, album: Album): string {
+function albumCard(cfg: SiteConfig, album: Album, index: number): string {
   const cover = coverOf(album);
   const href = albumPath(album);
   const art = cover
-    ? `<img src="${esc(coverImage(cfg, album, cover))}" alt="${esc(cover.alt ?? album.meta.title)}" width="${thumbSize(cfg, "wide").width}" height="${thumbSize(cfg, "wide").height}" loading="lazy" decoding="async">`
+    ? `<img src="${esc(coverImage(cfg, album, cover))}" alt="${esc(cover.alt ?? album.meta.title)}" width="${thumbSize(cfg, "wide").width}" height="${thumbSize(cfg, "wide").height}"${loadingAttrs(index)} decoding="async">`
     : "";
 
   return `<li class="album-item">
@@ -172,7 +186,7 @@ export function renderHome(
       ? ""
       : `<h2 class="section-head">Highlights</h2>
 <ul class="grid">
-${highlights.map((e) => tile(cfg, e.album, e.item)).join("\n")}
+${highlights.map((e, index) => tile(cfg, e.album, e.item, index)).join("\n")}
 </ul>`;
 
   const albumSection =
@@ -180,7 +194,7 @@ ${highlights.map((e) => tile(cfg, e.album, e.item)).join("\n")}
       ? `<p class="empty">No albums yet. Add one under <code>albums/</code> and run <code>npm run build</code>.</p>`
       : `<h2 class="section-head">Albums</h2>
 <ul class="album-grid">
-${albums.map((album) => albumCard(cfg, album)).join("\n")}
+${albums.map((album, index) => albumCard(cfg, album, index)).join("\n")}
 </ul>`;
 
   return layout({
