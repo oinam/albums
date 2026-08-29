@@ -1,4 +1,12 @@
-import { cpSync, existsSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
+import { createHash } from "node:crypto";
+import {
+  cpSync,
+  existsSync,
+  mkdirSync,
+  readFileSync,
+  rmSync,
+  writeFileSync,
+} from "node:fs";
 import { dirname, join } from "node:path";
 import type { SiteConfig } from "./config.ts";
 import type { Album, Item } from "./albums.ts";
@@ -16,6 +24,22 @@ import {
 } from "./templates.ts";
 
 export const OUT = "dist";
+
+const STYLESHEET = "assets/site.css";
+
+/**
+ * The stylesheet is served with a one-year cache and its URL never changed, so a
+ * returning visitor kept the old file long after a deploy — new markup styled by
+ * old rules. Hashing the contents into the name means a change is a different
+ * URL, which is what makes caching it for a year correct instead of harmful.
+ */
+function stylesheetHref(): string {
+  const hash = createHash("sha256")
+    .update(readFileSync(STYLESHEET))
+    .digest("hex")
+    .slice(0, 8);
+  return `/assets/site.${hash}.css`;
+}
 
 function write(path: string, contents: string): void {
   const full = join(OUT, path);
@@ -58,7 +82,7 @@ export function buildSite(cfg: SiteConfig): BuildResult {
   assertUniqueIds(albums);
 
   const pages = loadPages();
-  configureChrome(pages);
+  configureChrome(pages, stylesheetHref());
 
   rmSync(OUT, { recursive: true, force: true });
   mkdirSync(OUT, { recursive: true });
@@ -114,6 +138,7 @@ export function buildSite(cfg: SiteConfig): BuildResult {
   );
 
   cpSync("assets", join(OUT, "assets"), { recursive: true });
+  writeFileSync(join(OUT, stylesheetHref().slice(1)), readFileSync(STYLESHEET));
   if (existsSync("favicon.ico")) cpSync("favicon.ico", join(OUT, "favicon.ico"));
 
   return { albums: albums.length, items };

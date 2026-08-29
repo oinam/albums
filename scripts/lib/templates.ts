@@ -35,9 +35,11 @@ interface PageOptions {
  * threading the list through every renderer.
  */
 let chromePages: Page[] = [];
+let stylesheetHref = "/assets/site.css";
 
-export function configureChrome(pages: Page[]): void {
+export function configureChrome(pages: Page[], stylesheet: string): void {
   chromePages = pages;
+  stylesheetHref = stylesheet;
 }
 
 const ICON = {
@@ -109,7 +111,7 @@ export function layout({
 <link rel="canonical" href="${esc(canonical)}">
 <link rel="icon" href="/favicon.ico">
 <link rel="alternate" type="application/rss+xml" title="${esc(cfg.site.title)}" href="/feed.xml">
-<link rel="stylesheet" href="/assets/site.css">
+<link rel="stylesheet" href="${stylesheetHref}">
 <meta property="og:title" content="${esc(title)}">
 <meta property="og:description" content="${esc(description)}">
 <meta property="og:url" content="${esc(canonical)}">
