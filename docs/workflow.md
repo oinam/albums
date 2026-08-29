@@ -7,9 +7,8 @@ description: The everyday loop from a folder of photos to a deployed page.
 
 ## 1. Stage the files
 
-Put the originals in a folder under `_incoming/`, named for its date and title.
-`YYYY-MM-DD-title` is the common case; ranges, a month or a bare year all work too —
-see [Album metadata](/album-metadata/):
+Put the originals in a folder under `_incoming/`, named `YYYY-MM-DD-album-title`.
+Use `01` for a day or month you do not know — see [Album metadata](/album-metadata/):
 
 ```
 _incoming/2005-06-14-macromedia-lego-team/

@@ -101,7 +101,7 @@ function ensureAlbumMeta(slug: string, albumDir: string, items: Item[]): void {
     `---
 title: ${parsed.title || slug}
 date: ${date}
-${parsed.dateEnd ? `date_end: ${parsed.dateEnd}` : `# date_end: ${date}`}
+# date_end: ${date}
 # location:
 ${items[0] ? `cover: ${items[0].file}` : "# cover:"}
 ---

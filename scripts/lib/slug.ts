@@ -1,104 +1,79 @@
 export interface ParsedSlug {
-  /** `YYYY-MM-DD`, `YYYY-MM` or `YYYY` — whatever precision the folder name carried. */
+  /** `YYYY-MM-DD`, or absent when the folder did not start with one. */
   date?: string;
-  dateEnd?: string;
   title: string;
 }
 
 const MONTH_MAX = 12;
 const DAY_MAX = 31;
 
-function validMonth(m: string): boolean {
-  const n = Number(m);
-  return n >= 1 && n <= MONTH_MAX;
-}
-
-function validDay(d: string): boolean {
-  const n = Number(d);
-  return n >= 1 && n <= DAY_MAX;
-}
+/**
+ * Words that stay lowercase inside a title. Never applied to the first or last
+ * word, which is what the convention actually says.
+ */
+const MINOR_WORDS = new Set([
+  "a",
+  "an",
+  "and",
+  "as",
+  "at",
+  "but",
+  "by",
+  "for",
+  "from",
+  "in",
+  "into",
+  "nor",
+  "of",
+  "on",
+  "onto",
+  "or",
+  "over",
+  "per",
+  "the",
+  "to",
+  "up",
+  "via",
+  "with",
+]);
 
 function titleCase(rest: string): string {
-  return rest
-    .split("-")
-    .filter(Boolean)
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+  const words = rest.split("-").filter(Boolean);
+  return words
+    .map((word, index) => {
+      const lower = word.toLowerCase();
+      const isEdge = index === 0 || index === words.length - 1;
+      if (!isEdge && MINOR_WORDS.has(lower)) return lower;
+      return word.charAt(0).toUpperCase() + word.slice(1);
+    })
     .join(" ");
 }
 
 /**
- * Reads the date out of an album folder name, in whichever of these it used:
+ * Album folders are `YYYY-MM-DD-album-title`, and nothing else.
  *
- *   2005-06-14-lego-team          one day
- *   2005-06-14-20-lego-week       a range within the month
- *   2005-06-14-07-20-summer       a range within the year
- *   2005-06-lego-team             a month
- *   2005-lego-team                a year
- *   lego-team                     no date at all
+ * Earlier this understood month-only, year-only and two range forms, which made
+ * `2005-06-14-24-hours-in-tokyo` unreadable — is `24` the end of a range or the
+ * start of the title? One shape removes the question: the date is always exactly
+ * ten characters, and everything after it is the title. Use `01` for a day or
+ * month you do not know.
  *
- * Longest pattern first, and every component is range-checked, so a folder that
- * merely starts with digits does not get read as a date.
- *
- * One ambiguity is unavoidable: `2005-06-14-24-hours-in-tokyo` parses as a range
- * from the 14th to the 24th. Only the generated `album.md` is affected, and that
- * file is authoritative once written — correct it there and nothing re-reads the
- * folder name.
+ * The title is a starting point. Automatic casing keeps minor words lowercase
+ * inside the title, but it cannot know every convention — `album.md` is written
+ * once and is authoritative from then on, so correct it there.
  */
 export function parseSlug(slug: string): ParsedSlug {
-  const yearMonthDayMonthDay = /^(\d{4})-(\d{2})-(\d{2})-(\d{2})-(\d{2})-(.+)$/.exec(
-    slug,
-  );
-  if (
-    yearMonthDayMonthDay?.[1] &&
-    validMonth(yearMonthDayMonthDay[2] ?? "") &&
-    validDay(yearMonthDayMonthDay[3] ?? "") &&
-    validMonth(yearMonthDayMonthDay[4] ?? "") &&
-    validDay(yearMonthDayMonthDay[5] ?? "")
-  ) {
-    const [, y, m1, d1, m2, d2, rest] = yearMonthDayMonthDay;
-    return {
-      date: `${y}-${m1}-${d1}`,
-      dateEnd: `${y}-${m2}-${d2}`,
-      title: titleCase(rest ?? ""),
-    };
+  const match = /^(\d{4})-(\d{2})-(\d{2})-(.+)$/.exec(slug);
+  if (!match?.[1]) return { title: titleCase(slug) };
+
+  const month = Number(match[2]);
+  const day = Number(match[3]);
+  if (month < 1 || month > MONTH_MAX || day < 1 || day > DAY_MAX) {
+    return { title: titleCase(slug) };
   }
 
-  const yearMonthDayDay = /^(\d{4})-(\d{2})-(\d{2})-(\d{2})-(.+)$/.exec(slug);
-  if (
-    yearMonthDayDay?.[1] &&
-    validMonth(yearMonthDayDay[2] ?? "") &&
-    validDay(yearMonthDayDay[3] ?? "") &&
-    validDay(yearMonthDayDay[4] ?? "")
-  ) {
-    const [, y, m, d1, d2, rest] = yearMonthDayDay;
-    return {
-      date: `${y}-${m}-${d1}`,
-      dateEnd: `${y}-${m}-${d2}`,
-      title: titleCase(rest ?? ""),
-    };
-  }
-
-  const yearMonthDay = /^(\d{4})-(\d{2})-(\d{2})-(.+)$/.exec(slug);
-  if (
-    yearMonthDay?.[1] &&
-    validMonth(yearMonthDay[2] ?? "") &&
-    validDay(yearMonthDay[3] ?? "")
-  ) {
-    const [, y, m, d, rest] = yearMonthDay;
-    return { date: `${y}-${m}-${d}`, title: titleCase(rest ?? "") };
-  }
-
-  const yearMonth = /^(\d{4})-(\d{2})-(.+)$/.exec(slug);
-  if (yearMonth?.[1] && validMonth(yearMonth[2] ?? "")) {
-    const [, y, m, rest] = yearMonth;
-    return { date: `${y}-${m}`, title: titleCase(rest ?? "") };
-  }
-
-  const year = /^(\d{4})-(.+)$/.exec(slug);
-  if (year?.[1]) {
-    const [, y, rest] = year;
-    return { date: y, title: titleCase(rest ?? "") };
-  }
-
-  return { title: titleCase(slug) };
+  return {
+    date: `${match[1]}-${match[2]}-${match[3]}`,
+    title: titleCase(match[4] ?? ""),
+  };
 }

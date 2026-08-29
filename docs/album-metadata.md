@@ -9,25 +9,40 @@ Two files per album, both committed, both meant to be edited by hand.
 
 ## Naming the folder
 
-The folder name seeds the album's title and dates the first time ingest sees it.
-Five shapes are understood:
+One shape, always:
 
-| Folder                         | Date             | Renders as                     |
-| ------------------------------ | ---------------- | ------------------------------ |
-| `2005-06-14-lego-team`         | one day          | Jun 14, 2005                   |
-| `2005-06-14-20-lego-week`      | range in a month | Jun 14–20, 2005                |
-| `2005-06-14-07-20-summer-trip` | range in a year  | Jun 14 – Jul 20, 2005          |
-| `2005-06-imphal-monsoon`       | a month          | Jun 2005                       |
-| `2005-childhood-scans`         | a year           | 2005                           |
-| `lego-team`                    | none             | falls back to EXIF, then today |
+```
+YYYY-MM-DD-album-title
+2005-06-14-macromedia-lego-team
+```
 
-Every component is range-checked, so `2005-13-14-something` is not read as a date —
-it falls back to the year. Partial dates sort as their first day, so a month-level
-album lands at the start of that month.
+The first ten characters are the date and everything after them is the title. If you
+do not know the day, use `01`; likewise the month. `2005-01-01-childhood-scans` is a
+perfectly good name for a box of undated prints.
 
-One ambiguity is unavoidable: `2005-06-14-24-hours-in-tokyo` reads as a range from
-the 14th to the 24th. Only the generated `album.md` is affected, and that file wins
-from then on — fix the dates there and nothing re-reads the folder name.
+This used to accept month-only, year-only and two range forms, which sounds more
+flexible and was worse: `2005-06-14-24-hours-in-tokyo` had no correct reading — `24`
+could be the end of a range or the start of the title. One shape removes the
+question entirely.
+
+A folder that does not start with a valid `YYYY-MM-DD` still works. It gets no date
+from its name — falling back to EXIF, then to today — and the whole folder name
+becomes the title, digits and all, which is deliberately conspicuous.
+
+### The title is a starting point
+
+Minor words stay lowercase inside the title and never at either end, so
+`2005-06-14-a-day-in-imphal` becomes **A Day in Imphal**. That convention has more
+exceptions than any word list can hold, so treat it as a first draft: `album.md` is
+written once and is authoritative from then on. Correct it there and nothing
+re-reads the folder name.
+
+### Dates in `album.md` can be less precise
+
+The folder format is strict; the file it generates is not. Once written you can set
+`date` to `YYYY-MM` or a bare `YYYY` and it will render as _Jun 2005_ or _2005_
+rather than pretending to a day it does not know. Ranges work the same way through
+`date_end`. Partial dates sort as their first day.
 
 ## `albums/<slug>/album.md`
 
