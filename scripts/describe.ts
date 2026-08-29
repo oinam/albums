@@ -8,7 +8,7 @@ import type { SiteConfig } from "./lib/config.ts";
 import { loadAlbums, formatDate } from "./lib/albums.ts";
 import type { Album, Item } from "./lib/albums.ts";
 import { loadEnv } from "./lib/env.ts";
-import { posterUrl, scaledUrl } from "./lib/media.ts";
+import { posterUrl, visionUrl } from "./lib/media.ts";
 
 const VISION_WIDTH = 1024;
 
@@ -50,7 +50,7 @@ function albumContext(album: Album): string {
 }
 
 function sourceUrl(cfg: SiteConfig, album: Album, item: Item): string | null {
-  if (item.kind === "photo") return scaledUrl(cfg, album.slug, item.file, VISION_WIDTH);
+  if (item.kind === "photo") return visionUrl(cfg, album.slug, item.file, VISION_WIDTH);
   if (item.kind === "video") return posterUrl(cfg, album.slug, item.file);
   return null;
 }

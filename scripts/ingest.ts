@@ -117,10 +117,15 @@ ${items[0] ? `cover: ${items[0].file}` : "# cover:"}
   console.log(`  created ${path} — edit the title, dates and description by hand`);
 }
 
-/** Existing entries win: their id is a permalink and their prose may be hand-written. */
+/**
+ * Existing entries win: their id is a permalink and their prose may be hand-written.
+ *
+ * Ingest never removes an item. Staging is transient — you only stage the files you
+ * are adding — so anything already in photos.json survives a run that did not see it.
+ */
 function merge(existing: Item[], scanned: Item[]): Item[] {
   const byFile = new Map(existing.map((item) => [item.file, item]));
-  return scanned.map((fresh) => {
+  const updated = scanned.map((fresh) => {
     const prior = byFile.get(fresh.file);
     if (!prior) return fresh;
     return {
@@ -131,6 +136,9 @@ function merge(existing: Item[], scanned: Item[]): Item[] {
       height: fresh.height,
     };
   });
+
+  const staged = new Set(scanned.map((item) => item.file));
+  return [...existing.filter((item) => !staged.has(item.file)), ...updated];
 }
 
 function sortItems(items: Item[]): Item[] {

@@ -44,6 +44,11 @@ Re-running is safe. Existing entries keep their id and any wording you have writ
 only dimensions and byte counts are refreshed. Files already in R2 at the same size
 are not re-uploaded.
 
+**Ingest never removes an item.** You only need to stage the files you are adding —
+anything already in `photos.json` survives a run that did not see it, so you can
+empty `_incoming/` whenever you like. To drop a photo, delete its entry by hand and
+delete the object from R2.
+
 ## 3. Describe
 
 ```bash

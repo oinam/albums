@@ -18,6 +18,7 @@ History was rewritten to strip ~21 MB of committed photos, so local and
 `origin/main` have diverged. Nothing is pushed automatically:
 
 ```bash
+git fetch origin                       # filter-repo dropped the tracking refs
 git push --force-with-lease origin main
 ```
 

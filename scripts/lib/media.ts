@@ -49,3 +49,21 @@ export function posterUrl(cfg: SiteConfig, slug: string, file: string): string {
   const source = originalUrl(cfg, slug, file);
   return `https://${cfg.media.host}/cdn-cgi/media/mode=frame,time=1s,width=${cfg.sizes.desktop},format=jpg/${source}`;
 }
+
+/**
+ * Fixed-format rendition for handing to an API that negotiates its own Accept
+ * header. `format=auto` could return AVIF, which such a consumer may reject.
+ */
+export function visionUrl(
+  cfg: SiteConfig,
+  slug: string,
+  file: string,
+  width: number,
+): string {
+  return transform(
+    cfg,
+    slug,
+    file,
+    `width=${width},fit=scale-down,quality=${QUALITY},format=jpeg,metadata=none`,
+  );
+}

@@ -37,3 +37,8 @@ npm run docs        # ovellum build
 ```
 
 `npm run build` must never require a secret — Cloudflare Pages runs it with none.
+
+## /odo
+
+- Queue: `~/_/Oinam/1-Projects/devCommands/albums.oinam.com.md`
+- Log: `~/_/Oinam/1-Projects/devLogs/albums.oinam.com.md`
