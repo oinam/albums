@@ -40,6 +40,14 @@ span 4 × 3 cells and tall tiles 3 × 4, with `grid-auto-flow: dense` to pack th
 Below 400px the cell drops to 64px, because a wide tile spans four of them and four
 80px cells will not fit a small phone.
 
+## One spacing value
+
+`--gap` is the distance between two thumbnails **and** the distance from a
+thumbnail to the edge of the viewport. The media sits just off the edge rather
+than against it, and the two spacings cannot drift apart because they are the same
+declaration. Text keeps a wider margin of its own (`--edge`) — prose needs more
+room than pictures do.
+
 ## The media reaches both edges, and the rows are flush
 
 The grid is a justified gallery — the shape Flickr and Google Photos use — and it

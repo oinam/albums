@@ -22,7 +22,15 @@
   --space-large: calc(1.618034 * 1.618034 * 1rem);
 
   --border-radius: 3px;
-  --gutter: 4px;
+  /*
+   * The one spacing value for media. It is the distance between two thumbnails
+   * and, equally, the distance from a thumbnail to the edge of the viewport —
+   * so the grid sits just off the edge rather than against it. Change it here
+   * and both move together.
+   */
+  --gap: 8px;
+
+  /* The text margin. Prose needs more room than pictures do. */
   --edge: clamp(1rem, 3vw, 3.25rem);
 }
 
@@ -202,8 +210,7 @@ video {
   padding: 0;
   color: var(--link-color);
   background: none;
-  border: 1px solid var(--border-color);
-  border-radius: var(--border-radius);
+  border: none;
   cursor: pointer;
 }
 
@@ -220,7 +227,7 @@ video {
 
 main {
   flex: 1;
-  padding-block: var(--space);
+  padding-block: var(--gap) var(--space);
   padding-inline: var(--edge);
 }
 
@@ -269,13 +276,13 @@ main {
 .album-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 1fr));
-  gap: 0;
+  gap: var(--gap);
   margin-top: var(--space-large);
-  margin-inline: calc(-1 * var(--edge));
+  margin-inline: calc(var(--gap) - var(--edge));
 }
 
 .album-item {
-  padding: var(--gutter);
+  min-width: 0;
 }
 
 /*
@@ -299,9 +306,9 @@ main {
   --row: 240px;
   display: flex;
   flex-wrap: wrap;
-  gap: calc(var(--gutter) * 2);
+  gap: var(--gap);
   margin-top: var(--space-small);
-  margin-inline: calc(-1 * var(--edge));
+  margin-inline: calc(var(--gap) - var(--edge));
 }
 
 .grid::after {
@@ -311,6 +318,11 @@ main {
 
 .cell {
   flex: var(--ar) 1 calc(var(--ar) * var(--row));
+}
+
+/* When the grid opens the page there is nothing above it to separate from. */
+main > .grid:first-child {
+  margin-top: 0;
 }
 
 .tile {
