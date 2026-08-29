@@ -63,6 +63,29 @@ const THEME_ICON = {
 
 const THEME_TOGGLE = `<button type="button" class="theme-toggle" data-theme-toggle title="Theme: auto" aria-label="Theme: auto. Click to change.">${THEME_ICON.auto}</button>`;
 
+/**
+ * Keyboard shortcuts, on top of tabbing — never instead of it. Every target is a
+ * real link, so Tab and Enter already work and these are a shortcut over the same
+ * hrefs rather than a parallel mechanism.
+ *
+ * Three rules keep them from fighting the browser. Any modifier held and we do
+ * nothing, so Cmd/Alt+Arrow stays history navigation. Typing in a field does
+ * nothing, so a future search box is safe. And nothing is bound that the browser
+ * already uses on a normal page — which is why Random is R and not Space: Space
+ * is page-down, and taking it would break scrolling on exactly the pages where
+ * these shortcuts are useful.
+ */
+const KEYS_SCRIPT = `(function(){
+var map={ArrowLeft:'[rel=prev]',ArrowRight:'[rel=next]',r:'.pager .icon[href="/random/"]',R:'.pager .icon[href="/random/"]'};
+document.addEventListener('keydown',function(e){
+if(e.metaKey||e.ctrlKey||e.altKey||e.shiftKey)return;
+var t=e.target;
+if(t&&(t.isContentEditable||/^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName)))return;
+var sel=map[e.key];if(!sel)return;
+var a=document.querySelector(sel);if(!a||!a.href)return;
+e.preventDefault();location.href=a.href;});
+})()`;
+
 const TOGGLE_SCRIPT = `(function(){var b=document.querySelector("[data-theme-toggle]");if(!b)return;var order=["auto","light","dark"];var icons=${JSON.stringify(THEME_ICON)};
 function current(){try{return localStorage.getItem("theme")||"auto"}catch(e){return "auto"}}
 function paint(v){b.innerHTML=icons[v];b.title="Theme: "+v;b.setAttribute("aria-label","Theme: "+v+". Click to change.");if(v==="auto")delete document.documentElement.dataset.theme;else document.documentElement.dataset.theme=v}
@@ -114,6 +137,7 @@ ${body}
 </main>
 ${siteFooter(cfg)}
 <script>${TOGGLE_SCRIPT}</script>
+<script>${KEYS_SCRIPT}</script>
 </body>
 </html>
 `;
@@ -348,9 +372,9 @@ ${itemMeta(item)}
 <nav class="pager">
 <a class="pager-album" href="${albumPath(album)}">${esc(album.meta.title)}</a>
 <span class="pager-icons">
-${prev ? `<a class="icon" href="${itemPath(prev)}" rel="prev" aria-label="Previous">${ICON.prev}</a>` : `<span class="icon is-off" aria-hidden="true">${ICON.prev}</span>`}
-<a class="icon" href="/random/" aria-label="A random item">${ICON.random}</a>
-${next ? `<a class="icon" href="${itemPath(next)}" rel="next" aria-label="Next">${ICON.next}</a>` : `<span class="icon is-off" aria-hidden="true">${ICON.next}</span>`}
+${prev ? `<a class="icon" href="${itemPath(prev)}" rel="prev" aria-label="Previous" title="Previous (←)">${ICON.prev}</a>` : `<span class="icon is-off" aria-hidden="true">${ICON.prev}</span>`}
+<a class="icon" href="/random/" aria-label="A random item" title="Random (R)">${ICON.random}</a>
+${next ? `<a class="icon" href="${itemPath(next)}" rel="next" aria-label="Next" title="Next (→)">${ICON.next}</a>` : `<span class="icon is-off" aria-hidden="true">${ICON.next}</span>`}
 </span>
 </nav>`,
   });

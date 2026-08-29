@@ -112,6 +112,27 @@ filename. A screen reader announcing "dsc_0142.jpg" is worse than announcing not
 and an empty `alt` is the correct markup for an image with no caption. Write one by
 hand in `photos.json` when the picture carries meaning the title does not.
 
+## Keyboard shortcuts sit on top of the links
+
+`←` and `→` follow the pager, `R` takes the random link. They are a shortcut over
+hrefs that are already on the page, not a second way to navigate: every target is a
+real `<a>`, so Tab and Enter reach all of them with no script at all, and the script
+only saves the tabbing.
+
+Bare keys, no modifier. That is what Flickr, Google Photos and every lightbox use,
+and it is what a visitor tries first. The modified forms are the ones to leave alone
+— `Alt`/`Cmd` + `←` is browser history — so the handler returns the moment any
+modifier is held.
+
+Random is `R` and not `Space`. Space is page-down. Taking it would break scrolling on
+exactly the long pages where the shortcuts are worth having, and a shortcut bought
+with a browser default is a bad trade.
+
+Typing is exempt: an `input`, `textarea`, `select` or anything `contenteditable`
+swallows the key first, so a search field added later needs no change here. The pager
+icons carry their key in the `title` attribute, because a shortcut nobody can
+discover is a shortcut nobody uses.
+
 ## Spacing and type
 
 Spacing is a golden-ratio scale carried over from the site's first version:
