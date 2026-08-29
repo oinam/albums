@@ -25,4 +25,7 @@ R2_BUCKET = "oinam-media"
 # bucket is reachable *only* through its own endpoint — <account>.eu.r2.cloudflarestorage.com
 # rather than <account>.r2.cloudflarestorage.com — and uploads fail with NoSuchBucket against
 # the wrong one. Leave empty unless the bucket page shows a jurisdiction.
+#
+# Either form works: the short code ("eu") or the whole S3 endpoint URL exactly as the
+# dashboard shows it ("https://<account>.eu.r2.cloudflarestorage.com").
 R2_JURISDICTION = ""

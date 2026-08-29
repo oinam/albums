@@ -25,6 +25,10 @@ run = "npm run build"
 description = "Stage → dimensions + EXIF → R2 → photos.json (`mise run ingest -- --no-upload`)"
 run = "npm run ingest --"
 
+[tasks.doctor]
+description = "Check R2 credentials, endpoint, read/write, the media domain and transformations"
+run = "npx tsx scripts/doctor.ts"
+
 [tasks.docs]
 description = "Build the Ovellum docs site from docs/"
 run = "npm run docs"

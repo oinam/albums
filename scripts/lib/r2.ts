@@ -13,13 +13,15 @@ export interface Bucket {
  * jurisdiction's endpoint — `<account>.eu.r2.cloudflarestorage.com` rather than
  * `<account>.r2.cloudflarestorage.com`. A location hint does not change this;
  * only a jurisdiction does.
+ *
+ * `R2_JURISDICTION` accepts either the short code (`eu`) or the whole endpoint
+ * URL, because the whole URL is what the dashboard puts in front of you.
  */
 function endpointFor(account: string): string {
-  const jurisdiction = process.env.R2_JURISDICTION?.trim();
-  const host = jurisdiction
-    ? `${account}.${jurisdiction}.r2.cloudflarestorage.com`
-    : `${account}.r2.cloudflarestorage.com`;
-  return `https://${host}`;
+  const configured = process.env.R2_JURISDICTION?.trim();
+  if (!configured) return `https://${account}.r2.cloudflarestorage.com`;
+  if (/^https?:\/\//i.test(configured)) return configured.replace(/\/+$/, "");
+  return `https://${account}.${configured}.r2.cloudflarestorage.com`;
 }
 
 export function openBucket(): Bucket {

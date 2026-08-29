@@ -63,6 +63,19 @@ is unchanged. The bucket's page in the dashboard shows which one applies.
 Neither affects delivery. Transformations and the site read the bucket over HTTPS
 through `media.oinam.com`, not through the S3 API.
 
+### Check it works
+
+```bash
+mise run doctor
+```
+
+Verifies the credentials, resolves the endpoint, reads and writes the bucket,
+then fetches an image through `media.oinam.com` and through `/cdn-cgi/image/` to
+confirm the custom domain is public and transformations are on. If the bucket is
+empty it uploads a 64×48 probe image for the last two checks and deletes it after.
+
+Everything it touches it cleans up. Run it whenever something looks wrong.
+
 ## 4. Pages project
 
 **Workers & Pages → Create → Pages → Connect to Git**, pick the repository, then:

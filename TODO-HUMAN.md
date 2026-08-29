@@ -4,12 +4,13 @@ Things only you can do. Claude cannot: touch your Cloudflare dashboard, force-pu
 
 ## Blocking — nothing works until these are done
 
-- [x] **Create the R2 bucket** and attach `media.oinam.com` as its custom domain. Done: `oinam-media`, European region.
-- [ ] **Check whether that bucket has a jurisdiction or only a location hint.** Its page in the dashboard says which. If it shows a jurisdiction, set `R2_JURISDICTION = "eu"` in `mise.local.toml` — a jurisdictional bucket answers only on `<account>.eu.r2.cloudflarestorage.com`, and uploads to the ordinary endpoint fail with `NoSuchBucket`. A location hint needs nothing.
-- [ ] **Enable Images transformations** for the zone. `docs/deploy.md` §2.
-- [ ] **Create an R2 API token**, then `cp mise.local.toml.example mise.local.toml`, fill it in, and run `mise trust`.
-- [ ] **Create the Pages project**: build command `npm run build`, output `dist`,
-      Node 22+. `docs/deploy.md` §4.
+- [x] **R2 bucket + custom domain.** `oinam-media`, EU, mapped to `media.oinam.com`.
+- [x] **Jurisdiction settled.** It is a real EU _jurisdiction_, not a location hint — the endpoint carries `.eu.`. `R2_JURISDICTION` is set and working.
+- [x] **Images transformations enabled.** Verified: `/cdn-cgi/image/` returns `cf-resized` and honours `format=auto`.
+- [x] **R2 API token + `mise.local.toml`.** Read and write both confirmed against the live bucket.
+- [ ] **Create the Pages project**: build command `npm run build`, output `dist`, Node 22+. `docs/deploy.md` §4. This is the only one left.
+
+Re-run `mise run doctor` any time to re-check all of the above in about two seconds.
 
 ## Force-push required
 
