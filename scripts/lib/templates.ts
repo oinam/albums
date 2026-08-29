@@ -244,8 +244,7 @@ ${highlights.map((e, index) => tile(cfg, e.album, e.item, index)).join("\n")}
   const albumSection =
     albums.length === 0
       ? `<p class="empty">No albums yet. Add one under <code>albums/</code> and run <code>npm run build</code>.</p>`
-      : `<h2 class="section-head">Albums</h2>
-<ul class="album-grid">
+      : `<ul class="album-grid">
 ${albums.map((album, index) => albumCard(cfg, album, index)).join("\n")}
 </ul>`;
 
@@ -284,8 +283,7 @@ export function renderAlbum(cfg: SiteConfig, album: Album): string {
     title: `${album.meta.title} — ${cfg.site.title}`,
     description,
     path: albumPath(album),
-    body: `<p class="crumb"><a href="/">${esc(cfg.site.title)}</a></p>
-<h1>${esc(album.meta.title)}</h1>
+    body: `<h1>${esc(album.meta.title)}</h1>
 <p class="meta">${albumSubtitle(album)}</p>
 ${album.descriptionHtml ? `<div class="caption">${album.descriptionHtml}</div>` : ""}
 ${grid(cfg, album, album.items)}`,

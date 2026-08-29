@@ -264,12 +264,21 @@ main {
   margin-block: var(--space-small);
 }
 
+/*
+ * Same treatment as the photo grid: columns stretch to fill the width exactly and
+ * the gutter lives inside each card, so the covers reach both edges. Fixed-width
+ * columns would leave whatever is left after the last whole card as dead space.
+ */
 .album-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 320px));
-  gap: var(--space);
-  justify-content: start;
-  margin-top: var(--space-small);
+  grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 1fr));
+  gap: 0;
+  margin-top: var(--space-large);
+  margin-inline: calc(-1 * var(--edge));
+}
+
+.album-item {
+  padding: var(--gutter);
 }
 
 .grid {
