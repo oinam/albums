@@ -4,6 +4,7 @@ import {
   existsSync,
   mkdirSync,
   readFileSync,
+  readdirSync,
   statSync,
   watch,
 } from "node:fs";
@@ -13,6 +14,7 @@ import { extname, join, normalize, resolve, sep } from "node:path";
 import sharp from "sharp";
 import { loadConfig, stagingDir } from "./lib/config.ts";
 import { contentType } from "./lib/mime.ts";
+import { updateAlbum, updateItem } from "./lib/metadata.ts";
 import { OUT, buildSite } from "./lib/site.ts";
 
 const CACHE = ".dev-cache";
@@ -120,6 +122,124 @@ async function render(source: string, r: Rendition): Promise<string> {
   return target;
 }
 
+const LOOPBACK = new Set(["::1", "127.0.0.1", "::ffff:127.0.0.1"]);
+const MAX_BODY = 256 * 1024;
+
+/** Set by the editor so the file watcher does not rebuild the same change twice. */
+let editedAt = 0;
+
+/**
+ * The editor writes files, so the gate is deliberately narrow.
+ *
+ * A loopback socket is not enough on its own: the browser is on loopback too, and
+ * any page it happens to have open can post to this port. Requiring
+ * `application/json` forces a CORS preflight that a cross-site page cannot pass,
+ * and checking Host and Origin closes the rest. The slug is checked against the
+ * albums that actually exist rather than being joined into a path, so no request
+ * body can write outside `albums/`.
+ */
+function editAllowed(req: IncomingMessage): boolean {
+  if (req.method !== "POST") return false;
+  if (!LOOPBACK.has(req.socket.remoteAddress ?? "")) return false;
+  if (req.headers["content-type"] !== "application/json") return false;
+
+  const host = (req.headers.host ?? "").replace(/:\d+$/, "");
+  if (host !== "localhost" && host !== "127.0.0.1" && host !== "[::1]") return false;
+
+  const origin = req.headers.origin;
+  return (
+    origin === undefined || /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin)
+  );
+}
+
+async function readBody(req: IncomingMessage): Promise<string> {
+  const chunks: Buffer[] = [];
+  let size = 0;
+  for await (const chunk of req) {
+    const buf = chunk as Buffer;
+    size += buf.length;
+    if (size > MAX_BODY) throw new Error("Body too large");
+    chunks.push(buf);
+  }
+  return Buffer.concat(chunks).toString("utf8");
+}
+
+function plain(res: ServerResponse, status: number, body: string): void {
+  res.writeHead(status, { "content-type": "text/plain; charset=utf-8" });
+  res.end(body);
+}
+
+async function handleEdit(req: IncomingMessage, res: ServerResponse): Promise<void> {
+  if (!editAllowed(req)) {
+    plain(res, 403, "Editing is local-only.");
+    return;
+  }
+
+  let body: Record<string, unknown>;
+  try {
+    body = JSON.parse(await readBody(req)) as Record<string, unknown>;
+  } catch {
+    plain(res, 400, "Expected a JSON object.");
+    return;
+  }
+
+  const text = (key: string): string =>
+    typeof body[key] === "string" ? body[key].trim() : "";
+
+  const slug = text("slug");
+  const albums = readdirSync("albums", { withFileTypes: true })
+    .filter((entry) => entry.isDirectory())
+    .map((entry) => entry.name);
+  if (!albums.includes(slug)) {
+    plain(res, 400, `Unknown album: ${slug}`);
+    return;
+  }
+
+  try {
+    if (body.kind === "item") {
+      const id = text("id");
+      if (!id) {
+        plain(res, 400, "Missing item id.");
+        return;
+      }
+      updateItem(slug, id, {
+        title: text("title"),
+        date: text("date"),
+        description: text("description"),
+        alt: text("alt"),
+        highlight: body.highlight === true,
+      });
+    } else if (body.kind === "album") {
+      const title = text("title");
+      if (!title) {
+        plain(res, 400, "An album needs a title.");
+        return;
+      }
+      updateAlbum(
+        slug,
+        {
+          title,
+          date: text("date") || undefined,
+          date_end: text("date_end") || undefined,
+          location: text("location") || undefined,
+          cover: text("cover") || undefined,
+        },
+        text("description"),
+      );
+    } else {
+      plain(res, 400, "Unknown edit kind.");
+      return;
+    }
+  } catch (error) {
+    plain(res, 500, error instanceof Error ? error.message : String(error));
+    return;
+  }
+
+  editedAt = Date.now();
+  rebuild();
+  plain(res, 200, "ok");
+}
+
 function send(res: ServerResponse, status: number, body: string): void {
   res.writeHead(status, { "content-type": "text/html; charset=utf-8" });
   res.end(body);
@@ -128,6 +248,11 @@ function send(res: ServerResponse, status: number, body: string): void {
 async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> {
   const url = new URL(req.url ?? "/", "http://localhost");
   const pathname = url.pathname;
+
+  if (pathname === "/_edit") {
+    await handleEdit(req, res);
+    return;
+  }
 
   const redirect = readRedirects().get(pathname);
   if (redirect) {
@@ -163,7 +288,12 @@ function startWatching(): void {
   let timer: NodeJS.Timeout | undefined;
   const schedule = (): void => {
     clearTimeout(timer);
-    timer = setTimeout(rebuild, DEBOUNCE_MS);
+    timer = setTimeout(() => {
+      // An edit already rebuilt synchronously; rebuilding again here would clear
+      // dist just as the browser reloads into it.
+      if (Date.now() - editedAt < 1000) return;
+      rebuild();
+    }, DEBOUNCE_MS);
   };
 
   for (const target of WATCHED) {

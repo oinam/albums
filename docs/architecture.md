@@ -53,15 +53,17 @@ genuinely changes the experience. Media Transformations itself caps at 100 MB an
 ```
 scripts/
   build.ts        entry point — loads config, calls buildSite
-  dev.ts          local preview server: static files, renditions, watch
+  dev.ts          local preview server: static files, renditions, watch, /_edit
   ingest.ts       _incoming/ → dimensions + EXIF → R2 → photos.json
   doctor.ts       checks R2, the media domain and transformations end to end
   lib/
     albums.ts     album.md + photos.json loading, ordering, orientation
     config.ts     site.config.json and environment
     dimensions.ts pixel dimensions from file headers
+    editor.ts     the local metadata panel — never rendered by a real build
     ids.ts        stable base58 media ids
     media.ts      every media URL the site emits
+    metadata.ts   the only writer of album.md and photos.json
     mime.ts       content types, shared by R2 upload and the dev server
     probe.ts      optional ffprobe read of duration and dimensions
     r2.ts         S3-compatible R2 client
@@ -70,6 +72,10 @@ scripts/
     templates.ts  HTML
 assets/site.css   the whole stylesheet
 ```
+
+`metadata.ts` is the single writer so that ingest and the local editor cannot
+disagree about what a file on disk looks like. Two writers would mean each run of
+one reformatting the other's output, and the diff noise would hide the real change.
 
 `dimensions.ts` reads the container header rather than EXIF on purpose. Exported and
 edited files routinely carry an ICC profile and no camera tags at all, so EXIF

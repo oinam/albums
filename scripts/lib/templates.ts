@@ -1,6 +1,7 @@
 import type { SiteConfig } from "./config.ts";
 import type { Album, Item, StreamEntry } from "./albums.ts";
 import { coverOf, formatDate, orientationOf } from "./albums.ts";
+import { albumEditor, itemEditor } from "./editor.ts";
 import {
   croppedUrl,
   originalUrl,
@@ -27,6 +28,8 @@ interface PageOptions {
   path: string;
   body: string;
   head?: string;
+  /** The local editor, appended last. Empty in every production build. */
+  edit?: string;
 }
 
 /**
@@ -112,6 +115,7 @@ export function layout({
   path,
   body,
   head = "",
+  edit = "",
 }: PageOptions): string {
   const canonical = `https://${cfg.site.host}${path}`;
   return `<!doctype html>
@@ -138,7 +142,7 @@ ${body}
 ${siteFooter(cfg)}
 <script>${TOGGLE_SCRIPT}</script>
 <script>${KEYS_SCRIPT}</script>
-</body>
+${edit}</body>
 </html>
 `;
 }
@@ -373,6 +377,7 @@ export function renderAlbum(cfg: SiteConfig, album: Album): string {
     title: `${album.meta.title} — ${cfg.site.title}`,
     description,
     path: albumPath(album),
+    edit: cfg.media.local === true ? albumEditor(album) : "",
     body: `<h1>${esc(album.meta.title)}</h1>
 <p class="meta">${albumSubtitle(album)}</p>
 ${album.descriptionHtml ? `<div class="caption">${album.descriptionHtml}</div>` : ""}
@@ -441,6 +446,7 @@ export function renderItem(
       : `${album.meta.title} — ${cfg.site.title}`,
     description: item.description ?? album.meta.title,
     path: itemPath(item),
+    edit: cfg.media.local === true ? itemEditor(album, item) : "",
     body: `${stage(cfg, album, item)}
 ${itemMeta(item)}
 <nav class="pager">

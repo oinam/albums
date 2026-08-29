@@ -3,6 +3,7 @@ import { join } from "node:path";
 import exifr from "exifr";
 import { loadConfig, stagingDir } from "./lib/config.ts";
 import { kindFor, readItems } from "./lib/albums.ts";
+import { writeItems } from "./lib/metadata.ts";
 import type { Item } from "./lib/albums.ts";
 import { deriveId } from "./lib/ids.ts";
 import { parseSlug } from "./lib/slug.ts";
@@ -79,29 +80,6 @@ function merge(existing: Item[], scanned: Item[]): Item[] {
   return [...existing.filter((item) => !staged.has(item.file)), ...updated];
 }
 
-/**
- * What actually goes on disk: identity, then anything you wrote, then what the
- * file told us. `kind` is left out — it is the extension, and storing it only
- * gives a second place for it to be wrong.
- */
-function forFile(item: Item): Record<string, unknown> {
-  const ordered: Record<string, unknown> = { id: item.id, file: item.file };
-  const keys = [
-    "title",
-    "date",
-    "description",
-    "alt",
-    "highlight",
-    "width",
-    "height",
-  ] as const;
-  for (const key of keys) {
-    const value = item[key];
-    if (value !== undefined) ordered[key] = value;
-  }
-  return ordered;
-}
-
 function sortItems(items: Item[]): Item[] {
   return [...items].sort((a, b) =>
     a.file.localeCompare(b.file, undefined, { numeric: true }),
@@ -134,10 +112,7 @@ async function ingestAlbum(
 
   const items = sortItems(merge(readItems(albumDir), scanned));
   ensureAlbumMeta(slug, albumDir, items);
-  writeFileSync(
-    join(albumDir, "photos.json"),
-    `${JSON.stringify({ items: items.map(forFile) }, null, 2)}\n`,
-  );
+  writeItems(albumDir, items);
 
   if (noUpload) {
     console.log(`  metadata written; skipped upload (--no-upload)`);

@@ -131,6 +131,35 @@ mise run dev -- --port=3000    # if 8788 is taken
 A busy port is usually a previous `mise run dev` still holding it in another
 terminal. The server says so in one line and stops, rather than throwing.
 
+## Editing metadata while you look at it
+
+`mise run dev` puts an **Edit** button in the corner of every album and item page.
+It opens a panel holding exactly the fields described above — title, date,
+description, alt and the highlight flag on an item; title, dates, location, cover
+and description on an album — prefilled with what is there now. Save writes the
+file, rebuilds, and reloads the page under you.
+
+It writes through the same code ingest writes through, so a form edit and a hand
+edit produce the same bytes and neither churns the other's output. Clearing a
+field removes the key rather than storing an empty string. An item's `id` is never
+part of the form.
+
+**It is a development tool and it does not ship.** The panel is rendered only when
+the build is in local mode, so `npm run build` emits no markup, no style, no
+script and no `/_edit` reference anywhere in `dist/` — checked on every one of the
+generated pages. The endpoint is equally narrow: it answers only a same-origin
+JSON `POST` from the loopback interface, and the album name in the request is
+matched against the directories that actually exist rather than being joined into
+a path.
+
+Two things it will not do. Frontmatter comments do not survive an edit, because
+the file is rewritten rather than patched. And every value is written quoted —
+`date: "2026-06-16"` rather than `date: 2026-06-16` — which is deliberate: bare
+YAML turns that into a timestamp and a bare `1965` into a number.
+
+Nothing about this changes the model. The files on disk are still the truth, git
+still records the change, and the editor is only a faster way to type into them.
+
 ## 5. Build and push
 
 ```bash
