@@ -1,7 +1,7 @@
 import { existsSync, mkdirSync, readdirSync, statSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import exifr from "exifr";
-import { loadConfig } from "./lib/config.ts";
+import { loadConfig, stagingDir } from "./lib/config.ts";
 import { kindFor, readItems } from "./lib/albums.ts";
 import type { Item } from "./lib/albums.ts";
 import { deriveId } from "./lib/ids.ts";
@@ -9,7 +9,6 @@ import { applyOrientation, readDimensions } from "./lib/dimensions.ts";
 import { probeMedia } from "./lib/probe.ts";
 import { openBucket, upload } from "./lib/r2.ts";
 
-const STAGING = "_incoming";
 const ALBUMS = "albums";
 
 interface Exif {
@@ -159,8 +158,9 @@ async function ingestAlbum(
   slug: string,
   noUpload: boolean,
   prefix: string,
+  staging: string,
 ): Promise<void> {
-  const stageDir = join(STAGING, slug);
+  const stageDir = join(staging, slug);
   const files = readdirSync(stageDir)
     .filter((f) => !f.startsWith("."))
     .filter((f) => kindFor(f) !== null)
@@ -209,28 +209,31 @@ async function ingestAlbum(
 
 async function main(): Promise<void> {
   const cfg = loadConfig();
+  const staging = stagingDir();
   const args = process.argv.slice(2);
   const noUpload = args.includes("--no-upload");
   const named = args.filter((a) => !a.startsWith("--"));
 
-  if (!existsSync(STAGING)) {
-    console.log(`No ${STAGING}/ directory. Put an album folder there and re-run.`);
+  if (!existsSync(staging)) {
+    console.log(`No ${staging}/ directory. Put an album folder there and re-run.`);
     return;
   }
 
   const slugs =
     named.length > 0
       ? named
-      : readdirSync(STAGING, { withFileTypes: true })
+      : readdirSync(staging, { withFileTypes: true })
           .filter((e) => e.isDirectory())
           .map((e) => e.name);
 
   if (slugs.length === 0) {
-    console.log(`No album folders in ${STAGING}/.`);
+    console.log(`No album folders in ${staging}/.`);
     return;
   }
 
-  for (const slug of slugs) await ingestAlbum(slug, noUpload, cfg.media.prefix);
+  for (const slug of slugs) {
+    await ingestAlbum(slug, noUpload, cfg.media.prefix, staging);
+  }
 }
 
 await main();

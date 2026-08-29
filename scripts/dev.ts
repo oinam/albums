@@ -11,11 +11,10 @@ import { createServer } from "node:http";
 import type { IncomingMessage, ServerResponse } from "node:http";
 import { extname, join, normalize, resolve, sep } from "node:path";
 import sharp from "sharp";
-import { loadConfig } from "./lib/config.ts";
+import { loadConfig, stagingDir } from "./lib/config.ts";
 import { contentType } from "./lib/mime.ts";
 import { OUT, buildSite } from "./lib/site.ts";
 
-const STAGING = "_incoming";
 const CACHE = ".dev-cache";
 const RESIZABLE = new Set([".jpg", ".jpeg", ".png", ".webp", ".gif", ".avif"]);
 // Content only. Changes under scripts/ are handled by `tsx watch`, which restarts
@@ -25,6 +24,7 @@ const DEBOUNCE_MS = 120;
 
 const cfg = loadConfig();
 cfg.media.local = true;
+const staging = stagingDir();
 
 function rebuild(): void {
   try {
@@ -64,7 +64,7 @@ function readRedirects(): Map<string, string> {
 function mediaPath(pathname: string): string | null {
   const prefix = `/_media/${cfg.media.prefix}/`;
   if (!pathname.startsWith(prefix)) return null;
-  return within(STAGING, pathname.slice(prefix.length));
+  return within(staging, pathname.slice(prefix.length));
 }
 
 function sitePath(pathname: string): string | null {
@@ -183,7 +183,7 @@ createServer((req, res) => {
 }).listen(port, () => {
   console.log(`\n  albums.oinam.com — local preview`);
   console.log(`  http://localhost:${port}\n`);
-  console.log(`  Media is rendered from ${STAGING}/ and cached in ${CACHE}/.`);
+  console.log(`  Media is rendered from ${staging}/ and cached in ${CACHE}/.`);
   console.log(`  Sizes mirror production; AVIF/WebP negotiation is edge-only.`);
   console.log(`  Editing albums/ or assets/ rebuilds; editing scripts/ restarts.\n`);
 });

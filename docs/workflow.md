@@ -20,6 +20,17 @@ _incoming/2005-06-14-macromedia-lego-team/
 `_incoming/` is gitignored. Unprocessed originals never enter the repository — they
 go to R2 and stay there.
 
+**Consider staging outside the repository.** `_incoming/` is ignored by git, which
+also means `git clean -xdf` deletes it without asking. Set `ALBUMS_STAGING` in
+`mise.local.toml` to a path anywhere on disk — a photo library, an external drive —
+and the originals no longer depend on the repository surviving:
+
+```toml
+ALBUMS_STAGING = "/Users/brajeshwar/Pictures/oinam-albums"
+```
+
+The layout inside it is the same: one folder per album, named `YYYY-MM-DD-title`.
+
 Upload files exactly as the camera wrote them. Full resolution, no pre-processing,
 no format conversion. JPEG, PNG, GIF, WebP and HEIC all work as-is.
 

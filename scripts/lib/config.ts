@@ -27,3 +27,16 @@ export function requireEnv(name: string): string {
   }
   return value;
 }
+
+/**
+ * Where unprocessed originals are staged before upload.
+ *
+ * Defaults to `_incoming/` inside the repository, which is convenient but sits
+ * in the blast radius of `git clean -xdf`. Point `ALBUMS_STAGING` at a directory
+ * outside the repo — an external drive, a photo library — and the originals stop
+ * depending on the repository surviving.
+ */
+export function stagingDir(): string {
+  const configured = process.env.ALBUMS_STAGING?.trim();
+  return configured === undefined || configured === "" ? "_incoming" : configured;
+}

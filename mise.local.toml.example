@@ -21,6 +21,15 @@ R2_ACCESS_KEY_ID = ""
 R2_SECRET_ACCESS_KEY = ""
 R2_BUCKET = "oinam-media"
 
+# ---------------------------------------------------------------------------------------------
+# Where unprocessed originals are staged before upload. Defaults to _incoming/ inside the repo,
+# which is convenient but sits in the blast radius of `git clean -xdf` — that command deletes
+# ignored directories, and this one is ignored. Point it somewhere outside the repository and
+# the originals stop depending on the repository surviving.
+#
+#   ALBUMS_STAGING = "/Users/brajeshwar/Pictures/oinam-albums"
+ALBUMS_STAGING = ""
+
 # Only for a bucket created under a JURISDICTION rather than a location hint. A jurisdictional
 # bucket is reachable *only* through its own endpoint — <account>.eu.r2.cloudflarestorage.com
 # rather than <account>.r2.cloudflarestorage.com — and uploads fail with NoSuchBucket against
