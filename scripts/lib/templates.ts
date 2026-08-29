@@ -198,6 +198,24 @@ ${albumSection}`,
   });
 }
 
+/**
+ * Cloudflare Pages serves this with a real 404 status. Without the file it falls
+ * back to the site root and answers 200, which is a soft 404 — the page looks
+ * fine and every crawler is told the URL exists.
+ */
+export function renderNotFound(cfg: SiteConfig): string {
+  return layout({
+    cfg,
+    title: `Not found — ${cfg.site.title}`,
+    description: "That page does not exist.",
+    path: "/404.html",
+    body: `<p class="crumb"><a href="/">${esc(cfg.site.title)}</a></p>
+<h1>Not found</h1>
+<p class="caption">That page does not exist. Nothing here is ever deleted, so a link that used to work should still work — if one does not, it was probably never right.</p>
+<p><a href="/">Back to ${esc(cfg.site.title)}</a></p>`,
+  });
+}
+
 export function renderAlbum(cfg: SiteConfig, album: Album): string {
   const description = album.description || `${album.meta.title} — ${cfg.site.title}`;
   return layout({

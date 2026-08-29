@@ -3,7 +3,7 @@ import { dirname, join } from "node:path";
 import type { SiteConfig } from "./config.ts";
 import type { Album, Item } from "./albums.ts";
 import { highlightsOf, loadAlbums } from "./albums.ts";
-import { renderAlbum, renderHome, renderItem } from "./templates.ts";
+import { renderAlbum, renderHome, renderItem, renderNotFound } from "./templates.ts";
 
 export const OUT = "dist";
 
@@ -67,6 +67,7 @@ export function buildSite(cfg: SiteConfig): BuildResult {
     });
   }
 
+  write("404.html", renderNotFound(cfg));
   write("_redirects", redirects(albums));
   write(
     "robots.txt",
