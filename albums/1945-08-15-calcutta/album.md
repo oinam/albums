@@ -1,13 +1,8 @@
 ---
 title: Calcutta
 date: 1945-46
-# date_end: 1945-08-15
-location: Calcutta, India
+location: India
 cover: a-busy-calcutta-traffic-scene_267603335_o.jpeg
 ---
 
-Placeholder description — replace this with your own. Everything below the
-frontmatter is Markdown, so *emphasis*, [links](https://oinam.com/) and several
-paragraphs all work.
-
-These are scans of press photographs made in Calcutta around the end of the war.
+Pictures, by an American military Photographer Claude Waddell, of Calcutta taken most likely between 1945-1946. Thanks to David Nelson who was kind enough to give me permission to have these photographs for my personal collection.
