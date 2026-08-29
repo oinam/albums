@@ -7,6 +7,7 @@ import { kindFor, readItems } from "./lib/albums.ts";
 import type { Item } from "./lib/albums.ts";
 import { deriveId } from "./lib/ids.ts";
 import { applyOrientation, readDimensions } from "./lib/dimensions.ts";
+import { probeMedia } from "./lib/probe.ts";
 import { openBucket, upload } from "./lib/r2.ts";
 
 const STAGING = "_incoming";
@@ -70,7 +71,13 @@ async function describeFile(slug: string, dir: string, file: string): Promise<It
     bytes: statSync(path).size,
   };
 
-  if (kind !== "photo") return item;
+  if (kind !== "photo") {
+    const probe = probeMedia(path);
+    if (probe?.duration !== undefined) item.duration = probe.duration;
+    if (probe?.width !== undefined) item.width = probe.width;
+    if (probe?.height !== undefined) item.height = probe.height;
+    return item;
+  }
 
   const exif = ((await exifr.parse(path, true).catch(() => null)) ?? {}) as Exif;
   const dims = readDimensions(path);

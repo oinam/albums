@@ -1,6 +1,15 @@
 {
   "items": [
     {
+      "id": "2NEQcjaAJ",
+      "file": "clip.mp4",
+      "kind": "video",
+      "bytes": 576978,
+      "duration": 8,
+      "width": 1280,
+      "height": 960
+    },
+    {
       "id": "2QuANo1Jn",
       "file": "photo-1.jpg",
       "kind": "photo",
@@ -75,6 +84,13 @@
       "bytes": 317443,
       "width": 2160,
       "height": 3840
+    },
+    {
+      "id": "36WyFNLUP",
+      "file": "voice-note.m4a",
+      "kind": "audio",
+      "bytes": 45035,
+      "duration": 3.330023
     }
   ]
 }

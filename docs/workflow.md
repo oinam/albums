@@ -29,7 +29,7 @@ no format conversion. JPEG, PNG, GIF, WebP and HEIC all work as-is.
 npm run ingest
 ```
 
-For each file this reads the dimensions and EXIF, assigns a permanent photo id,
+For each file this reads the dimensions and EXIF, assigns a permanent media id,
 uploads to R2, and writes `albums/<slug>/photos.json`. It creates `album.md` the
 first time with the title and date guessed from the folder name.
 
@@ -61,6 +61,11 @@ It reads the image through the `/cdn-cgi/image/` URL at 1024px wide, so the albu
 must already be uploaded and `media.oinam.com` must be reachable.
 
 Videos are described from their poster frame. Audio is skipped.
+
+**Video and audio metadata is optional.** If `ffprobe` is on your PATH, ingest also
+records duration and pixel dimensions for those files. It is not a dependency of
+this project — without it those fields are simply left empty and everything else
+works the same.
 
 ## 4. Edit anything you disagree with
 

@@ -9,8 +9,6 @@ Work Claude tracks. Anything needing Brajeshwar's hands or credentials lives in
       albums. Not before — the whole list fits comfortably until then.
 - [ ] `npm run describe` runs one request at a time. Add small-batch concurrency,
       or move to the Batch API for a 50% saving on large runs.
-- [ ] Video duration is not read at ingest. Needed before any Stream-vs-R2 decision
-      can be automated per file.
 - [ ] Nothing surfaces highlights during ingest. Marking one means editing
       `photos.json` by hand; a `--highlight` flag on ingest would be friendlier.
 

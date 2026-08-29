@@ -1,6 +1,6 @@
 import type { SiteConfig } from "./config.ts";
-import type { Album, Item, StreamEntry } from "./albums.ts";
-import { coverOf, formatDate, orientationOf } from "./albums.ts";
+import type { Album, Item, MediaKind, StreamEntry } from "./albums.ts";
+import { coverOf, formatDate, formatDuration, orientationOf } from "./albums.ts";
 import {
   originalUrl,
   posterThumbUrl,
@@ -212,15 +212,37 @@ ${grid(cfg, album, album.items)}`,
   });
 }
 
+function formatBytes(bytes: number): string {
+  return bytes >= 1024 * 1024
+    ? `${(bytes / 1048576).toFixed(1)} MB`
+    : `${Math.round(bytes / 1024)} KB`;
+}
+
+const KIND_LABEL: Record<MediaKind, string> = {
+  photo: "Photo",
+  video: "Video",
+  audio: "Audio",
+};
+
 function stage(cfg: SiteConfig, album: Album, item: Item): string {
   const source = originalUrl(cfg, album.slug, item.file);
   const alt = esc(altFor(item));
 
   if (item.kind === "audio") {
-    return `<div class="stage"><audio controls preload="metadata" src="${esc(source)}"></audio></div>`;
+    return `<div class="stage stage--audio">
+<p class="audio-heading">${esc(item.title ?? item.file)}</p>
+<audio controls preload="metadata" src="${esc(source)}"></audio>
+</div>`;
   }
+
   if (item.kind === "video") {
-    return `<div class="stage"><video controls preload="none" playsinline poster="${esc(posterUrl(cfg, album.slug, item.file))}" src="${esc(source)}"></video></div>`;
+    const dims =
+      item.width && item.height ? ` width="${item.width}" height="${item.height}"` : "";
+    return `<div class="stage">
+<video controls preload="metadata" playsinline${dims}
+       poster="${esc(posterUrl(cfg, album.slug, item.file))}"
+       src="${esc(source)}"></video>
+</div>`;
   }
 
   const dims =
@@ -233,20 +255,27 @@ function stage(cfg: SiteConfig, album: Album, item: Item): string {
 </div>`;
 }
 
-function exif(cfg: SiteConfig, album: Album, item: Item): string {
-  const rows: [string, string][] = [];
+/** Facts about the item, in the order each kind makes them worth reading. */
+function details(cfg: SiteConfig, album: Album, item: Item): string {
+  const rows: [string, string][] = [["Kind", KIND_LABEL[item.kind]]];
+
   if (item.taken) rows.push(["Taken", item.taken.replace("T", " ")]);
+  if (item.duration !== undefined) {
+    rows.push(["Duration", formatDuration(item.duration)]);
+  }
   if (item.camera) rows.push(["Camera", item.camera]);
   if (item.lens) rows.push(["Lens", item.lens]);
   if (item.settings) rows.push(["Settings", item.settings]);
-  if (item.width && item.height) rows.push(["Size", `${item.width} × ${item.height}`]);
-  rows.push([
-    "Original",
-    `<a href="${esc(originalUrl(cfg, album.slug, item.file))}">${esc(item.file)}</a>`,
-  ]);
+  if (item.width && item.height) {
+    rows.push(["Dimensions", `${item.width} × ${item.height}`]);
+  }
+  if (item.bytes !== undefined) rows.push(["File size", formatBytes(item.bytes)]);
+
+  const original = `<a href="${esc(originalUrl(cfg, album.slug, item.file))}">${esc(item.file)}</a>`;
 
   return `<dl class="exif">
-${rows.map(([k, v]) => `<dt>${esc(k)}</dt><dd>${k === "Original" ? v : esc(v)}</dd>`).join("\n")}
+${rows.map(([k, v]) => `<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join("\n")}
+<dt>Original</dt><dd>${original}</dd>
 </dl>`;
 }
 
@@ -273,7 +302,7 @@ export function renderItem(
 ${stage(cfg, album, item)}
 ${item.caption ? `<p class="caption">${esc(item.caption)}</p>` : ""}
 ${tags}
-${exif(cfg, album, item)}
+${details(cfg, album, item)}
 <nav class="pager">
 <span>${prev ? `<a href="${itemPath(prev)}">&larr; Previous</a>` : ""}</span>
 <span><a href="${albumPath(album)}">Back to ${esc(album.meta.title)}</a></span>

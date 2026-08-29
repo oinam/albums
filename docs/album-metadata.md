@@ -68,6 +68,7 @@ The ingest script writes this file once and never touches it again.
 | `kind`                                | ingest            | `photo`, `video`, or `audio`, from the extension.                                 |
 | `bytes`, `width`, `height`            | ingest, every run | Read from the file header, not EXIF.                                              |
 | `taken`, `camera`, `lens`, `settings` | ingest            | From EXIF, omitted when absent.                                                   |
+| `duration`                            | ingest            | Seconds, for video and audio. Needs ffprobe; omitted without it.                  |
 | `title`, `alt`, `caption`, `keywords` | describe          | Yours to overwrite.                                                               |
 | `generated`                           | describe          | Marks machine-written wording.                                                    |
 | `edited`                              | you               | Set `true` to freeze an item against regeneration.                                |

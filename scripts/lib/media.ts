@@ -5,7 +5,7 @@ const QUALITY = 82;
 const CONTACT_QUALITY = 80;
 
 const LOCAL_POSTER =
-  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%23ddd'/%3E%3Cpath d='M6 4.5v7l5-3.5z' fill='%23888'/%3E%3C/svg%3E";
+  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 48'%3E%3Crect width='64' height='48' fill='%23e4e4e4'/%3E%3Cpath d='M27 17.5v13l11-6.5z' fill='%23999'/%3E%3C/svg%3E";
 
 export interface Rendition {
   width: number;

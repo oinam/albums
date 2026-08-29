@@ -64,6 +64,7 @@ scripts/
     ids.ts        stable base58 media ids
     media.ts      every media URL the site emits
     mime.ts       content types, shared by R2 upload and the dev server
+    probe.ts      optional ffprobe read of duration and dimensions
     r2.ts         S3-compatible R2 client
     site.ts       the build itself — every page written into dist/
     templates.ts  HTML
