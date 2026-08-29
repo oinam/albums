@@ -12,6 +12,17 @@ Work Claude tracks. Anything needing Brajeshwar's hands or credentials lives in
 
 ## Considered and deliberately not done
 
+- **GUI or bucket-side upload.** The folder-plus-script flow stays. A GUI can put
+  bytes in R2, but `photos.json` is what the site reads, and only ingest builds it —
+  so a GUI would still need an `ingest --from-bucket` pass afterwards. Decided
+  2026-08-29 to keep the one command.
+- **A photo in more than one album.** Not supported, on purpose. A photo lives in an
+  album: the R2 key is `albums/<slug>/<file>` and the id derives from it. Allowing
+  many would mean decoupling storage from albums, an id registry, and an ambiguous
+  "back to album" — which is what Flickr's `/in/album-{id}/` URLs exist to solve.
+  Decided 2026-08-29. If it ever becomes necessary, the cheap version is one _home_
+  album per photo with others referencing its id.
+
 - **A chronological stream at `/`.** Built, then removed. Paginating newest-first
   means inserting one item rewrites every page in the chain, invalidating all of
   their caches — a bad property for a static site. Highlights plus album covers
