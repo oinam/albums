@@ -156,24 +156,63 @@ async function ingestAlbum(
   console.log(`  uploaded ${uploaded}, already present ${skipped}`);
 }
 
+const ALBUM_FLAG = "--album";
+
+/**
+ * Album names, however they were given: bare, `--album name`, or `--album=name`.
+ * The bare form came first and still works — the flag exists because it reads
+ * better in a command someone else has to understand.
+ */
+function namedAlbums(args: string[]): string[] {
+  const named: string[] = [];
+
+  for (let i = 0; i < args.length; i += 1) {
+    const arg = args[i];
+    if (arg === undefined) continue;
+
+    if (arg === ALBUM_FLAG) {
+      const value = args[i + 1];
+      if (value === undefined || value.startsWith("--")) {
+        throw new Error(`${ALBUM_FLAG} needs an album folder name after it`);
+      }
+      named.push(value);
+      i += 1;
+    } else if (arg.startsWith(`${ALBUM_FLAG}=`)) {
+      named.push(arg.slice(ALBUM_FLAG.length + 1));
+    } else if (!arg.startsWith("--")) {
+      named.push(arg);
+    }
+  }
+
+  return named;
+}
+
 async function main(): Promise<void> {
   const cfg = loadConfig();
   const staging = stagingDir();
   const args = process.argv.slice(2);
   const noUpload = args.includes("--no-upload");
-  const named = args.filter((a) => !a.startsWith("--"));
+  const named = namedAlbums(args);
 
   if (!existsSync(staging)) {
     console.log(`No ${staging}/ directory. Put an album folder there and re-run.`);
     return;
   }
 
-  const slugs =
-    named.length > 0
-      ? named
-      : readdirSync(staging, { withFileTypes: true })
-          .filter((e) => e.isDirectory())
-          .map((e) => e.name);
+  const staged = readdirSync(staging, { withFileTypes: true })
+    .filter((e) => e.isDirectory())
+    .map((e) => e.name);
+
+  // Without this a mistyped name reaches readdirSync and dies as a bare ENOENT.
+  const missing = named.filter((slug) => !staged.includes(slug));
+  if (missing.length > 0) {
+    console.error(`Not staged in ${staging}/: ${missing.join(", ")}`);
+    if (staged.length > 0) console.error(`Staged: ${staged.join(", ")}`);
+    process.exitCode = 1;
+    return;
+  }
+
+  const slugs = named.length > 0 ? named : staged;
 
   if (slugs.length === 0) {
     console.log(`No album folders in ${staging}/.`);

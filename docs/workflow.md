@@ -48,9 +48,13 @@ first time with the title and date guessed from the folder name.
 Useful flags:
 
 ```bash
-mise run ingest -- 2005-06-14-macromedia-lego-team   # just one album
-mise run ingest -- --no-upload                       # metadata only, no R2, no credentials
+mise run ingest -- --album 2005-06-14-macromedia-lego-team   # just one album
+mise run ingest -- 2005-06-14-macromedia-lego-team           # the same, bare
+mise run ingest -- --no-upload                               # metadata only, no R2, no credentials
 ```
+
+`--album` may be repeated, and `--album=name` works too. A name that is not staged
+is an error listing what is, rather than a stack trace.
 
 Re-running is safe. Existing entries keep their id and any wording you have written;
 only dimensions and byte counts are refreshed. Files already in R2 at the same size
