@@ -116,15 +116,20 @@ export function posterUrl(cfg: SiteConfig, slug: string, file: string): string {
 /**
  * Fixed-format rendition for handing to an API that negotiates its own Accept
  * header. `format=auto` could return AVIF, which such a consumer may reject.
+ *
+ * Both axes are bounded so the *long* edge is what gets constrained. Bounding
+ * width alone leaves a portrait taller than a landscape is wide, and vision
+ * tokens are billed on area — a 9:16 frame cost 2.7x a 3:2 one for no gain.
  */
 export function visionUrl(
   cfg: SiteConfig,
   slug: string,
   file: string,
-  width: number,
+  longEdge: number,
 ): string {
   return transform(cfg, slug, file, {
-    width,
+    width: longEdge,
+    height: longEdge,
     fit: "scale-down",
     quality: QUALITY,
     format: "jpeg",
