@@ -5,12 +5,44 @@ Things only you can do. Claude cannot: touch your Cloudflare dashboard, force-pu
 ## Blocking — nothing works until these are done
 
 - [x] **R2 bucket + custom domain.** `oinam-media`, EU, mapped to `media.oinam.com`.
-- [x] **Jurisdiction settled.** It is a real EU _jurisdiction_, not a location hint — the endpoint carries `.eu.`. `R2_JURISDICTION` is set and working.
+- [x] **Jurisdiction settled.** A real EU _jurisdiction_, not a location hint. `R2_JURISDICTION` set and working.
 - [x] **Images transformations enabled.** Verified: `/cdn-cgi/image/` returns `cf-resized` and honours `format=auto`.
 - [x] **R2 API token + `mise.local.toml`.** Read and write both confirmed against the live bucket.
-- [ ] **Create the Pages project**: build command `npm run build`, output `dist`, Node 22+. `docs/deploy.md` §4. This is the only one left.
+- [x] **Pages project exists** and already serves `albums.oinam.com` from the repo.
 
-Re-run `mise run doctor` any time to re-check all of the above in about two seconds.
+## Change the Pages build settings BEFORE pushing
+
+The project currently has no build step — it served the repo root, where the old
+`index.html` lived. That file is gone; the site is generated into `dist/` now. Push
+without changing this and Pages serves an empty root.
+
+**Workers & Pages → the project → Settings → Builds & deployments:**
+
+| Setting                | Value           |
+| ---------------------- | --------------- |
+| Framework preset       | None            |
+| Build command          | `npm run build` |
+| Build output directory | `dist`          |
+| Root directory         | (leave empty)   |
+
+**Settings → Environment variables**, for Production _and_ Preview:
+
+| Name           | Value |
+| -------------- | ----- |
+| `NODE_VERSION` | `22`  |
+
+No secrets. The build reads only the repository — that is deliberate, and it is why
+nothing else belongs here. Keep `NODE_VERSION` matching `[tools] node` in `mise.toml`.
+
+Changing settings does not trigger a rebuild, so the current site stays up until you
+push.
+
+## Then, in this order
+
+1. `mise run ingest` — uploads the 11 demo files. Until the bucket has them, every
+   image on the deployed site 404s: the HTML is fine, the media simply is not there.
+2. Force-push (below). Pages builds and deploys.
+3. `mise run doctor` to confirm the whole chain once more.
 
 ## Force-push required
 
