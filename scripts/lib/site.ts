@@ -139,7 +139,9 @@ export function buildSite(cfg: SiteConfig): BuildResult {
 
   cpSync("assets", join(OUT, "assets"), { recursive: true });
   writeFileSync(join(OUT, stylesheetHref().slice(1)), readFileSync(STYLESHEET));
-  if (existsSync("favicon.ico")) cpSync("favicon.ico", join(OUT, "favicon.ico"));
+  for (const asset of ["favicon.ico", "oinam-logo.svg"]) {
+    if (existsSync(asset)) cpSync(asset, join(OUT, asset));
+  }
 
   return { albums: albums.length, items };
 }

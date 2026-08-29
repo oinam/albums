@@ -48,7 +48,7 @@ const ICON = {
   random: `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 7h3l4 10h5M4 17h3l4-10h5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M17 4l3 3-3 3M17 14l3 3-3 3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
 } as const;
 
-const LOGO = `<svg class="logo" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2.5"/></svg>`;
+const LOGO = `<img class="logo" src="/oinam-logo.svg" alt="" width="24" height="24" decoding="async">`;
 
 /**
  * Applied before the first paint, so a chosen theme never flashes the other one.
@@ -57,13 +57,17 @@ const LOGO = `<svg class="logo" viewBox="0 0 24 24" aria-hidden="true" focusable
  */
 const THEME_SCRIPT = `(function(){try{var t=localStorage.getItem("theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}})()`;
 
-const THEME_TOGGLE = `<button type="button" class="theme-toggle" data-theme-toggle aria-label="Theme: auto. Click to change.">
-<span data-theme-label>Auto</span>
-</button>`;
+const THEME_ICON = {
+  auto: `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 4a8 8 0 000 16z" fill="currentColor"/></svg>`,
+  light: `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="4.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M19.1 4.9l-1.8 1.8M6.7 17.3l-1.8 1.8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>`,
+  dark: `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 14.5A8.5 8.5 0 019.5 4a8.5 8.5 0 1010.5 10.5z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>`,
+} as const;
 
-const TOGGLE_SCRIPT = `(function(){var b=document.querySelector("[data-theme-toggle]");if(!b)return;var l=b.querySelector("[data-theme-label]");var order=["auto","light","dark"];
+const THEME_TOGGLE = `<button type="button" class="theme-toggle" data-theme-toggle title="Theme: auto" aria-label="Theme: auto. Click to change.">${THEME_ICON.auto}</button>`;
+
+const TOGGLE_SCRIPT = `(function(){var b=document.querySelector("[data-theme-toggle]");if(!b)return;var order=["auto","light","dark"];var icons=${JSON.stringify(THEME_ICON)};
 function current(){try{return localStorage.getItem("theme")||"auto"}catch(e){return "auto"}}
-function paint(v){l.textContent=v.charAt(0).toUpperCase()+v.slice(1);b.setAttribute("aria-label","Theme: "+v+". Click to change.");if(v==="auto")delete document.documentElement.dataset.theme;else document.documentElement.dataset.theme=v}
+function paint(v){b.innerHTML=icons[v];b.title="Theme: "+v;b.setAttribute("aria-label","Theme: "+v+". Click to change.");if(v==="auto")delete document.documentElement.dataset.theme;else document.documentElement.dataset.theme=v}
 paint(current());
 b.addEventListener("click",function(){var v=order[(order.indexOf(current())+1)%3];try{localStorage.setItem("theme",v)}catch(e){}paint(v)})})()`;
 

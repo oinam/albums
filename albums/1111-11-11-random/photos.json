@@ -3,12 +3,17 @@
     {
       "id": "1XNkb3TtE",
       "file": "IMG_1994.jpeg",
+      "title": "A Test Title",
+      "date": "2024-06-01",
+      "description": "Placeholder description for testing.",
       "width": 3642,
       "height": 2521
     },
     {
       "id": "1nHHwdYiH",
       "file": "IMG_3151.jpeg",
+      "title": "Another Test Title",
+      "date": "2022-08-13",
       "highlight": true,
       "width": 2322,
       "height": 2958
@@ -16,6 +21,7 @@
     {
       "id": "1RVeJaYtT",
       "file": "IMG_3706.jpeg",
+      "title": "Title Only, No Date",
       "highlight": true,
       "width": 3348,
       "height": 2430
