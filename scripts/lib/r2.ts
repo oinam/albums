@@ -1,31 +1,7 @@
 import { createReadStream } from "node:fs";
-import { extname } from "node:path";
 import { HeadObjectCommand, PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { requireEnv } from "./config.ts";
-
-const CONTENT_TYPES: Record<string, string> = {
-  ".jpg": "image/jpeg",
-  ".jpeg": "image/jpeg",
-  ".png": "image/png",
-  ".gif": "image/gif",
-  ".webp": "image/webp",
-  ".heic": "image/heic",
-  ".heif": "image/heif",
-  ".mp4": "video/mp4",
-  ".m4v": "video/x-m4v",
-  ".mov": "video/quicktime",
-  ".webm": "video/webm",
-  ".mp3": "audio/mpeg",
-  ".m4a": "audio/mp4",
-  ".aac": "audio/aac",
-  ".wav": "audio/wav",
-  ".flac": "audio/flac",
-  ".ogg": "audio/ogg",
-};
-
-export function contentType(file: string): string {
-  return CONTENT_TYPES[extname(file).toLowerCase()] ?? "application/octet-stream";
-}
+import { contentType } from "./mime.ts";
 
 export interface Bucket {
   client: S3Client;

@@ -8,7 +8,7 @@ export interface SiteConfig {
     author: string;
     locale: string;
   };
-  media: { host: string; prefix: string };
+  media: { host: string; prefix: string; local?: boolean };
   sizes: { contact: number; phone: number; desktop: number };
   describe: { model: string; effort: "low" | "medium" | "high" | "xhigh" | "max" };
 }

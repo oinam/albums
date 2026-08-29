@@ -22,11 +22,12 @@ static HTML, generated on your machine and deployed by pushing to GitHub.
 Nothing is generated at upload time and no derivative is ever written back into R2.
 The edge cache is the derivative store, and it refills itself on demand.
 
-## Three commands
+## Four commands
 
 ```bash
 npm run ingest     # stage → EXIF → R2, writes photos.json
 npm run describe   # Claude writes titles, alt text, captions
+npm run dev        # local preview on http://localhost:8788
 npm run build      # renders dist/
 ```
 

@@ -30,6 +30,7 @@ changing anything; keep it current when you do. This file stays short on purpose
 ```bash
 npm run ingest      # _incoming/ → EXIF → R2 → photos.json   (needs .env)
 npm run describe    # photos.json → Claude → photos.json     (needs .env)
+npm run dev         # local preview on :8788, watches + rebuilds
 npm run build       # → dist/                                (no credentials)
 npm run lint        # eslint + prettier --check
 npm run typecheck   # tsc --noEmit
@@ -37,6 +38,10 @@ npm run docs        # ovellum build
 ```
 
 `npm run build` must never require a secret — Cloudflare Pages runs it with none.
+
+`npm run dev` builds with `--local`, which rewrites every media URL to `/media/...`
+and has the dev server render the renditions Cloudflare would. Production output is
+unaffected; see `docs/workflow.md`.
 
 ## /odo
 

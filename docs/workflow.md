@@ -78,7 +78,38 @@ you like. To stop an item being regenerated, set `"edited": true` on it:
 
 `npm run describe` skips every item marked that way, even with `--force`.
 
-## 5. Build and push
+## 5. Preview it locally
+
+```bash
+npm run dev
+```
+
+Then open <http://localhost:8788>. The whole site is there — album pages, photo
+pages, the photostream, and the redirects — with live rebuilds when you edit
+`albums/` or `assets/`, and a full restart when you edit `scripts/`.
+
+**Media works offline.** Production reads renditions from `/cdn-cgi/image/` on
+Cloudflare, which does not exist on your machine, so the dev server stands in for
+it: `/media/...` maps to your staged originals in `_incoming/`, and the same three
+widths are rendered on demand with sharp and cached in `.dev-cache/`. A grid tile
+arrives at about 14 KB rather than dragging a 5 MB original over the wire.
+
+Two things the local preview cannot show you:
+
+- **Format negotiation.** Locally every rendition is JPEG. `format=auto` only picks
+  AVIF or WebP at the edge, so real-world payloads are smaller than what you see.
+- **Video posters.** `mode=frame` is a Media Transformation. Locally a video tile
+  gets a neutral play-symbol placeholder instead.
+
+Media only appears for albums you still have staged. `_incoming/` is gitignored, so
+a fresh clone previews with empty tiles until you put something in it — the layout
+is all still there.
+
+```bash
+npm run dev -- --port=3000    # if 8788 is taken
+```
+
+## 6. Build and push
 
 ```bash
 npm run build
