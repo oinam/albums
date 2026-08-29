@@ -26,10 +26,21 @@ Deploying from here is just `git push`.
 
 Nobody is looking at the site yet, so none of this is urgent.
 
-- [ ] **Purge the Cloudflare cache once.** The eleven deleted demo objects were
-      uploaded with a one-year `immutable` header and still answer 200 at their old
-      URLs. Nothing links to them — it is stale, not broken. Caching → Configuration
-      → Purge Everything. Uploads since carry a one-day TTL, so it will not recur.
+- [ ] **Purge the Cloudflare cache once.** Two separate leftovers, same fix.
+
+      The eleven deleted demo objects were uploaded with a one-year `immutable`
+          header and still answer 200 at their old URLs. Uploads since carry a one-day
+          TTL, so that will not recur.
+
+          Deleted *pages* linger too. `/about/`, `/contact/` and the old
+          `/album/1111-11-11-random/` still answer 200 with their old HTML, served from
+          the edge with `s-maxage=604800` and an age of a few hours. The origin is
+          correct — add any query string and all three return 404 — so this is a
+          cached copy, not a broken build, and it ages out within the week. Fresh 404s
+          are `no-store`, so nothing new is accumulating.
+
+          Nothing links to any of it. Caching → Configuration → Purge Everything.
+
 - [ ] **Mark six more highlights.** Six are flagged; the home page mosaic is
       4 x 3 and needs twelve, so the page is currently falling back to the
       justified grid. Open any photo in `mise run dev` and tick "Highlight on the
