@@ -40,6 +40,12 @@ export function configureChrome(pages: Page[]): void {
   chromePages = pages;
 }
 
+const ICON = {
+  prev: `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  next: `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  random: `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 7h3l4 10h5M4 17h3l4-10h5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M17 4l3 3-3 3M17 14l3 3-3 3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+} as const;
+
 const LOGO = `<svg class="logo" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2.5"/></svg>`;
 
 /**
@@ -397,9 +403,36 @@ ${stage(cfg, album, item)}
 ${description}
 ${details(cfg, album, item)}
 <nav class="pager">
-<span>${prev ? `<a href="${itemPath(prev)}">&larr; Previous</a>` : ""}</span>
-<span><a href="${albumPath(album)}">Back to ${esc(album.meta.title)}</a></span>
-<span>${next ? `<a href="${itemPath(next)}">Next &rarr;</a>` : ""}</span>
+<a class="pager-album" href="${albumPath(album)}">${esc(album.meta.title)}</a>
+<span class="pager-icons">
+${prev ? `<a class="icon" href="${itemPath(prev)}" rel="prev" aria-label="Previous">${ICON.prev}</a>` : `<span class="icon is-off" aria-hidden="true">${ICON.prev}</span>`}
+<a class="icon" href="/random/" aria-label="A random item">${ICON.random}</a>
+${next ? `<a class="icon" href="${itemPath(next)}" rel="next" aria-label="Next">${ICON.next}</a>` : `<span class="icon is-off" aria-hidden="true">${ICON.next}</span>`}
+</span>
 </nav>`,
+  });
+}
+
+/**
+ * Sends the visitor to a random item. The ids ship with the page, so there is no
+ * request to make a choice — the page picks one and replaces itself, leaving no
+ * entry in history to trap the back button.
+ */
+export function renderRandom(cfg: SiteConfig, entries: StreamEntry[]): string {
+  const ids = entries.map((entry) => entry.item.id);
+  const list = ids
+    .map((id) => `<li><a href="/media/${id}/">${esc(id)}</a></li>`)
+    .join("");
+
+  return layout({
+    cfg,
+    title: `Random — ${cfg.site.title}`,
+    description: "Sends you to something at random.",
+    path: "/random/",
+    head: `<meta name="robots" content="noindex">\n`,
+    body: `<h1>Random</h1>
+<p class="caption">Picking something&hellip;</p>
+<noscript><ul class="prose">${list}</ul></noscript>
+<script>(function(){var i=${JSON.stringify(ids)};if(!i.length)return;location.replace("/media/"+i[Math.floor(Math.random()*i.length)]+"/")})()</script>`,
   });
 }

@@ -40,6 +40,29 @@ span 4 × 3 cells and tall tiles 3 × 4, with `grid-auto-flow: dense` to pack th
 Below 400px the cell drops to 64px, because a wide tile spans four of them and four
 80px cells will not fit a small phone.
 
+## The media reaches both edges
+
+The grid is column-based masonry — `columns: 320px` — which fits as many columns
+as the viewport allows and stretches them to fill it exactly.
+
+A fixed tile width cannot do that. Whatever is left after the last whole tile is
+dead space, and at 1512px that was 220px of it. Stretching the columns instead
+means the pictures touch both edges at any width.
+
+The trade is reading order: items flow down each column before moving to the next,
+rather than left to right. For a wall of pictures that is the right trade, and it
+is what every masonry photo grid does. Text keeps its margin; only the media bleeds.
+
+## Header and footer
+
+One row each, on the alternate ground, and neither is fixed — the page scrolls
+normally and the footer is pushed down by `margin-top: auto` rather than pinned.
+
+The theme toggle has three states, not two. `auto` stamps nothing on the document
+and lets `prefers-color-scheme` decide; light and dark set `data-theme` explicitly
+and win over the system in both directions. The stored choice is applied by a small
+script in the head, before first paint, so a chosen theme never flashes the other.
+
 ## Images load eagerly above the fold
 
 The first eight tiles carry `loading="eager"`, the first of each grid also

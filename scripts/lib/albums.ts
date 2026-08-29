@@ -11,6 +11,7 @@ export interface Item {
   // Written by ingest. Never edit `id` — it is the permalink.
   id: string;
   file: string;
+  /** Derived from the extension at load; never stored. */
   kind: MediaKind;
   width?: number;
   height?: number;
@@ -83,7 +84,10 @@ export function readItems(albumDir: string): Item[] {
   const path = join(albumDir, "photos.json");
   if (!existsSync(path)) return [];
   const parsed = JSON.parse(readFileSync(path, "utf8")) as { items?: Item[] };
-  return parsed.items ?? [];
+  return (parsed.items ?? []).map((item) => ({
+    ...item,
+    kind: kindFor(item.file) ?? "photo",
+  }));
 }
 
 /**

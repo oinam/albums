@@ -12,6 +12,7 @@ import {
   renderHome,
   renderItem,
   renderNotFound,
+  renderRandom,
 } from "./templates.ts";
 
 export const OUT = "dist";
@@ -93,6 +94,7 @@ export function buildSite(cfg: SiteConfig): BuildResult {
     );
   }
 
+  write("random/index.html", renderRandom(cfg, chronological(albums)));
   write("feed.xml", renderFeed(cfg, chronological(albums)));
   write("_redirects", redirects(albums));
   write(

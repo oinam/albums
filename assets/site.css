@@ -393,14 +393,50 @@ main {
   color: var(--text-color);
 }
 
+/* Centred: album title above, then three targets big enough to hit. */
 .pager {
   display: flex;
-  flex-wrap: wrap;
-  gap: var(--space);
-  justify-content: space-between;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-small);
   padding-top: var(--space);
   border-top: 1px solid var(--border-color);
-  font-size: 0.9rem;
+}
+
+.pager-album {
+  font-size: 1rem;
+  color: var(--text-strong);
+}
+
+.pager-icons {
+  display: flex;
+  align-items: center;
+  gap: var(--space-small);
+}
+
+.icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+}
+
+.icon svg {
+  width: 1.35rem;
+  height: 1.35rem;
+}
+
+.icon:hover,
+.icon:focus-visible {
+  background: var(--bg-subtle);
+  color: var(--link-hover-color);
+}
+
+.icon.is-off {
+  opacity: 0.25;
 }
 
 .tags {

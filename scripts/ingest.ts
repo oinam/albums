@@ -91,26 +91,18 @@ function ensureAlbumMeta(slug: string, albumDir: string, items: Item[]): void {
   if (existsSync(path)) return;
 
   const parsed = parseSlug(slug);
-  const date =
-    parsed.date ??
-    items.find((i) => i.taken)?.taken?.slice(0, 10) ??
-    new Date().toISOString().slice(0, 10);
 
   writeFileSync(
     path,
     `---
-title: ${parsed.title || slug}
-# The folder's date prefix already sorts this album. Uncomment to show a date
-# to readers as well — any precision, or free text like 1945-46.
-# date: ${date}
-# date_end: ${date}
-# location:
-${items[0] ? `cover: ${items[0].file}` : "# cover:"}
+title: ${parsed.title || slug}${items[0] ? `\ncover: ${items[0].file}` : ""}
+# Optional: date, date_end, location. Anything below this block is the
+# album's description. See docs/album-metadata.md
 ---
 
 `,
   );
-  console.log(`  created ${path} — edit the title, dates and description by hand`);
+  console.log(`  created ${path} — yours to edit from here on`);
 }
 
 /**
@@ -135,6 +127,36 @@ function merge(existing: Item[], scanned: Item[]): Item[] {
 
   const staged = new Set(scanned.map((item) => item.file));
   return [...existing.filter((item) => !staged.has(item.file)), ...updated];
+}
+
+/**
+ * What actually goes on disk: identity, then anything you wrote, then what the
+ * file told us. `kind` is left out — it is the extension, and storing it only
+ * gives a second place for it to be wrong.
+ */
+function forFile(item: Item): Record<string, unknown> {
+  const ordered: Record<string, unknown> = { id: item.id, file: item.file };
+  const keys = [
+    "title",
+    "description",
+    "date",
+    "location",
+    "alt",
+    "highlight",
+    "width",
+    "height",
+    "bytes",
+    "duration",
+    "taken",
+    "camera",
+    "lens",
+    "settings",
+  ] as const;
+  for (const key of keys) {
+    const value = item[key];
+    if (value !== undefined) ordered[key] = value;
+  }
+  return ordered;
 }
 
 function sortItems(items: Item[]): Item[] {
@@ -173,7 +195,7 @@ async function ingestAlbum(
   ensureAlbumMeta(slug, albumDir, items);
   writeFileSync(
     join(albumDir, "photos.json"),
-    `${JSON.stringify({ items }, null, 2)}\n`,
+    `${JSON.stringify({ items: items.map(forFile) }, null, 2)}\n`,
   );
 
   if (noUpload) {
