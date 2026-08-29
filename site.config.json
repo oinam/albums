@@ -15,9 +15,5 @@
     "thumb": 640,
     "phone": 800,
     "desktop": 1600
-  },
-  "describe": {
-    "model": "claude-opus-5",
-    "effort": "medium"
   }
 }

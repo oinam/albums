@@ -7,8 +7,8 @@
 #   mise trust          # after creating mise.local.toml
 #
 # The npm scripts stay: Cloudflare Pages runs `npm run build` and knows nothing about mise.
-# The tasks below are the local entry points, because ingest and describe need the env
-# that mise loads and `npm run` on its own does not.
+# The tasks below are the local entry points, because ingest needs the env that mise
+# loads and `npm run` on its own does not.
 
 [tools]
 node = "22" # set Cloudflare Pages NODE_VERSION to match
@@ -24,10 +24,6 @@ run = "npm run build"
 [tasks.ingest]
 description = "Stage → dimensions + EXIF → R2 → photos.json (`mise run ingest -- --no-upload`)"
 run = "npm run ingest --"
-
-[tasks.describe]
-description = "Claude writes titles, alt text and captions (`mise run describe -- --dry-run` first)"
-run = "npm run describe --"
 
 [tasks.docs]
 description = "Build the Ovellum docs site from docs/"

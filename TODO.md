@@ -7,10 +7,8 @@ Work Claude tracks. Anything needing Brajeshwar's hands or credentials lives in
 
 - [ ] Album pagination on the home page, once the archive passes roughly a hundred
       albums. Not before — the whole list fits comfortably until then.
-- [ ] `npm run describe` runs one request at a time. Add small-batch concurrency,
-      or move to the Batch API for a 50% saving on large runs.
-- [ ] Nothing surfaces highlights during ingest. Marking one means editing
-      `photos.json` by hand; a `--highlight` flag on ingest would be friendlier.
+- [ ] Marking a highlight means editing `photos.json` by hand. A `--highlight`
+      flag on ingest would be friendlier.
 
 ## Considered and deliberately not done
 

@@ -42,11 +42,10 @@ mise trust
 ```
 
 `mise.local.toml` is gitignored and holds `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`,
-`R2_SECRET_ACCESS_KEY`, `R2_BUCKET` and `ANTHROPIC_API_KEY`. With mise active in
-your shell, entering the repository loads them; `mise run ingest` and
-`mise run describe` then work with no further setup.
+`R2_SECRET_ACCESS_KEY` and `R2_BUCKET`. With mise active in your shell, entering the
+repository loads them, and `mise run ingest` works with no further setup.
 
-These are for ingest and describe on your machine. The build never needs them,
+These are for ingest on your machine. The build never needs them,
 which is why Pages can build with no secrets configured at all.
 
 ### Location hint or jurisdiction?

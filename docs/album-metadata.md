@@ -36,6 +36,8 @@ The ingest script writes this file once and never touches it again.
 
 ## `albums/<slug>/photos.json`
 
+Two kinds of field: what ingest reads off the file, and what you choose to write.
+
 ```json
 {
   "items": [
@@ -50,29 +52,44 @@ The ingest script writes this file once and never touches it again.
       "camera": "NIKON D70",
       "lens": "18-70mm f/3.5-4.5",
       "settings": "35mm · f/5.6 · 1/125s · ISO 200",
+
       "title": "The Lego wall, half finished",
-      "alt": "A partition of interlocking plastic bricks dividing an open-plan office.",
-      "caption": "Built over three afternoons and dismantled the following Monday.",
-      "keywords": ["office", "lego", "construction"],
-      "generated": true,
-      "edited": false
+      "description": "Built over three afternoons and dismantled the following Monday.",
+      "date": "2005-06-14",
+      "location": "San Francisco, CA",
+      "highlight": true
     }
   ]
 }
 ```
 
-| Field                                 | Written by        | Notes                                                                             |
-| ------------------------------------- | ----------------- | --------------------------------------------------------------------------------- |
-| `id`                                  | ingest, once      | **A permalink.** Never change it after publishing — `/media/<id>/` depends on it. |
-| `file`                                | ingest            | The R2 object name within the album.                                              |
-| `kind`                                | ingest            | `photo`, `video`, or `audio`, from the extension.                                 |
-| `bytes`, `width`, `height`            | ingest, every run | Read from the file header, not EXIF.                                              |
-| `taken`, `camera`, `lens`, `settings` | ingest            | From EXIF, omitted when absent.                                                   |
-| `duration`                            | ingest            | Seconds, for video and audio. Needs ffprobe; omitted without it.                  |
-| `title`, `alt`, `caption`, `keywords` | describe          | Yours to overwrite.                                                               |
-| `generated`                           | describe          | Marks machine-written wording.                                                    |
-| `edited`                              | you               | Set `true` to freeze an item against regeneration.                                |
-| `highlight`                           | you               | Set `true` to surface it on the home page.                                        |
+### Written by ingest
+
+| Field                                 | Notes                                                                             |
+| ------------------------------------- | --------------------------------------------------------------------------------- |
+| `id`                                  | **A permalink.** Never change it after publishing — `/media/<id>/` depends on it. |
+| `file`                                | The R2 object name within the album.                                              |
+| `kind`                                | `photo`, `video`, or `audio`, from the extension.                                 |
+| `bytes`, `width`, `height`            | Read from the file header, not EXIF. Refreshed every run.                         |
+| `taken`, `camera`, `lens`, `settings` | From EXIF, omitted when the file has none.                                        |
+| `duration`                            | Seconds, for video and audio. Needs ffprobe; omitted without it.                  |
+
+### Written by you
+
+All optional. Ingest never touches them, so re-running it is always safe.
+
+| Field         | Notes                                                                                                                     |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| `title`       | Becomes the page heading. Without it there is no heading.                                                                 |
+| `description` | A sentence or two under the image.                                                                                        |
+| `date`        | `YYYY-MM-DD`. Overrides `taken` for display and for ordering — the field to reach for with scans and wrong camera clocks. |
+| `location`    | Free text.                                                                                                                |
+| `alt`         | Screen-reader text. Falls back to `title`, then to empty.                                                                 |
+| `highlight`   | `true` puts it on the home page.                                                                                          |
+
+**Anything absent is not rendered.** No heading, no empty row, no placeholder, and
+never the filename standing in for a title. A photo with nothing written about it is
+just a photograph, which is usually the right answer.
 
 ## About the id
 

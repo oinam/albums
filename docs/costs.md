@@ -42,34 +42,6 @@ breaks instead of costing money.
 For an archive you care about, the paid plan is the safer posture even if usage
 rarely reaches the threshold.
 
-## Describing images
-
-`mise run describe` is the only line that isn't Cloudflare. Each item is one request
-to Claude carrying a 1024px rendition of the image.
-
-Vision tokens are billed on area — roughly `width x height / 750` — so a 1024px
-long edge is about 950 input tokens, plus ~200 for the system prompt and album
-context. Output is the JSON plus whatever the model thinks first, which at the
-default `medium` effort runs a few hundred tokens.
-
-At Opus 5 rates ($5/M in, $25/M out) that lands near **$0.02 per item**:
-
-| Archive     | Default | `effort: "low"` | Low + Batch API |
-| ----------- | ------- | --------------- | --------------- |
-| 100 items   | $2      | $1.20           | $0.60           |
-| 1,000 items | $21     | $12             | $6              |
-| 5,000 items | $104    | $60             | $30             |
-
-Paid once per item, not monthly — `describe` skips anything already generated
-unless you pass `--force`.
-
-Three levers, in the order worth pulling them. Drop `describe.effort` to `low` in
-`site.config.json`; captioning is perception rather than reasoning and rarely needs
-the deliberation. Move to the Batch API, which is half price and costs nothing but
-latency for work that is not interactive. Only then consider a smaller model.
-
-Run `--dry-run` first to see exactly how many items would be sent.
-
 ## If transformations ever dominate
 
 Pre-bake the three renditions into R2 at ingest and serve them as plain objects.

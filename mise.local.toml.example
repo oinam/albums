@@ -1,6 +1,5 @@
 # Copy to `mise.local.toml` (gitignored), fill in, and run `mise trust` once. Mise then loads
-# these into the project env, so `mise run ingest` and `mise run describe` both see them with no
-# separate .env file. (Your shell already runs `mise activate`, so entering the repo loads them.)
+# these into the project env, so `mise run ingest` sees them with no separate .env file. (Your shell already runs `mise activate`, so entering the repo loads them.)
 #
 #   cp mise.local.toml.example mise.local.toml
 #   # edit the values below, then:
@@ -27,8 +26,3 @@ R2_BUCKET = "oinam-media"
 # rather than <account>.r2.cloudflarestorage.com — and uploads fail with NoSuchBucket against
 # the wrong one. Leave empty unless the bucket page shows a jurisdiction.
 R2_JURISDICTION = ""
-
-# ---------------------------------------------------------------------------------------------
-# Anthropic — writes the titles, alt text and captions. Only `mise run describe` uses it.
-# https://console.anthropic.com → API keys
-ANTHROPIC_API_KEY = ""

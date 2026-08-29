@@ -16,7 +16,10 @@
       "bytes": 5412765,
       "width": 8400,
       "height": 5600,
-      "highlight": true
+      "highlight": true,
+      "title": "Folded light",
+      "description": "A worked example of the optional fields. Delete them and the page simply shows the photograph.",
+      "location": "Imphal, Manipur"
     },
     {
       "id": "23VbdeTjC",

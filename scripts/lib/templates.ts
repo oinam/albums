@@ -1,5 +1,5 @@
 import type { SiteConfig } from "./config.ts";
-import type { Album, Item, MediaKind, StreamEntry } from "./albums.ts";
+import type { Album, Item, StreamEntry } from "./albums.ts";
 import { coverOf, formatDate, formatDuration, orientationOf } from "./albums.ts";
 import {
   originalUrl,
@@ -75,8 +75,9 @@ function itemPath(item: Item): string {
   return `/media/${item.id}/`;
 }
 
+/** Empty is deliberate: a screen reader announcing "photo-1.jpg" is worse than silence. */
 function altFor(item: Item): string {
-  return item.alt ?? item.title ?? item.file;
+  return item.alt ?? item.title ?? "";
 }
 
 /** Album covers are always wide, so the album list stays a tidy uniform grid. */
@@ -218,12 +219,6 @@ function formatBytes(bytes: number): string {
     : `${Math.round(bytes / 1024)} KB`;
 }
 
-const KIND_LABEL: Record<MediaKind, string> = {
-  photo: "Photo",
-  video: "Video",
-  audio: "Audio",
-};
-
 function stage(cfg: SiteConfig, album: Album, item: Item): string {
   const source = originalUrl(cfg, album.slug, item.file);
   const alt = esc(altFor(item));
@@ -255,11 +250,13 @@ function stage(cfg: SiteConfig, album: Album, item: Item): string {
 </div>`;
 }
 
-/** Facts about the item, in the order each kind makes them worth reading. */
+/** Only rows that have a value. Nothing is invented and nothing shows as empty. */
 function details(cfg: SiteConfig, album: Album, item: Item): string {
-  const rows: [string, string][] = [["Kind", KIND_LABEL[item.kind]]];
+  const rows: [string, string][] = [];
 
-  if (item.taken) rows.push(["Taken", item.taken.replace("T", " ")]);
+  const when = item.date ?? item.taken;
+  if (when) rows.push(["Date", when.replace("T", " ")]);
+  if (item.location) rows.push(["Location", item.location]);
   if (item.duration !== undefined) {
     rows.push(["Duration", formatDuration(item.duration)]);
   }
@@ -286,22 +283,22 @@ export function renderItem(
   prev: Item | undefined,
   next: Item | undefined,
 ): string {
-  const title = item.title ?? `${album.meta.title} — ${item.file}`;
-  const tags =
-    item.keywords && item.keywords.length > 0
-      ? `<p class="tags">${item.keywords.map((k) => esc(k)).join(" &middot; ")}</p>`
-      : "";
+  const heading = item.title ? `<h1>${esc(item.title)}</h1>` : "";
+  const description = item.description
+    ? `<p class="caption">${esc(item.description)}</p>`
+    : "";
 
   return layout({
     cfg,
-    title: `${title} — ${cfg.site.title}`,
-    description: item.caption ?? item.alt ?? title,
+    title: item.title
+      ? `${item.title} — ${cfg.site.title}`
+      : `${album.meta.title} — ${cfg.site.title}`,
+    description: item.description ?? album.meta.title,
     path: itemPath(item),
     body: `<p class="crumb"><a href="/">${esc(cfg.site.title)}</a> / <a href="${albumPath(album)}">${esc(album.meta.title)}</a></p>
-<h1>${esc(title)}</h1>
+${heading}
 ${stage(cfg, album, item)}
-${item.caption ? `<p class="caption">${esc(item.caption)}</p>` : ""}
-${tags}
+${description}
 ${details(cfg, album, item)}
 <nav class="pager">
 <span>${prev ? `<a href="${itemPath(prev)}">&larr; Previous</a>` : ""}</span>

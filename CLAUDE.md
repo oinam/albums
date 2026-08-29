@@ -6,7 +6,7 @@ R2, renditions from `/cdn-cgi/image/`, static HTML deployed by Cloudflare Pages.
 **The documentation is in `docs/`, and it is the source of truth.** Read it before
 changing anything; keep it current when you do. This file stays short on purpose.
 
-- `docs/workflow.md` — the ingest → describe → build loop
+- `docs/workflow.md` — the stage → ingest → build loop
 - `docs/album-metadata.md` — every field in `album.md` and `photos.json`
 - `docs/urls.md` — routes, the size ladder, the EXIF privacy note
 - `docs/architecture.md` — why each piece sits where it does
@@ -31,7 +31,6 @@ changing anything; keep it current when you do. This file stays short on purpose
 
 ```bash
 mise run ingest     # _incoming/ → EXIF → R2 → photos.json   (needs mise.local.toml)
-mise run describe   # photos.json → Claude → photos.json     (needs mise.local.toml)
 mise run dev        # local preview on :8788, watches + rebuilds
 mise run build      # → dist/                                (no credentials)
 mise run check      # types + lint + formatting + docs links

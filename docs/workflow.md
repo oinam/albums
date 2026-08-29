@@ -49,41 +49,39 @@ anything already in `photos.json` survives a run that did not see it, so you can
 empty `_incoming/` whenever you like. To drop a photo, delete its entry by hand and
 delete the object from R2.
 
-## 3. Describe
+## 3. Say something about it, or don't
 
-```bash
-mise run describe -- --dry-run   # list what would be sent, spend nothing
-mise run describe                # generate titles, alt text, captions, keywords
-```
+Nothing is generated for you. Every item works with no words at all — the photo just
+appears, and the page shows only what the file itself supplies.
 
-This sends each image to Claude and writes the result back into `photos.json`.
-It reads the image through the `/cdn-cgi/image/` URL at 1024px wide, so the album
-must already be uploaded and `media.oinam.com` must be reachable.
-
-Videos are described from their poster frame. Audio is skipped.
-
-**Video and audio metadata is optional.** If `ffprobe` is on your PATH, ingest also
-records duration and pixel dimensions for those files. It is not a dependency of
-this project — without it those fields are simply left empty and everything else
-works the same.
-
-## 4. Edit anything you disagree with
-
-Open `albums/<slug>/album.md` and `albums/<slug>/photos.json` and change whatever
-you like. To stop an item being regenerated, set `"edited": true` on it:
+When you do want to add something, open `albums/<slug>/photos.json` and fill in any
+of four optional fields:
 
 ```json
 {
   "id": "7hKp2mQ4x",
   "file": "dsc_0142.jpg",
   "title": "The Lego wall, half finished",
-  "edited": true
+  "description": "Built over three afternoons and dismantled the following Monday.",
+  "date": "2005-06-14",
+  "location": "San Francisco, CA"
 }
 ```
 
-`mise run describe` skips every item marked that way, even with `--force`.
+**Anything you leave out is not rendered.** No heading, no empty row, no placeholder,
+and no falling back to the filename. A photo with no title has no title.
 
-## 5. Preview it locally
+`date` overrides whatever EXIF claimed, which matters for scans and for anything
+whose camera clock was wrong. It also decides where the item sorts.
+
+There is a fifth field, `alt`, for screen-reader text when the title alone is not
+descriptive enough. Without it the alt falls back to the title, and then to empty —
+which is correct, because a screen reader announcing "dsc_0142.jpg" is worse than
+announcing nothing.
+
+Ingest never touches any of these. Re-run it as often as you like.
+
+## 4. Preview it locally
 
 ```bash
 mise run dev
@@ -114,7 +112,7 @@ is all still there.
 mise run dev -- --port=3000    # if 8788 is taken
 ```
 
-## 6. Build and push
+## 5. Build and push
 
 ```bash
 mise run build

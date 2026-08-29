@@ -55,7 +55,6 @@ scripts/
   build.ts        entry point — loads config, calls buildSite
   dev.ts          local preview server: static files, renditions, watch
   ingest.ts       _incoming/ → dimensions + EXIF → R2 → photos.json
-  describe.ts     photos.json → Claude → titles, alt text, captions
   lib/
     albums.ts     album.md + photos.json loading, ordering, orientation
     config.ts     site.config.json and environment

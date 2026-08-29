@@ -11,7 +11,6 @@ export interface SiteConfig {
   };
   media: { host: string; prefix: string; local?: boolean };
   sizes: { thumb: number; phone: number; desktop: number };
-  describe: { model: string; effort: "low" | "medium" | "high" | "xhigh" | "max" };
 }
 
 export function loadConfig(path = "site.config.json"): SiteConfig {

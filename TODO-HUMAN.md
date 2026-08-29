@@ -34,7 +34,6 @@ git push --force-with-lease origin main
       built for plural. Pick one and add a zone Redirect Rule for the other.
 - [ ] **EXIF on originals.** Renditions are stripped, but the "Original" download
       link serves the untouched file with GPS coordinates intact. `docs/urls.md`.
-- [ ] **Run `mise run describe` for real.** It costs money, so I only dry-ran it.
       It also needs `media.oinam.com` live first.
 
 ## For the giveaway

@@ -7,23 +7,26 @@ export type MediaKind = "photo" | "video" | "audio";
 export type Orientation = "wide" | "tall";
 
 export interface Item {
+  // Written by ingest. Never edit `id` — it is the permalink.
   id: string;
   file: string;
   kind: MediaKind;
   width?: number;
   height?: number;
   bytes?: number;
+  duration?: number;
   taken?: string;
   camera?: string;
   lens?: string;
   settings?: string;
-  duration?: number;
+
+  // Yours. All optional, all left alone by ingest, none of them invented.
+  // Anything absent is simply not rendered — no placeholders, no filenames.
   title?: string;
+  description?: string;
+  date?: string;
+  location?: string;
   alt?: string;
-  caption?: string;
-  keywords?: string[];
-  generated?: boolean;
-  edited?: boolean;
   highlight?: boolean;
 }
 
@@ -170,7 +173,7 @@ export function chronological(albums: Album[]): StreamEntry[] {
       album.items.map((item) => ({
         album,
         item,
-        at: item.taken ?? `${album.meta.date}T00:00:00`,
+        at: item.date ?? item.taken ?? `${album.meta.date}T00:00:00`,
       })),
     )
     .sort((a, b) => b.at.localeCompare(a.at))
