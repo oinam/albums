@@ -1,6 +1,6 @@
 import type { SiteConfig } from "./config.ts";
 import type { Album, Item, StreamEntry } from "./albums.ts";
-import { formatDate, year } from "./albums.ts";
+import { coverOf, formatDate } from "./albums.ts";
 import { contactUrl, originalUrl, posterUrl, scaledUrl, srcset } from "./media.ts";
 
 export function esc(value: string): string {
@@ -58,13 +58,6 @@ function albumPath(album: Album): string {
   return `/album/${album.slug}/`;
 }
 
-const ALBUMS_PATH = "/albums/";
-
-/** Page one of the stream is the site root; the rest hang off /page/. */
-function streamPath(page: number): string {
-  return page <= 1 ? "/" : `/page/${page}/`;
-}
-
 /**
  * One route for every kind of item. Keeping the media type out of the path is
  * what makes the id a permalink: re-encoding a clip or swapping a still for a
@@ -76,6 +69,12 @@ function itemPath(item: Item): string {
 
 function altFor(item: Item): string {
   return item.alt ?? item.title ?? item.file;
+}
+
+function coverImage(cfg: SiteConfig, album: Album, item: Item): string {
+  return item.kind === "video"
+    ? posterUrl(cfg, album.slug, item.file)
+    : contactUrl(cfg, album.slug, item.file);
 }
 
 function tile(cfg: SiteConfig, album: Album, item: Item): string {
@@ -119,46 +118,52 @@ function albumSubtitle(album: Album): string {
   return parts.join(" &middot; ");
 }
 
-const PREVIEW_COUNT = 8;
+function albumCard(cfg: SiteConfig, album: Album): string {
+  const cover = coverOf(album);
+  const href = albumPath(album);
+  const art = cover
+    ? `<img src="${esc(coverImage(cfg, album, cover))}" alt="${esc(cover.alt ?? album.meta.title)}" width="${cfg.sizes.contact}" height="${cfg.sizes.contact}" loading="lazy" decoding="async">`
+    : "";
 
-export function renderAlbums(cfg: SiteConfig, albums: Album[]): string {
-  if (albums.length === 0) {
-    return layout({
-      cfg,
-      title: `Albums — ${cfg.site.title}`,
-      description: `Every album in ${cfg.site.title}.`,
-      path: ALBUMS_PATH,
-      body: `<p class="crumb"><a href="/">${esc(cfg.site.title)}</a></p>
-<h1>Albums</h1>
-<p class="empty">No albums yet. Add one under <code>albums/</code> and run <code>npm run build</code>.</p>`,
-    });
-  }
-
-  const sections: string[] = [];
-  let current = "";
-  for (const album of albums) {
-    const y = year(album);
-    if (y !== current) {
-      if (current !== "") sections.push(`</div>`);
-      sections.push(`<h2 class="year">${esc(y)}</h2>`, `<div class="albums">`);
-      current = y;
-    }
-    sections.push(`<section class="album-card">
-<h2><a href="${albumPath(album)}">${esc(album.meta.title)}</a></h2>
+  return `<li class="album-item">
+<a class="tile" href="${href}">${art}</a>
+<h3><a href="${href}">${esc(album.meta.title)}</a></h3>
 <p class="meta">${albumSubtitle(album)}</p>
-${grid(cfg, album, album.items.slice(0, PREVIEW_COUNT))}
-</section>`);
-  }
-  if (current !== "") sections.push(`</div>`);
+</li>`;
+}
+
+export function renderHome(
+  cfg: SiteConfig,
+  albums: Album[],
+  highlights: StreamEntry[],
+): string {
+  const highlightSection =
+    highlights.length === 0
+      ? ""
+      : `<h2 class="year">Highlights</h2>
+<ul class="grid">
+${highlights.map((e) => tile(cfg, e.album, e.item)).join("\n")}
+</ul>`;
+
+  const albumSection =
+    albums.length === 0
+      ? `<p class="empty">No albums yet. Add one under <code>albums/</code> and run <code>npm run build</code>.</p>`
+      : `<h2 class="year">Albums</h2>
+<ul class="album-grid">
+${albums.map((album) => albumCard(cfg, album)).join("\n")}
+</ul>`;
 
   return layout({
     cfg,
-    title: `Albums — ${cfg.site.title}`,
-    description: `Every album in ${cfg.site.title}, newest first.`,
-    path: ALBUMS_PATH,
-    body: `<p class="crumb"><a href="/">${esc(cfg.site.title)}</a></p>
-<h1>Albums</h1>
-${sections.join("\n")}`,
+    title: cfg.site.title,
+    description: cfg.site.tagline,
+    path: "/",
+    body: `<header class="masthead">
+<h1>${esc(cfg.site.title)}</h1>
+<p>${esc(cfg.site.tagline)}</p>
+</header>
+${highlightSection}
+${albumSection}`,
   });
 }
 
@@ -169,60 +174,11 @@ export function renderAlbum(cfg: SiteConfig, album: Album): string {
     title: `${album.meta.title} — ${cfg.site.title}`,
     description,
     path: albumPath(album),
-    body: `<p class="crumb"><a href="/">${esc(cfg.site.title)}</a> / <a href="${ALBUMS_PATH}">Albums</a></p>
+    body: `<p class="crumb"><a href="/">${esc(cfg.site.title)}</a></p>
 <h1>${esc(album.meta.title)}</h1>
 <p class="meta">${albumSubtitle(album)}</p>
 ${album.descriptionHtml ? `<div class="caption">${album.descriptionHtml}</div>` : ""}
 ${grid(cfg, album, album.items)}`,
-  });
-}
-
-function pagination(page: number, pageCount: number): string {
-  if (pageCount <= 1) return "";
-  const newer = page > 1 ? `<a href="${streamPath(page - 1)}">&larr; Newer</a>` : "";
-  const older =
-    page < pageCount ? `<a href="${streamPath(page + 1)}">Older &rarr;</a>` : "";
-  return `<nav class="pager">
-<span>${newer}</span>
-<span>Page ${page} of ${pageCount}</span>
-<span>${older}</span>
-</nav>`;
-}
-
-export function renderStream(
-  cfg: SiteConfig,
-  entries: StreamEntry[],
-  page: number,
-  pageCount: number,
-): string {
-  const body =
-    entries.length === 0
-      ? `<p class="empty">Nothing here yet.</p>`
-      : `<ul class="grid">\n${entries.map((e) => tile(cfg, e.album, e.item)).join("\n")}\n</ul>`;
-
-  const rel: string[] = [];
-  if (page > 1) rel.push(`<link rel="prev" href="${streamPath(page - 1)}">`);
-  if (page < pageCount) rel.push(`<link rel="next" href="${streamPath(page + 1)}">`);
-
-  const heading =
-    page === 1
-      ? `<header class="masthead">
-<h1>${esc(cfg.site.title)}</h1>
-<p>${esc(cfg.site.tagline)}</p>
-</header>`
-      : `<p class="crumb"><a href="/">${esc(cfg.site.title)}</a></p>
-<h1>Page ${page}</h1>`;
-
-  return layout({
-    cfg,
-    title: page === 1 ? cfg.site.title : `Page ${page} — ${cfg.site.title}`,
-    description: `${cfg.site.tagline} Everything, newest first.`,
-    path: streamPath(page),
-    head: rel.length > 0 ? `${rel.join("\n")}\n` : "",
-    body: `${heading}
-<p class="meta"><a href="${ALBUMS_PATH}">Browse by album &rarr;</a></p>
-${body}
-${pagination(page, pageCount)}`,
   });
 }
 

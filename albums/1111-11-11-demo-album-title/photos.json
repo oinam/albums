@@ -6,7 +6,8 @@
       "kind": "photo",
       "bytes": 5412765,
       "width": 8400,
-      "height": 5600
+      "height": 5600,
+      "highlight": true
     },
     {
       "id": "23VbdeTjC",
@@ -22,7 +23,8 @@
       "kind": "photo",
       "bytes": 2546275,
       "width": 4000,
-      "height": 6000
+      "height": 6000,
+      "highlight": true
     },
     {
       "id": "14byuAxtP",
@@ -38,7 +40,8 @@
       "kind": "photo",
       "bytes": 1319537,
       "width": 3024,
-      "height": 4032
+      "height": 4032,
+      "highlight": true
     },
     {
       "id": "2zFGtceHv",
@@ -62,7 +65,8 @@
       "kind": "photo",
       "bytes": 5596332,
       "width": 7500,
-      "height": 5000
+      "height": 5000,
+      "highlight": true
     },
     {
       "id": "2eVP52oPD",

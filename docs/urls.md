@@ -7,33 +7,48 @@ description: The Flickr-shaped routes, and the three-rung size ladder behind the
 
 ## Page routes
 
-| Route            | Shows                                             |
-| ---------------- | ------------------------------------------------- |
-| `/`              | Everything, newest first — page one of the stream |
-| `/page/{n}/`     | The rest of the stream                            |
-| `/albums/`       | Every album, grouped by year                      |
-| `/album/{slug}/` | One album                                         |
-| `/media/{id}/`   | One item — photo, video, or audio                 |
+| Route            | Shows                                         |
+| ---------------- | --------------------------------------------- |
+| `/`              | Highlights, then every album by cover picture |
+| `/album/{slug}/` | One album                                     |
+| `/media/{id}/`   | One item — photo, video, or audio             |
 
-The root is the stream, not the album index. That follows Flickr, where a person's
-default view is their photostream and albums are a curation layer on top of it.
-`/albums/` is one click away and linked from every stream page.
+Three routes, and only one of them is a list. There is no separate `/albums/`
+page: the home page _is_ the album index, with a curated strip of highlights
+above it.
 
-Segments are singular where the page shows one thing and plural where it lists many.
-`media` is a mass noun, so it needs no plural at all.
+### Why there is no chronological stream
 
-### Pagination, not infinite scroll
+A paginated newest-first stream reads well, but it has a property worth avoiding
+on a static site: **inserting one item rewrites every page.** A new photo at the
+top pushes one item off the bottom of page one, onto page two, and so on down the
+whole chain — so adding a single file changes the bytes of every page and
+invalidates all of their caches.
 
-Page size is `site.pageSize` in `site.config.json`, default 60. Every page is a real
-URL, so it can be linked, bookmarked, and crawled; the back button lands where you
-left; and none of it needs JavaScript. `rel="prev"` and `rel="next"` are emitted for
-crawlers.
+Highlights plus album covers has no such coupling. The home page changes when you
+mark a highlight or add an album. An album page changes when that album changes.
+Nothing else moves.
 
-### Ordering
+### Highlights
 
-The stream is ordered by capture time where EXIF supplied one, and by the album's
-start date otherwise — so undated scans still land in the right stretch of the
-timeline rather than clumping at the epoch.
+Set `"highlight": true` on any item in `photos.json`. The home page shows the most
+recent `site.highlights` of them (default 12), newest first. Mark none and the
+section is omitted entirely — the home page is then just albums.
+
+### Album covers
+
+`cover:` in `album.md` names the file; without it the first item is used. Covers
+are rendered at the same square contact size as grid tiles, so they add no
+transformation beyond the three rungs below.
+
+### Pagination
+
+None yet, deliberately. Albums are few and the home page lists them all. Past
+roughly a hundred albums it will want paging — that is the point to add it, and
+only there.
+
+Segments are singular where the page shows one thing. `media` is a mass noun, so
+the scheme needs no plural anywhere.
 
 ### Why one route for photos, video, and audio
 
@@ -49,10 +64,9 @@ already opaque, so the loss is smaller than it first looks.
 
 ### Redirects
 
-`/album/` lands on `/albums/`, and `/media/` and `/photos/` land on `/`. Per album,
-the build emits a redirect from the bare slug and from the older `/albums/{slug}/`
-form — which matters because `/albums/` and `/album/{slug}/` are one letter apart,
-and the redirect is what stops that being a trap.
+`/albums/`, `/album/`, `/media/` and `/photos/` all land on `/`. Per album, the
+build emits a redirect from the bare slug and from the older `/albums/{slug}/`
+form, so nothing published earlier breaks.
 
 ## The size ladder
 

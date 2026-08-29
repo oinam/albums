@@ -22,6 +22,7 @@ export interface Item {
   keywords?: string[];
   generated?: boolean;
   edited?: boolean;
+  highlight?: boolean;
 }
 
 export interface AlbumMeta {
@@ -151,10 +152,6 @@ export function formatDate(date: string, dateEnd?: string): string {
   return `${start.m} ${start.d}–${end.d}, ${start.y}`;
 }
 
-export function year(album: Album): string {
-  return album.meta.date.slice(0, 4);
-}
-
 export interface StreamEntry {
   album: Album;
   item: Item;
@@ -176,4 +173,21 @@ export function chronological(albums: Album[]): StreamEntry[] {
     )
     .sort((a, b) => b.at.localeCompare(a.at))
     .map(({ album, item }) => ({ album, item }));
+}
+
+/** The item named by `cover:` in album.md, falling back to the first one. */
+export function coverOf(album: Album): Item | undefined {
+  const named = album.meta.cover;
+  if (named) {
+    const match = album.items.find((item) => item.file === named);
+    if (match) return match;
+  }
+  return album.items[0];
+}
+
+/** Highlighted items, newest first — what the home page leads with. */
+export function highlightsOf(albums: Album[], limit: number): StreamEntry[] {
+  return chronological(albums)
+    .filter((entry) => entry.item.highlight === true)
+    .slice(0, limit);
 }

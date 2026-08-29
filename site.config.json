@@ -5,7 +5,7 @@
     "host": "albums.oinam.com",
     "author": "Brajeshwar Oinam",
     "locale": "en",
-    "pageSize": 60
+    "highlights": 12
   },
   "media": {
     "host": "media.oinam.com",
