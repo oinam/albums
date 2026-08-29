@@ -32,7 +32,8 @@ export interface Item {
 
 export interface AlbumMeta {
   title: string;
-  date: string;
+  /** Optional. An album with no date shows none, and sorts after every dated one. */
+  date?: string;
   date_end?: string;
   location?: string;
   cover?: string;
@@ -101,8 +102,8 @@ function readAlbum(root: string, slug: string): Album | null {
     date: isoDate(raw.date),
     date_end: isoDate(raw.date_end),
   };
-  if (!meta.title || !meta.date) {
-    throw new Error(`${metaPath}: album.md needs at least a title and a date.`);
+  if (!meta.title) {
+    throw new Error(`${metaPath}: album.md needs a title.`);
   }
 
   const description = parsed.content.trim();
@@ -122,7 +123,14 @@ export function loadAlbums(root = "albums"): Album[] {
     .filter((entry) => entry.isDirectory())
     .map((entry) => readAlbum(root, entry.name))
     .filter((album): album is Album => album !== null)
-    .sort((a, b) => sortableDate(b.meta.date).localeCompare(sortableDate(a.meta.date)));
+    .sort((a, b) => {
+      const left = a.meta.date;
+      const right = b.meta.date;
+      if (!left && !right) return a.meta.title.localeCompare(b.meta.title);
+      if (!left) return 1;
+      if (!right) return -1;
+      return sortableDate(right).localeCompare(sortableDate(left));
+    });
 }
 
 const MONTHS = [
@@ -163,7 +171,13 @@ function one(p: DateParts): string {
   return p.d === undefined ? `${p.m} ${p.y}` : `${p.m} ${p.d}, ${p.y}`;
 }
 
-/** A single date or a range, at whatever precision each end carries. */
+/**
+ * A single date or a range, at whatever precision each end carries.
+ *
+ * Anything the parser does not recognise is returned verbatim, which makes the
+ * field an escape hatch: `1945-46` renders as written. Ordering still works —
+ * see sortableDate.
+ */
 export function formatDate(date: string, dateEnd?: string): string {
   const start = parts(date);
   if (!start) return date;
@@ -182,10 +196,18 @@ export function formatDate(date: string, dateEnd?: string): string {
   return `${start.m} ${start.d}–${end.d}, ${start.y}`;
 }
 
-/** Pads a partial date so string comparison orders it correctly. */
+/**
+ * Pads a date so string comparison orders it correctly.
+ *
+ * Unrecognised strings fall back to their leading year, so a hand-written
+ * `1945-46` still sorts among 1945 rather than by accident of its characters.
+ */
 export function sortableDate(date: string): string {
   const p = parts(date);
-  if (!p) return date;
+  if (!p) {
+    const year = /^(\d{4})/.exec(date)?.[1];
+    return year ? `${year}-01-01` : date;
+  }
   const month = p.m ? String(MONTHS.indexOf(p.m) + 1).padStart(2, "0") : "01";
   const day = p.d === undefined ? "01" : String(p.d).padStart(2, "0");
   return `${p.y}-${month}-${day}`;
@@ -207,7 +229,10 @@ export function chronological(albums: Album[]): StreamEntry[] {
       album.items.map((item) => ({
         album,
         item,
-        at: item.date ?? item.taken ?? `${sortableDate(album.meta.date)}T00:00:00`,
+        at:
+          item.date ??
+          item.taken ??
+          (album.meta.date ? `${sortableDate(album.meta.date)}T00:00:00` : ""),
       })),
     )
     .sort((a, b) => b.at.localeCompare(a.at))

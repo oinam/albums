@@ -139,7 +139,8 @@ ${items.map((item, index) => tile(cfg, album, item, index)).join("\n")}
 }
 
 function albumSubtitle(album: Album): string {
-  const parts = [formatDate(album.meta.date, album.meta.date_end)];
+  const parts: string[] = [];
+  if (album.meta.date) parts.push(formatDate(album.meta.date, album.meta.date_end));
   if (album.meta.location) parts.push(album.meta.location);
   const count = album.items.length;
   parts.push(count === 1 ? "1 item" : `${count} items`);
@@ -162,7 +163,10 @@ function albumCard(cfg: SiteConfig, album: Album, index: number): string {
 
 function archiveSummary(albums: Album[]): string {
   const items = albums.reduce((total, album) => total + album.items.length, 0);
-  const years = albums.map((album) => album.meta.date.slice(0, 4)).sort();
+  const years = albums
+    .map((album) => album.meta.date?.slice(0, 4))
+    .filter((y): y is string => y !== undefined)
+    .sort();
   const first = years[0];
   const last = years[years.length - 1];
 
