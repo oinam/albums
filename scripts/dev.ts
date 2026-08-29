@@ -178,9 +178,20 @@ const port = Number(portArg ?? process.env.PORT ?? 8788);
 rebuild();
 startWatching();
 
-createServer((req, res) => {
+const server = createServer((req, res) => {
   void handle(req, res);
-}).listen(port, () => {
+});
+
+server.on("error", (err: NodeJS.ErrnoException) => {
+  if (err.code !== "EADDRINUSE") throw err;
+  console.error(`\n  Port ${port} is already in use.`);
+  console.error(`  Another dev server is probably still running — stop that one,`);
+  console.error(`  or start this one on a different port:\n`);
+  console.error(`      mise run dev -- --port=${port + 1}\n`);
+  process.exit(1);
+});
+
+server.listen(port, () => {
   console.log(`\n  albums.oinam.com — local preview`);
   console.log(`  http://localhost:${port}\n`);
   console.log(`  Media is rendered from ${staging}/ and cached in ${CACHE}/.`);

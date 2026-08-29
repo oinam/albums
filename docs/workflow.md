@@ -124,6 +124,9 @@ is all still there.
 mise run dev -- --port=3000    # if 8788 is taken
 ```
 
+A busy port is usually a previous `mise run dev` still holding it in another
+terminal. The server says so in one line and stops, rather than throwing.
+
 ## 5. Build and push
 
 ```bash
