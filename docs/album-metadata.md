@@ -37,12 +37,22 @@ exceptions than any word list can hold, so treat it as a first draft: `album.md`
 written once and is authoritative from then on. Correct it there and nothing
 re-reads the folder name.
 
+### An album can have no date
+
+Comment `date` out and the album shows none — no date on its card, no date on its
+page, and nothing contributed to the archive summary. Undated albums sort after
+every dated one.
+
 ### Dates in `album.md` can be less precise
 
 The folder format is strict; the file it generates is not. Once written you can set
 `date` to `YYYY-MM` or a bare `YYYY` and it will render as _Jun 2005_ or _2005_
 rather than pretending to a day it does not know. Ranges work the same way through
 `date_end`. Partial dates sort as their first day.
+
+The field is also an escape hatch. A string the parser does not recognise is
+printed exactly as written — `1945-46` for a span across two years, or
+`circa 1945` — and sorts by its leading year, so ordering still holds.
 
 ## `albums/<slug>/album.md`
 
@@ -60,13 +70,13 @@ cover: dsc_0142.jpg
 The week we built half the office out of Lego. Nobody got any work done.
 ```
 
-| Field      | Required | Notes                                                                                                        |
-| ---------- | -------- | ------------------------------------------------------------------------------------------------------------ |
-| `title`    | yes      | Shown everywhere. Nothing derives from the folder name after the first ingest.                               |
-| `date`     | yes      | `YYYY-MM-DD`, `YYYY-MM` or `YYYY` — whatever precision the album deserves. Sorts the album on the home page. |
-| `date_end` | no       | Makes it a range. Rendered as `Jun 14–17, 2005`.                                                             |
-| `location` | no       | Free text, shown under the title.                                                                            |
-| `cover`    | no       | Filename shown as the album's cover on the home page. Defaults to the first item.                            |
+| Field      | Required | Notes                                                                                                                                                       |
+| ---------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `title`    | yes      | Shown everywhere. Nothing derives from the folder name after the first ingest.                                                                              |
+| `date`     | no       | `YYYY-MM-DD`, `YYYY-MM` or `YYYY`. Anything else is printed verbatim, so `1945-46` renders as written. Omit it entirely and the album shows no date at all. |
+| `date_end` | no       | Makes it a range. Rendered as `Jun 14–17, 2005`.                                                                                                            |
+| `location` | no       | Free text, shown under the title.                                                                                                                           |
+| `cover`    | no       | Filename shown as the album's cover on the home page. Defaults to the first item.                                                                           |
 
 Everything below the frontmatter is Markdown and is rendered on the album page.
 The ingest script writes this file once and never touches it again.
