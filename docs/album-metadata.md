@@ -7,6 +7,28 @@ description: Every field in album.md and photos.json.
 
 Two files per album, both committed, both meant to be edited by hand.
 
+## Naming the folder
+
+The folder name seeds the album's title and dates the first time ingest sees it.
+Five shapes are understood:
+
+| Folder                         | Date             | Renders as                     |
+| ------------------------------ | ---------------- | ------------------------------ |
+| `2005-06-14-lego-team`         | one day          | Jun 14, 2005                   |
+| `2005-06-14-20-lego-week`      | range in a month | Jun 14–20, 2005                |
+| `2005-06-14-07-20-summer-trip` | range in a year  | Jun 14 – Jul 20, 2005          |
+| `2005-06-imphal-monsoon`       | a month          | Jun 2005                       |
+| `2005-childhood-scans`         | a year           | 2005                           |
+| `lego-team`                    | none             | falls back to EXIF, then today |
+
+Every component is range-checked, so `2005-13-14-something` is not read as a date —
+it falls back to the year. Partial dates sort as their first day, so a month-level
+album lands at the start of that month.
+
+One ambiguity is unavoidable: `2005-06-14-24-hours-in-tokyo` reads as a range from
+the 14th to the 24th. Only the generated `album.md` is affected, and that file wins
+from then on — fix the dates there and nothing re-reads the folder name.
+
 ## `albums/<slug>/album.md`
 
 YAML frontmatter for the structured fields, Markdown below it for the description.

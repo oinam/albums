@@ -5,6 +5,7 @@ import { loadConfig, stagingDir } from "./lib/config.ts";
 import { kindFor, readItems } from "./lib/albums.ts";
 import type { Item } from "./lib/albums.ts";
 import { deriveId } from "./lib/ids.ts";
+import { parseSlug } from "./lib/slug.ts";
 import { applyOrientation, readDimensions } from "./lib/dimensions.ts";
 import { probeMedia } from "./lib/probe.ts";
 import { openBucket, upload } from "./lib/r2.ts";
@@ -22,19 +23,6 @@ interface Exif {
   ISO?: number;
   FocalLength?: number;
   Orientation?: number;
-}
-
-function titleFromSlug(slug: string): string {
-  return slug
-    .replace(/^\d{4}-\d{2}-\d{2}-?/, "")
-    .split("-")
-    .filter(Boolean)
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(" ");
-}
-
-function dateFromSlug(slug: string): string | null {
-  return /^(\d{4}-\d{2}-\d{2})/.exec(slug)?.[1] ?? null;
 }
 
 function shutter(seconds: number): string {
@@ -102,17 +90,18 @@ function ensureAlbumMeta(slug: string, albumDir: string, items: Item[]): void {
   const path = join(albumDir, "album.md");
   if (existsSync(path)) return;
 
+  const parsed = parseSlug(slug);
   const date =
-    dateFromSlug(slug) ??
+    parsed.date ??
     items.find((i) => i.taken)?.taken?.slice(0, 10) ??
     new Date().toISOString().slice(0, 10);
 
   writeFileSync(
     path,
     `---
-title: ${titleFromSlug(slug) || slug}
+title: ${parsed.title || slug}
 date: ${date}
-# date_end: ${date}
+${parsed.dateEnd ? `date_end: ${parsed.dateEnd}` : `# date_end: ${date}`}
 # location:
 ${items[0] ? `cover: ${items[0].file}` : "# cover:"}
 ---

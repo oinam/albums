@@ -27,11 +27,8 @@ Deploying from here is just `git push`.
 - [ ] **Images paid plan.** The free plan hard-stops at 5,000 transformations a
       month with error 9422 — images stop rendering rather than costing money.
       Decide deliberately. `docs/costs.md`.
-- [ ] **`album.oinam.com` vs `albums.oinam.com`.** README says singular, the site is
-      built for plural. Pick one and add a zone Redirect Rule for the other.
-- [ ] **EXIF on originals.** Renditions are stripped, but the "Original" download
-      link serves the untouched file with GPS coordinates intact. `docs/urls.md`.
-      It also needs `media.oinam.com` live first.
+- [ ] **`album.oinam.com` vs `albums.oinam.com`.** README says singular, the site is built for plural. Pick one and add a zone Redirect Rule for the other.
+- [ ] **EXIF on originals.** Renditions are stripped, but the "Original" download link serves the untouched file with GPS coordinates intact. `docs/urls.md`. It also needs `media.oinam.com` live first.
 
 ## For the giveaway
 

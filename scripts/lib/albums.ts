@@ -77,9 +77,14 @@ export function readItems(albumDir: string): Item[] {
   return parsed.items ?? [];
 }
 
-/** YAML parses an unquoted `1965-04-02` into a Date; normalise both shapes to a string. */
+/**
+ * YAML gives back three different types depending on precision: `1965-04-02`
+ * becomes a Date, `1965-04` stays a string, and a bare `1965` arrives as a
+ * number. Normalise all three to the string the rest of the code expects.
+ */
 function isoDate(value: unknown): string | undefined {
   if (value instanceof Date) return value.toISOString().slice(0, 10);
+  if (typeof value === "number" && Number.isInteger(value)) return String(value);
   if (typeof value === "string" && value.trim() !== "") return value.trim();
   return undefined;
 }
@@ -117,7 +122,7 @@ export function loadAlbums(root = "albums"): Album[] {
     .filter((entry) => entry.isDirectory())
     .map((entry) => readAlbum(root, entry.name))
     .filter((album): album is Album => album !== null)
-    .sort((a, b) => b.meta.date.localeCompare(a.meta.date));
+    .sort((a, b) => sortableDate(b.meta.date).localeCompare(sortableDate(a.meta.date)));
 }
 
 const MONTHS = [
@@ -135,26 +140,55 @@ const MONTHS = [
   "Dec",
 ];
 
-function parts(iso: string): { y: string; m: string; d: number } | null {
-  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso);
-  if (!match?.[1] || !match[2] || !match[3]) return null;
-  const month = MONTHS[Number(match[2]) - 1];
-  if (!month) return null;
-  return { y: match[1], m: month, d: Number(match[3]) };
+interface DateParts {
+  y: string;
+  m?: string;
+  d?: number;
 }
 
-/** "Jun 14, 2005", or "Jun 14–17, 2005" / "Dec 30, 2005 – Jan 2, 2006" for a range. */
+/** Accepts `YYYY`, `YYYY-MM` and `YYYY-MM-DD` — folder names carry all three. */
+function parts(iso: string): DateParts | null {
+  const match = /^(\d{4})(?:-(\d{2}))?(?:-(\d{2}))?$/.exec(iso.slice(0, 10));
+  if (!match?.[1]) return null;
+
+  const monthIndex = match[2] ? Number(match[2]) - 1 : undefined;
+  const month = monthIndex === undefined ? undefined : MONTHS[monthIndex];
+  if (match[2] && !month) return null;
+
+  return { y: match[1], m: month, d: match[3] ? Number(match[3]) : undefined };
+}
+
+function one(p: DateParts): string {
+  if (!p.m) return p.y;
+  return p.d === undefined ? `${p.m} ${p.y}` : `${p.m} ${p.d}, ${p.y}`;
+}
+
+/** A single date or a range, at whatever precision each end carries. */
 export function formatDate(date: string, dateEnd?: string): string {
   const start = parts(date);
   if (!start) return date;
-  const single = `${start.m} ${start.d}, ${start.y}`;
-  if (!dateEnd || dateEnd === date) return single;
+  if (!dateEnd || dateEnd === date) return one(start);
 
   const end = parts(dateEnd);
-  if (!end) return single;
-  if (start.y !== end.y) return `${single} – ${end.m} ${end.d}, ${end.y}`;
-  if (start.m !== end.m) return `${start.m} ${start.d} – ${end.m} ${end.d}, ${start.y}`;
+  if (!end) return one(start);
+
+  if (start.y !== end.y) return `${one(start)} – ${one(end)}`;
+  if (start.m !== end.m) {
+    return start.d === undefined || end.d === undefined
+      ? `${start.m ?? ""} – ${end.m ?? ""} ${start.y}`.trim()
+      : `${start.m} ${start.d} – ${end.m} ${end.d}, ${start.y}`;
+  }
+  if (start.d === undefined || end.d === undefined) return one(start);
   return `${start.m} ${start.d}–${end.d}, ${start.y}`;
+}
+
+/** Pads a partial date so string comparison orders it correctly. */
+export function sortableDate(date: string): string {
+  const p = parts(date);
+  if (!p) return date;
+  const month = p.m ? String(MONTHS.indexOf(p.m) + 1).padStart(2, "0") : "01";
+  const day = p.d === undefined ? "01" : String(p.d).padStart(2, "0");
+  return `${p.y}-${month}-${day}`;
 }
 
 export interface StreamEntry {
@@ -173,7 +207,7 @@ export function chronological(albums: Album[]): StreamEntry[] {
       album.items.map((item) => ({
         album,
         item,
-        at: item.date ?? item.taken ?? `${album.meta.date}T00:00:00`,
+        at: item.date ?? item.taken ?? `${sortableDate(album.meta.date)}T00:00:00`,
       })),
     )
     .sort((a, b) => b.at.localeCompare(a.at))
