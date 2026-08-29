@@ -1,6 +1,5 @@
 import type { SiteConfig } from "./config.ts";
 import type { Album, Item, StreamEntry } from "./albums.ts";
-import type { Page } from "./pages.ts";
 import { coverOf, formatDate, orientationOf } from "./albums.ts";
 import {
   originalUrl,
@@ -30,15 +29,13 @@ interface PageOptions {
 }
 
 /**
- * Standalone pages available to the header and footer. Set once at the start of a
- * build; a build is a single run, so a module-level value is honest here and saves
- * threading the list through every renderer.
+ * The stylesheet's hashed name, set once at the start of a build. A build is a
+ * single run, so a module-level value is honest here and saves threading the name
+ * through every renderer.
  */
-let chromePages: Page[] = [];
 let stylesheetHref = "/assets/site.css";
 
-export function configureChrome(pages: Page[], stylesheet: string): void {
-  chromePages = pages;
+export function configureChrome(stylesheet: string): void {
   stylesheetHref = stylesheet;
 }
 
@@ -95,7 +92,7 @@ b.addEventListener("click",function(){var v=order[(order.indexOf(current())+1)%3
 function siteFooter(cfg: SiteConfig): string {
   const links = [
     `<a href="/feed.xml">RSS</a>`,
-    ...chromePages.map((page) => `<a href="/${page.slug}/">${esc(page.title)}</a>`),
+    `<a href="https://oinam.com/contact/">Contact</a>`,
     `<a href="https://oinam.com/">oinam.com</a>`,
   ].join("");
 

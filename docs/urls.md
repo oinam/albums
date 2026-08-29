@@ -8,7 +8,6 @@ description: The Flickr-shaped routes, and the three-rung size ladder behind the
 ## Page routes
 
 | `/random/` | Redirects to one item at random |
-| `/about/`, `/contact/` | Standalone pages from `pages/*.md` |
 | `/feed.xml` | RSS, the 50 most recent items |
 
 | Route            | Shows                                         |

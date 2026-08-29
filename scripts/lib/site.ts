@@ -11,11 +11,9 @@ import { dirname, join } from "node:path";
 import type { SiteConfig } from "./config.ts";
 import type { Album, Item } from "./albums.ts";
 import { chronological, highlightsOf, loadAlbums } from "./albums.ts";
-import { loadPages } from "./pages.ts";
 import { renderFeed } from "./feed.ts";
 import {
   configureChrome,
-  layout,
   renderAlbum,
   renderHome,
   renderItem,
@@ -81,8 +79,7 @@ export function buildSite(cfg: SiteConfig): BuildResult {
   const albums = loadAlbums();
   assertUniqueIds(albums);
 
-  const pages = loadPages();
-  configureChrome(pages, stylesheetHref());
+  configureChrome(stylesheetHref());
 
   rmSync(OUT, { recursive: true, force: true });
   mkdirSync(OUT, { recursive: true });
@@ -105,18 +102,6 @@ export function buildSite(cfg: SiteConfig): BuildResult {
   }
 
   write("404.html", renderNotFound(cfg));
-  for (const page of pages) {
-    write(
-      `${page.slug}/index.html`,
-      layout({
-        cfg,
-        title: `${page.title} — ${cfg.site.title}`,
-        description: page.title,
-        path: `/${page.slug}/`,
-        body: `<h1>${page.title}</h1>\n<div class="prose">${page.html}</div>`,
-      }),
-    );
-  }
 
   write("random/index.html", renderRandom(cfg, chronological(albums)));
   write("feed.xml", renderFeed(cfg, chronological(albums)));
