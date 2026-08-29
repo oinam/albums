@@ -22,12 +22,13 @@
   --space-large: calc(1.618034 * 1.618034 * 1rem);
 
   --border-radius: 3px;
-  --cell: 80px;
   --gutter: 4px;
+  --edge: clamp(1rem, 3vw, 3.25rem);
 }
 
+/* System preference — unless an explicit light choice overrides it. */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme="light"]) {
     --bg: var(--color-gray-900);
     --bg-subtle: var(--color-gray-800);
     --text-color: var(--color-gray-300);
@@ -37,6 +38,18 @@
     --link-hover-color: var(--color-gray-100);
     --border-color: var(--color-gray-700);
   }
+}
+
+/* An explicit choice wins in both directions. */
+:root[data-theme="dark"] {
+  --bg: var(--color-gray-900);
+  --bg-subtle: var(--color-gray-800);
+  --text-color: var(--color-gray-300);
+  --text-strong: var(--color-gray-100);
+  --text-muted: var(--color-gray-500);
+  --link-color: var(--color-gray-300);
+  --link-hover-color: var(--color-gray-100);
+  --border-color: var(--color-gray-700);
 }
 
 *,
@@ -56,9 +69,11 @@ html {
 
 body {
   margin: 0;
-  padding-block: clamp(1.5rem, 3vw, 3.25rem);
-  padding-inline: clamp(1rem, 3vw, 3.25rem);
+  padding: 0;
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
   font-family:
     system-ui,
     -apple-system,
@@ -127,70 +142,125 @@ video {
   display: block;
 }
 
-.masthead {
-  margin-bottom: var(--space-large);
+/* Header and footer: one row each, alternate ground, never fixed. */
+.bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-small) var(--space);
+  padding: var(--space-small) var(--edge);
+  background: var(--bg-subtle);
+  border-block: 1px solid var(--border-color);
 }
 
-.masthead h1 {
-  font-size: clamp(1.6rem, 3.2vw, 2.4rem);
+.site-header {
+  border-top: none;
+}
+
+.site-footer {
+  margin-top: auto;
   border-bottom: none;
-  padding-bottom: 0;
-  margin-bottom: 0.2rem;
-  letter-spacing: -0.01em;
-}
-
-.masthead .tagline {
-  margin: 0;
-  font-size: 1.05rem;
-  color: var(--text-color);
-}
-
-.masthead .stat {
-  margin: var(--space-small) 0 0 0;
-  font-size: 0.8rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--text-muted);
-}
-
-.masthead p {
-  margin: 0;
-  color: var(--text-muted);
-  font-size: 0.9rem;
-}
-
-.crumb {
   font-size: 0.85rem;
   color: var(--text-muted);
-  margin-bottom: var(--space-small);
 }
 
-.section-head {
-  margin-top: var(--space-large);
+.site-footer p {
+  margin: 0;
+  max-width: none;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-small);
+  font-size: 1rem;
+  color: var(--text-strong);
+}
+
+.logo {
+  width: 1.1em;
+  height: 1.1em;
+  flex: none;
+}
+
+.bar-nav {
+  display: flex;
+  align-items: center;
+  gap: var(--space-small);
   font-size: 0.85rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--text-muted);
-  border-bottom: 1px solid var(--border-color);
-  padding-bottom: var(--space-small);
 }
 
-.meta {
-  color: var(--text-muted);
-  font-size: 0.9rem;
-  margin: 0 0 var(--space) 0;
+.bar-nav a {
+  padding: 0.15rem 0.4rem;
+  border-radius: var(--border-radius);
 }
 
-.album-grid {
-  display: grid;
-  /* Same 320px as a wide tile, so covers line up with the lattice above. */
-  grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 320px));
-  gap: var(--space);
-  justify-content: start;
+.bar-nav a:hover,
+.bar-nav a:focus-visible {
+  background: var(--bg);
+}
+
+.theme-toggle {
+  font: inherit;
+  font-size: 0.85rem;
+  color: var(--link-color);
+  background: none;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  padding: 0.1rem 0.5rem;
+  cursor: pointer;
+  min-width: 4.2em;
+}
+
+.theme-toggle:hover,
+.theme-toggle:focus-visible {
+  color: var(--link-hover-color);
+  background: var(--bg);
+}
+
+main {
+  flex: 1;
+  padding-block: var(--space);
+  padding-inline: var(--edge);
+}
+
+/* Media reaches the edges of the viewport; text does not. */
+/*
+ * A photo wall. `columns` fits as many ~320px columns as the viewport allows and
+ * then stretches them to fill it exactly, so the media reaches both edges at any
+ * width — which a fixed tile width cannot do, since whatever is left over after
+ * the last whole tile becomes dead space.
+ *
+ * The trade is reading order: items flow down each column before moving to the
+ * next, rather than left to right. For a wall of pictures that is the right
+ * trade, and it is what every masonry photo grid does.
+ */
+.grid {
+  columns: 320px;
+  column-gap: 0;
+  margin-inline: calc(-1 * var(--edge));
   margin-top: var(--space-small);
 }
 
-.album-item .tile {
+.cell {
+  break-inside: avoid;
+  padding: var(--gutter);
+}
+
+.cell--wide .tile {
+  aspect-ratio: 4 / 3;
+}
+
+.cell--tall .tile {
+  aspect-ratio: 3 / 4;
+}
+
+.audio-tile {
+  aspect-ratio: 4 / 3;
+}
+
+.tile {
   aspect-ratio: 4 / 3;
 }
 
@@ -202,37 +272,6 @@ video {
 .album-item .meta {
   margin: 0;
   font-size: 0.85rem;
-}
-
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, var(--cell));
-  grid-auto-rows: var(--cell);
-  grid-auto-flow: row dense;
-  gap: 0;
-  justify-content: start;
-  margin-top: var(--space-small);
-  margin-inline: calc(-1 * var(--gutter));
-}
-
-.cell {
-  padding: var(--gutter);
-}
-
-.cell--wide {
-  grid-column: span 4;
-  grid-row: span 3;
-}
-
-.cell--tall {
-  grid-column: span 3;
-  grid-row: span 4;
-}
-
-/* Only lattice tiles fill their cell; album covers size from their own ratio. */
-.cell .tile {
-  width: 100%;
-  height: 100%;
 }
 
 .tile {
@@ -396,12 +435,5 @@ video {
 @media (max-width: 620px) {
   body {
     font-size: 16px;
-  }
-}
-
-@media (max-width: 400px) {
-  /* A wide tile spans four cells; shrink the lattice so it still fits. */
-  :root {
-    --cell: 64px;
   }
 }

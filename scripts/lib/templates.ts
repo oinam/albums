@@ -1,5 +1,6 @@
 import type { SiteConfig } from "./config.ts";
 import type { Album, Item, StreamEntry } from "./albums.ts";
+import type { Page } from "./pages.ts";
 import { coverOf, formatDate, formatDuration, orientationOf } from "./albums.ts";
 import {
   originalUrl,
@@ -28,6 +29,61 @@ interface PageOptions {
   head?: string;
 }
 
+/**
+ * Standalone pages available to the header and footer. Set once at the start of a
+ * build; a build is a single run, so a module-level value is honest here and saves
+ * threading the list through every renderer.
+ */
+let chromePages: Page[] = [];
+
+export function configureChrome(pages: Page[]): void {
+  chromePages = pages;
+}
+
+const LOGO = `<svg class="logo" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2.5"/></svg>`;
+
+/**
+ * Applied before the first paint, so a chosen theme never flashes the other one.
+ * Three states: an explicit light or dark, or auto, which follows the system and
+ * stamps nothing.
+ */
+const THEME_SCRIPT = `(function(){try{var t=localStorage.getItem("theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}})()`;
+
+const THEME_TOGGLE = `<button type="button" class="theme-toggle" data-theme-toggle aria-label="Theme: auto. Click to change.">
+<span data-theme-label>Auto</span>
+</button>`;
+
+const TOGGLE_SCRIPT = `(function(){var b=document.querySelector("[data-theme-toggle]");if(!b)return;var l=b.querySelector("[data-theme-label]");var order=["auto","light","dark"];
+function current(){try{return localStorage.getItem("theme")||"auto"}catch(e){return "auto"}}
+function paint(v){l.textContent=v.charAt(0).toUpperCase()+v.slice(1);b.setAttribute("aria-label","Theme: "+v+". Click to change.");if(v==="auto")delete document.documentElement.dataset.theme;else document.documentElement.dataset.theme=v}
+paint(current());
+b.addEventListener("click",function(){var v=order[(order.indexOf(current())+1)%3];try{localStorage.setItem("theme",v)}catch(e){}paint(v)})})()`;
+
+function chromeLinks(): { header: string; footer: string } {
+  const links = chromePages.map(
+    (page) => `<a href="/${page.slug}/">${esc(page.title)}</a>`,
+  );
+  return {
+    header: links.join(""),
+    footer: [`<a href="/feed.xml">RSS</a>`, ...links].join(""),
+  };
+}
+
+function siteHeader(cfg: SiteConfig): string {
+  return `<header class="bar site-header">
+<a class="brand" href="/">${LOGO}<span>${esc(cfg.site.title)}</span></a>
+<nav class="bar-nav">${chromeLinks().header}${THEME_TOGGLE}</nav>
+</header>`;
+}
+
+function siteFooter(cfg: SiteConfig): string {
+  const year = new Date().getFullYear();
+  return `<footer class="bar site-footer">
+<p>&copy; ${year}. All Rights Reserved by <a href="https://oinam.com/">${esc(cfg.site.author.split(" ").pop() ?? "Oinam")}</a>.</p>
+<nav class="bar-nav">${chromeLinks().footer}</nav>
+</footer>`;
+}
+
 export function layout({
   cfg,
   title,
@@ -46,17 +102,21 @@ export function layout({
 <meta name="description" content="${esc(description)}">
 <link rel="canonical" href="${esc(canonical)}">
 <link rel="icon" href="/favicon.ico">
+<link rel="alternate" type="application/rss+xml" title="${esc(cfg.site.title)}" href="/feed.xml">
 <link rel="stylesheet" href="/assets/site.css">
 <meta property="og:title" content="${esc(title)}">
 <meta property="og:description" content="${esc(description)}">
 <meta property="og:url" content="${esc(canonical)}">
 <meta property="og:type" content="website">
-${head}</head>
+${head}<script>${THEME_SCRIPT}</script>
+</head>
 <body>
+${siteHeader(cfg)}
+<main>
 ${body}
-<footer class="site-footer">
-<p><a href="/">${esc(cfg.site.title)}</a> &middot; ${esc(cfg.site.author)}</p>
-</footer>
+</main>
+${siteFooter(cfg)}
+<script>${TOGGLE_SCRIPT}</script>
 </body>
 </html>
 `;
