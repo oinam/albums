@@ -2,8 +2,8 @@ import { cpSync, existsSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import type { SiteConfig } from "./config.ts";
 import type { Album, Item } from "./albums.ts";
-import { loadAlbums } from "./albums.ts";
-import { renderAlbum, renderIndex, renderItem, renderStream } from "./templates.ts";
+import { chronological, loadAlbums } from "./albums.ts";
+import { renderAlbum, renderAlbums, renderItem, renderStream } from "./templates.ts";
 
 export const OUT = "dist";
 
@@ -30,7 +30,7 @@ function assertUniqueIds(albums: Album[]): void {
 }
 
 function redirects(albums: Album[]): string {
-  const lines = ["/albums/ / 301", "/album/ / 301", "/photos/ /media/ 301"];
+  const lines = ["/album/ /albums/ 301", "/media/ / 301", "/photos/ / 301"];
   for (const album of albums) {
     lines.push(`/${album.slug}/ /album/${album.slug}/ 301`);
     lines.push(`/albums/${album.slug}/ /album/${album.slug}/ 301`);
@@ -50,8 +50,17 @@ export function buildSite(cfg: SiteConfig): BuildResult {
   rmSync(OUT, { recursive: true, force: true });
   mkdirSync(OUT, { recursive: true });
 
-  write("index.html", renderIndex(cfg, albums));
-  write("media/index.html", renderStream(cfg, albums));
+  const entries = chronological(albums);
+  const pageSize = Math.max(1, cfg.site.pageSize);
+  const pageCount = Math.max(1, Math.ceil(entries.length / pageSize));
+
+  for (let page = 1; page <= pageCount; page += 1) {
+    const slice = entries.slice((page - 1) * pageSize, page * pageSize);
+    const html = renderStream(cfg, slice, page, pageCount);
+    write(page === 1 ? "index.html" : `page/${page}/index.html`, html);
+  }
+
+  write("albums/index.html", renderAlbums(cfg, albums));
 
   let items = 0;
   for (const album of albums) {
@@ -70,11 +79,15 @@ export function buildSite(cfg: SiteConfig): BuildResult {
     "robots.txt",
     `User-agent: *\nAllow: /\nSitemap: https://${cfg.site.host}/sitemap.txt\n`,
   );
+
+  const pageUrls = Array.from({ length: pageCount }, (_, i) =>
+    i === 0 ? `https://${cfg.site.host}/` : `https://${cfg.site.host}/page/${i + 1}/`,
+  );
   write(
     "sitemap.txt",
     `${[
-      `https://${cfg.site.host}/`,
-      `https://${cfg.site.host}/media/`,
+      ...pageUrls,
+      `https://${cfg.site.host}/albums/`,
       ...albums.map((a) => `https://${cfg.site.host}/album/${a.slug}/`),
       ...albums.flatMap((a) =>
         a.items.map((i) => `https://${cfg.site.host}/media/${i.id}/`),

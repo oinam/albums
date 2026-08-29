@@ -1,5 +1,5 @@
 import type { SiteConfig } from "./config.ts";
-import type { Album, Item } from "./albums.ts";
+import type { Album, Item, StreamEntry } from "./albums.ts";
 import { formatDate, year } from "./albums.ts";
 import { contactUrl, originalUrl, posterUrl, scaledUrl, srcset } from "./media.ts";
 
@@ -17,9 +17,17 @@ interface PageOptions {
   description: string;
   path: string;
   body: string;
+  head?: string;
 }
 
-export function layout({ cfg, title, description, path, body }: PageOptions): string {
+export function layout({
+  cfg,
+  title,
+  description,
+  path,
+  body,
+  head = "",
+}: PageOptions): string {
   const canonical = `https://${cfg.site.host}${path}`;
   return `<!doctype html>
 <html lang="${esc(cfg.site.locale)}">
@@ -35,7 +43,7 @@ export function layout({ cfg, title, description, path, body }: PageOptions): st
 <meta property="og:description" content="${esc(description)}">
 <meta property="og:url" content="${esc(canonical)}">
 <meta property="og:type" content="website">
-</head>
+${head}</head>
 <body>
 ${body}
 <footer class="site-footer">
@@ -48,6 +56,13 @@ ${body}
 
 function albumPath(album: Album): string {
   return `/album/${album.slug}/`;
+}
+
+const ALBUMS_PATH = "/albums/";
+
+/** Page one of the stream is the site root; the rest hang off /page/. */
+function streamPath(page: number): string {
+  return page <= 1 ? "/" : `/page/${page}/`;
 }
 
 /**
@@ -106,14 +121,15 @@ function albumSubtitle(album: Album): string {
 
 const PREVIEW_COUNT = 8;
 
-export function renderIndex(cfg: SiteConfig, albums: Album[]): string {
+export function renderAlbums(cfg: SiteConfig, albums: Album[]): string {
   if (albums.length === 0) {
     return layout({
       cfg,
-      title: cfg.site.title,
-      description: cfg.site.tagline,
-      path: "/",
-      body: `<h1>${esc(cfg.site.title)}</h1>
+      title: `Albums — ${cfg.site.title}`,
+      description: `Every album in ${cfg.site.title}.`,
+      path: ALBUMS_PATH,
+      body: `<p class="crumb"><a href="/">${esc(cfg.site.title)}</a></p>
+<h1>Albums</h1>
 <p class="empty">No albums yet. Add one under <code>albums/</code> and run <code>npm run build</code>.</p>`,
     });
   }
@@ -137,13 +153,11 @@ ${grid(cfg, album, album.items.slice(0, PREVIEW_COUNT))}
 
   return layout({
     cfg,
-    title: cfg.site.title,
-    description: cfg.site.tagline,
-    path: "/",
-    body: `<header class="masthead">
-<h1>${esc(cfg.site.title)}</h1>
-<p>${esc(cfg.site.tagline)}</p>
-</header>
+    title: `Albums — ${cfg.site.title}`,
+    description: `Every album in ${cfg.site.title}, newest first.`,
+    path: ALBUMS_PATH,
+    body: `<p class="crumb"><a href="/">${esc(cfg.site.title)}</a></p>
+<h1>Albums</h1>
 ${sections.join("\n")}`,
   });
 }
@@ -155,7 +169,7 @@ export function renderAlbum(cfg: SiteConfig, album: Album): string {
     title: `${album.meta.title} — ${cfg.site.title}`,
     description,
     path: albumPath(album),
-    body: `<p class="crumb"><a href="/">${esc(cfg.site.title)}</a></p>
+    body: `<p class="crumb"><a href="/">${esc(cfg.site.title)}</a> / <a href="${ALBUMS_PATH}">Albums</a></p>
 <h1>${esc(album.meta.title)}</h1>
 <p class="meta">${albumSubtitle(album)}</p>
 ${album.descriptionHtml ? `<div class="caption">${album.descriptionHtml}</div>` : ""}
@@ -163,23 +177,52 @@ ${grid(cfg, album, album.items)}`,
   });
 }
 
-export function renderStream(cfg: SiteConfig, albums: Album[]): string {
-  const tiles = albums.flatMap((album) =>
-    album.items.map((item) => tile(cfg, album, item)),
-  );
+function pagination(page: number, pageCount: number): string {
+  if (pageCount <= 1) return "";
+  const newer = page > 1 ? `<a href="${streamPath(page - 1)}">&larr; Newer</a>` : "";
+  const older =
+    page < pageCount ? `<a href="${streamPath(page + 1)}">Older &rarr;</a>` : "";
+  return `<nav class="pager">
+<span>${newer}</span>
+<span>Page ${page} of ${pageCount}</span>
+<span>${older}</span>
+</nav>`;
+}
+
+export function renderStream(
+  cfg: SiteConfig,
+  entries: StreamEntry[],
+  page: number,
+  pageCount: number,
+): string {
   const body =
-    tiles.length === 0
+    entries.length === 0
       ? `<p class="empty">Nothing here yet.</p>`
-      : `<ul class="grid">\n${tiles.join("\n")}\n</ul>`;
+      : `<ul class="grid">\n${entries.map((e) => tile(cfg, e.album, e.item)).join("\n")}\n</ul>`;
+
+  const rel: string[] = [];
+  if (page > 1) rel.push(`<link rel="prev" href="${streamPath(page - 1)}">`);
+  if (page < pageCount) rel.push(`<link rel="next" href="${streamPath(page + 1)}">`);
+
+  const heading =
+    page === 1
+      ? `<header class="masthead">
+<h1>${esc(cfg.site.title)}</h1>
+<p>${esc(cfg.site.tagline)}</p>
+</header>`
+      : `<p class="crumb"><a href="/">${esc(cfg.site.title)}</a></p>
+<h1>Page ${page}</h1>`;
 
   return layout({
     cfg,
-    title: `Photostream — ${cfg.site.title}`,
-    description: `Everything in ${cfg.site.title}, newest first.`,
-    path: "/media/",
-    body: `<p class="crumb"><a href="/">${esc(cfg.site.title)}</a></p>
-<h1>Photostream</h1>
-${body}`,
+    title: page === 1 ? cfg.site.title : `Page ${page} — ${cfg.site.title}`,
+    description: `${cfg.site.tagline} Everything, newest first.`,
+    path: streamPath(page),
+    head: rel.length > 0 ? `${rel.join("\n")}\n` : "",
+    body: `${heading}
+<p class="meta"><a href="${ALBUMS_PATH}">Browse by album &rarr;</a></p>
+${body}
+${pagination(page, pageCount)}`,
   });
 }
 

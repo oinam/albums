@@ -7,6 +7,7 @@ export interface SiteConfig {
     host: string;
     author: string;
     locale: string;
+    pageSize: number;
   };
   media: { host: string; prefix: string; local?: boolean };
   sizes: { contact: number; phone: number; desktop: number };

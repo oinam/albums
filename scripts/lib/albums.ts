@@ -154,3 +154,26 @@ export function formatDate(date: string, dateEnd?: string): string {
 export function year(album: Album): string {
   return album.meta.date.slice(0, 4);
 }
+
+export interface StreamEntry {
+  album: Album;
+  item: Item;
+}
+
+/**
+ * Every item across every album, newest first. Capture time wins where EXIF
+ * supplied one; otherwise the item inherits its album's start date, so
+ * undated scans still land in the right stretch of the timeline.
+ */
+export function chronological(albums: Album[]): StreamEntry[] {
+  return albums
+    .flatMap((album) =>
+      album.items.map((item) => ({
+        album,
+        item,
+        at: item.taken ?? `${album.meta.date}T00:00:00`,
+      })),
+    )
+    .sort((a, b) => b.at.localeCompare(a.at))
+    .map(({ album, item }) => ({ album, item }));
+}

@@ -7,21 +7,33 @@ description: The Flickr-shaped routes, and the three-rung size ladder behind the
 
 ## Page routes
 
-The grammar is Flickr's, minus the `/{user}/` segment — one host serves one person,
-so repeating the name only lengthens every URL.
+| Route            | Shows                                             |
+| ---------------- | ------------------------------------------------- |
+| `/`              | Everything, newest first — page one of the stream |
+| `/page/{n}/`     | The rest of the stream                            |
+| `/albums/`       | Every album, grouped by year                      |
+| `/album/{slug}/` | One album                                         |
+| `/media/{id}/`   | One item — photo, video, or audio                 |
 
-| Flickr                               | Here                                       |
-| ------------------------------------ | ------------------------------------------ |
-| `/photos/{user}/`                    | `/` — every album, newest year first       |
-| `/photos/{user}/albums/{id}`         | `/album/2005-06-14-macromedia-lego-team/`  |
-| `/photos/{user}/{photo-id}`          | `/media/7hKp2mQ4x/`                        |
-| —                                    | `/media/` — everything, newest first       |
-| `live.staticflickr.com/…_{size}.jpg` | `media.oinam.com/cdn-cgi/image/{params}/…` |
+The root is the stream, not the album index. That follows Flickr, where a person's
+default view is their photostream and albums are a curation layer on top of it.
+`/albums/` is one click away and linked from every stream page.
 
-Segments are singular where the page shows one thing, and `media` is a mass noun,
-so nothing in the scheme needs a plural. `/media/` is the whole stream and
-`/media/{id}/` is one item in it — the same segment, so a typo cannot land between
-the two.
+Segments are singular where the page shows one thing and plural where it lists many.
+`media` is a mass noun, so it needs no plural at all.
+
+### Pagination, not infinite scroll
+
+Page size is `site.pageSize` in `site.config.json`, default 60. Every page is a real
+URL, so it can be linked, bookmarked, and crawled; the back button lands where you
+left; and none of it needs JavaScript. `rel="prev"` and `rel="next"` are emitted for
+crawlers.
+
+### Ordering
+
+The stream is ordered by capture time where EXIF supplied one, and by the album's
+start date otherwise — so undated scans still land in the right stretch of the
+timeline rather than clumping at the epoch.
 
 ### Why one route for photos, video, and audio
 
@@ -37,9 +49,10 @@ already opaque, so the loss is smaller than it first looks.
 
 ### Redirects
 
-The build emits, per album, a redirect from the bare slug and from the older
-`/albums/{slug}/` form. Three fixed rules cover the rest: `/albums/` and `/album/`
-land on `/`, and `/photos/` lands on `/media/`.
+`/album/` lands on `/albums/`, and `/media/` and `/photos/` land on `/`. Per album,
+the build emits a redirect from the bare slug and from the older `/albums/{slug}/`
+form — which matters because `/albums/` and `/album/{slug}/` are one letter apart,
+and the redirect is what stops that being a trap.
 
 ## The size ladder
 
