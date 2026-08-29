@@ -1,4 +1,4 @@
-import { createReadStream } from "node:fs";
+import { createReadStream, statSync } from "node:fs";
 import { HeadObjectCommand, PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { requireEnv } from "./config.ts";
 import { contentType } from "./mime.ts";
@@ -67,8 +67,8 @@ export async function upload(
   bucket: Bucket,
   key: string,
   path: string,
-  bytes: number,
 ): Promise<"uploaded" | "skipped"> {
+  const bytes = statSync(path).size;
   if ((await sizeOf(bucket, key)) === bytes) return "skipped";
 
   await bucket.client.send(

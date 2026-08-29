@@ -14,8 +14,9 @@
     "ingest": "tsx scripts/ingest.ts",
     "docs": "ovellum build",
     "typecheck": "tsc --noEmit",
-    "lint": "eslint . && prettier --check .",
-    "format": "prettier --write ."
+    "lint": "eslint . && prettier --check . && npm run lint:css",
+    "format": "prettier --write .",
+    "lint:css": "tsx scripts/lint-css.ts"
   },
   "dependencies": {
     "gray-matter": "^4.0.3",

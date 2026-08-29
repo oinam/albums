@@ -1,7 +1,7 @@
 import type { SiteConfig } from "./config.ts";
 import type { Album, Item, StreamEntry } from "./albums.ts";
 import type { Page } from "./pages.ts";
-import { coverOf, formatDate, formatDuration, orientationOf } from "./albums.ts";
+import { coverOf, formatDate, orientationOf } from "./albums.ts";
 import {
   originalUrl,
   posterThumbUrl,
@@ -227,25 +227,6 @@ function albumCard(cfg: SiteConfig, album: Album, index: number): string {
 </li>`;
 }
 
-function archiveSummary(albums: Album[]): string {
-  const items = albums.reduce((total, album) => total + album.items.length, 0);
-  const years = albums
-    .map((album) => album.meta.date?.slice(0, 4))
-    .filter((y): y is string => y !== undefined)
-    .sort();
-  const first = years[0];
-  const last = years[years.length - 1];
-
-  const parts = [
-    items === 1 ? "1 item" : `${items} items`,
-    albums.length === 1 ? "1 album" : `${albums.length} albums`,
-  ];
-  if (first !== undefined && last !== undefined) {
-    parts.push(first === last ? first : `${first}–${last}`);
-  }
-  return parts.join(" &middot; ");
-}
-
 export function renderHome(
   cfg: SiteConfig,
   albums: Album[],
@@ -254,8 +235,7 @@ export function renderHome(
   const highlightSection =
     highlights.length === 0
       ? ""
-      : `<h2 class="section-head">Highlights</h2>
-<ul class="grid">
+      : `<ul class="grid">
 ${highlights.map((e, index) => tile(cfg, e.album, e.item, index)).join("\n")}
 </ul>`;
 
@@ -272,12 +252,7 @@ ${albums.map((album, index) => albumCard(cfg, album, index)).join("\n")}
     title: cfg.site.title,
     description: cfg.site.tagline,
     path: "/",
-    body: `<header class="masthead">
-<h1>${esc(cfg.site.title)}</h1>
-<p class="tagline">${esc(cfg.site.tagline)}</p>
-${albums.length > 0 ? `<p class="stat">${archiveSummary(albums)}</p>` : ""}
-</header>
-${highlightSection}
+    body: `${highlightSection}
 ${albumSection}`,
   });
 }
@@ -315,12 +290,6 @@ ${grid(cfg, album, album.items)}`,
   });
 }
 
-function formatBytes(bytes: number): string {
-  return bytes >= 1024 * 1024
-    ? `${(bytes / 1048576).toFixed(1)} MB`
-    : `${Math.round(bytes / 1024)} KB`;
-}
-
 function stage(cfg: SiteConfig, album: Album, item: Item): string {
   const source = originalUrl(cfg, album.slug, item.file);
   const alt = esc(altFor(item));
@@ -352,30 +321,20 @@ function stage(cfg: SiteConfig, album: Album, item: Item): string {
 </div>`;
 }
 
-/** Only rows that have a value. Nothing is invented and nothing shows as empty. */
-function details(cfg: SiteConfig, album: Album, item: Item): string {
-  const rows: [string, string][] = [];
+/**
+ * Title, date, description — and only when they exist. Everything the file
+ * happened to know about itself (camera, lens, exposure, dimensions, weight) is
+ * deliberately not here: it is data about the photograph rather than about the
+ * picture, and it was crowding out the three things worth reading.
+ */
+function itemMeta(item: Item): string {
+  const rows = [
+    item.title ? `<h1>${esc(item.title)}</h1>` : "",
+    item.date ? `<p class="item-date">${formatDate(item.date)}</p>` : "",
+    item.description ? `<p class="item-description">${esc(item.description)}</p>` : "",
+  ].filter(Boolean);
 
-  const when = item.date ?? item.taken;
-  if (when) rows.push(["Date", when.replace("T", " ")]);
-  if (item.location) rows.push(["Location", item.location]);
-  if (item.duration !== undefined) {
-    rows.push(["Duration", formatDuration(item.duration)]);
-  }
-  if (item.camera) rows.push(["Camera", item.camera]);
-  if (item.lens) rows.push(["Lens", item.lens]);
-  if (item.settings) rows.push(["Settings", item.settings]);
-  if (item.width && item.height) {
-    rows.push(["Dimensions", `${item.width} × ${item.height}`]);
-  }
-  if (item.bytes !== undefined) rows.push(["File size", formatBytes(item.bytes)]);
-
-  const original = `<a href="${esc(originalUrl(cfg, album.slug, item.file))}">${esc(item.file)}</a>`;
-
-  return `<dl class="exif">
-${rows.map(([k, v]) => `<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join("\n")}
-<dt>Original</dt><dd>${original}</dd>
-</dl>`;
+  return rows.length === 0 ? "" : `<div class="item-meta">\n${rows.join("\n")}\n</div>`;
 }
 
 export function renderItem(
@@ -385,11 +344,6 @@ export function renderItem(
   prev: Item | undefined,
   next: Item | undefined,
 ): string {
-  const heading = item.title ? `<h1>${esc(item.title)}</h1>` : "";
-  const description = item.description
-    ? `<p class="caption">${esc(item.description)}</p>`
-    : "";
-
   return layout({
     cfg,
     title: item.title
@@ -397,11 +351,8 @@ export function renderItem(
       : `${album.meta.title} — ${cfg.site.title}`,
     description: item.description ?? album.meta.title,
     path: itemPath(item),
-    body: `<p class="crumb"><a href="/">${esc(cfg.site.title)}</a> / <a href="${albumPath(album)}">${esc(album.meta.title)}</a></p>
-${heading}
-${stage(cfg, album, item)}
-${description}
-${details(cfg, album, item)}
+    body: `${stage(cfg, album, item)}
+${itemMeta(item)}
 <nav class="pager">
 <a class="pager-album" href="${albumPath(album)}">${esc(album.meta.title)}</a>
 <span class="pager-icons">

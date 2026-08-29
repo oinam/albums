@@ -53,6 +53,16 @@ The trade is reading order: items flow down each column before moving to the nex
 rather than left to right. For a wall of pictures that is the right trade, and it
 is what every masonry photo grid does. Text keeps its margin; only the media bleeds.
 
+## The pages open with the pictures
+
+No masthead, no section heading above the first grid. The home page is photographs
+from the first pixel, and an item page is the picture, then its caption block, then
+the navigation. The site name is already in the header bar; repeating it as a page
+heading only pushed the work further down.
+
+The item caption block is centred and capped at 640px so it reads as a caption
+rather than a column of data.
+
 ## Header and footer
 
 One row each, on the alternate ground, and neither is fixed — the page scrolls

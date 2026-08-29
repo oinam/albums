@@ -13,21 +13,15 @@ export interface Item {
   file: string;
   /** Derived from the extension at load; never stored. */
   kind: MediaKind;
+  /** Structural: they choose the 4:3 or 3:4 crop and reserve space before load. */
   width?: number;
   height?: number;
-  bytes?: number;
-  duration?: number;
-  taken?: string;
-  camera?: string;
-  lens?: string;
-  settings?: string;
 
   // Yours. All optional, all left alone by ingest, none of them invented.
-  // Anything absent is simply not rendered — no placeholders, no filenames.
+  // Anything absent is simply not rendered.
   title?: string;
-  description?: string;
   date?: string;
-  location?: string;
+  description?: string;
   alt?: string;
   highlight?: boolean;
 }
@@ -233,9 +227,8 @@ export interface StreamEntry {
 }
 
 /**
- * Every item across every album, newest first. Capture time wins where EXIF
- * supplied one; otherwise the item inherits its album's start date, so
- * undated scans still land in the right stretch of the timeline.
+ * Every item across every album, newest first. A hand-written item date wins;
+ * otherwise the item inherits its album's position on the shelf.
  */
 export function chronological(albums: Album[]): StreamEntry[] {
   return albums
@@ -243,8 +236,7 @@ export function chronological(albums: Album[]): StreamEntry[] {
       album.items.map((item) => ({
         album,
         item,
-        at:
-          item.date ?? item.taken ?? (album.sortKey ? `${album.sortKey}T00:00:00` : ""),
+        at: item.date ?? (album.sortKey ? `${album.sortKey}T00:00:00` : ""),
       })),
     )
     .sort((a, b) => b.at.localeCompare(a.at))

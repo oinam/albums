@@ -1,4 +1,4 @@
-import { existsSync, mkdirSync, readdirSync, statSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import exifr from "exifr";
 import { loadConfig, stagingDir } from "./lib/config.ts";
@@ -13,36 +13,7 @@ import { openBucket, upload } from "./lib/r2.ts";
 const ALBUMS = "albums";
 
 interface Exif {
-  Make?: string;
-  Model?: string;
-  LensModel?: string;
-  DateTimeOriginal?: Date;
-  CreateDate?: Date;
-  FNumber?: number;
-  ExposureTime?: number;
-  ISO?: number;
-  FocalLength?: number;
   Orientation?: number;
-}
-
-function shutter(seconds: number): string {
-  return seconds >= 1 ? `${seconds}s` : `1/${Math.round(1 / seconds)}s`;
-}
-
-function settingsFrom(exif: Exif): string | undefined {
-  const parts: string[] = [];
-  if (exif.FocalLength) parts.push(`${Math.round(exif.FocalLength)}mm`);
-  if (exif.FNumber) parts.push(`f/${exif.FNumber}`);
-  if (exif.ExposureTime) parts.push(shutter(exif.ExposureTime));
-  if (exif.ISO) parts.push(`ISO ${exif.ISO}`);
-  return parts.length > 0 ? parts.join(" · ") : undefined;
-}
-
-function cameraFrom(exif: Exif): string | undefined {
-  const make = exif.Make?.trim();
-  const model = exif.Model?.trim();
-  if (!model) return make;
-  return make && !model.startsWith(make) ? `${make} ${model}` : model;
 }
 
 async function describeFile(slug: string, dir: string, file: string): Promise<Item> {
@@ -50,38 +21,23 @@ async function describeFile(slug: string, dir: string, file: string): Promise<It
   const kind = kindFor(file);
   if (!kind) throw new Error(`Unsupported file type: ${path}`);
 
-  const item: Item = {
-    id: deriveId(slug, file),
-    file,
-    kind,
-    bytes: statSync(path).size,
-  };
+  const item: Item = { id: deriveId(slug, file), file, kind };
 
   if (kind !== "photo") {
     const probe = probeMedia(path);
-    if (probe?.duration !== undefined) item.duration = probe.duration;
     if (probe?.width !== undefined) item.width = probe.width;
     if (probe?.height !== undefined) item.height = probe.height;
     return item;
   }
 
-  const exif = ((await exifr.parse(path, true).catch(() => null)) ?? {}) as Exif;
+  const exif = ((await exifr.parse(path, ["Orientation"]).catch(() => null)) ??
+    {}) as Exif;
   const dims = readDimensions(path);
   if (dims) {
     const oriented = applyOrientation(dims, exif.Orientation);
     item.width = oriented.width;
     item.height = oriented.height;
   }
-
-  const taken = exif.DateTimeOriginal ?? exif.CreateDate;
-  if (taken instanceof Date && !Number.isNaN(taken.getTime())) {
-    item.taken = taken.toISOString().slice(0, 19);
-  }
-  const camera = cameraFrom(exif);
-  if (camera) item.camera = camera;
-  if (exif.LensModel) item.lens = exif.LensModel.trim();
-  const settings = settingsFrom(exif);
-  if (settings) item.settings = settings;
 
   return item;
 }
@@ -116,13 +72,7 @@ function merge(existing: Item[], scanned: Item[]): Item[] {
   const updated = scanned.map((fresh) => {
     const prior = byFile.get(fresh.file);
     if (!prior) return fresh;
-    return {
-      ...fresh,
-      ...prior,
-      bytes: fresh.bytes,
-      width: fresh.width,
-      height: fresh.height,
-    };
+    return { ...fresh, ...prior, width: fresh.width, height: fresh.height };
   });
 
   const staged = new Set(scanned.map((item) => item.file));
@@ -138,19 +88,12 @@ function forFile(item: Item): Record<string, unknown> {
   const ordered: Record<string, unknown> = { id: item.id, file: item.file };
   const keys = [
     "title",
-    "description",
     "date",
-    "location",
+    "description",
     "alt",
     "highlight",
     "width",
     "height",
-    "bytes",
-    "duration",
-    "taken",
-    "camera",
-    "lens",
-    "settings",
   ] as const;
   for (const key of keys) {
     const value = item[key];
@@ -160,11 +103,9 @@ function forFile(item: Item): Record<string, unknown> {
 }
 
 function sortItems(items: Item[]): Item[] {
-  return [...items].sort((a, b) => {
-    if (a.taken && b.taken && a.taken !== b.taken)
-      return a.taken.localeCompare(b.taken);
-    return a.file.localeCompare(b.file, undefined, { numeric: true });
-  });
+  return [...items].sort((a, b) =>
+    a.file.localeCompare(b.file, undefined, { numeric: true }),
+  );
 }
 
 async function ingestAlbum(
@@ -208,12 +149,7 @@ async function ingestAlbum(
   let skipped = 0;
   for (const item of items) {
     const key = `${prefix}/${slug}/${item.file}`;
-    const result = await upload(
-      bucket,
-      key,
-      join(stageDir, item.file),
-      item.bytes ?? 0,
-    );
+    const result = await upload(bucket, key, join(stageDir, item.file));
     if (result === "uploaded") uploaded += 1;
     else skipped += 1;
   }

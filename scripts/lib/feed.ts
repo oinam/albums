@@ -12,7 +12,7 @@ function escapeXml(value: string): string {
 }
 
 function pubDate(entry: StreamEntry): string {
-  const raw = entry.item.date ?? entry.item.taken ?? entry.album.sortKey;
+  const raw = entry.item.date ?? entry.album.sortKey;
   const parsed = raw ? new Date(raw) : new Date(Number.NaN);
   return (Number.isNaN(parsed.getTime()) ? new Date() : parsed).toUTCString();
 }

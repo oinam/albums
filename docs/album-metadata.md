@@ -117,31 +117,31 @@ Two kinds of field: what ingest reads off the file, and what you choose to write
 
 ### Written by ingest
 
-| Field                                 | Notes                                                                             |
-| ------------------------------------- | --------------------------------------------------------------------------------- |
-| `id`                                  | **A permalink.** Never change it after publishing — `/media/<id>/` depends on it. |
-| `file`                                | The R2 object name within the album.                                              |
-| `kind`                                | `photo`, `video`, or `audio`, from the extension.                                 |
-| `bytes`, `width`, `height`            | Read from the file header, not EXIF. Refreshed every run.                         |
-| `taken`, `camera`, `lens`, `settings` | From EXIF, omitted when the file has none.                                        |
-| `duration`                            | Seconds, for video and audio. Needs ffprobe; omitted without it.                  |
+| Field             | Notes                                                                                                            |
+| ----------------- | ---------------------------------------------------------------------------------------------------------------- |
+| `id`              | **A permalink.** Never change it after publishing — `/media/<id>/` depends on it.                                |
+| `file`            | The R2 object name within the album.                                                                             |
+| `width`, `height` | Read from the file header. Structural: they choose the 4:3 or 3:4 crop and reserve space before the image loads. |
+
+Nothing else. Camera, lens, exposure, capture time and file size used to be stored
+and shown; they were data _about the photograph_ rather than about the picture, and
+they crowded out the three things worth reading. `kind` is not stored either — it is
+the file extension, and a second copy of it is only a second place to be wrong.
 
 ### Written by you
 
 All optional. Ingest never touches them, so re-running it is always safe.
 
-| Field         | Notes                                                                                                                     |
-| ------------- | ------------------------------------------------------------------------------------------------------------------------- |
-| `title`       | Becomes the page heading. Without it there is no heading.                                                                 |
-| `description` | A sentence or two under the image.                                                                                        |
-| `date`        | `YYYY-MM-DD`. Overrides `taken` for display and for ordering — the field to reach for with scans and wrong camera clocks. |
-| `location`    | Free text.                                                                                                                |
-| `alt`         | Screen-reader text. Falls back to `title`, then to empty.                                                                 |
-| `highlight`   | `true` puts it on the home page.                                                                                          |
+| Field         | Notes                                                                |
+| ------------- | -------------------------------------------------------------------- |
+| `title`       | Shown above the picture's caption block.                             |
+| `date`        | `YYYY-MM-DD`, `YYYY-MM`, `YYYY`, or free text. Also orders the item. |
+| `description` | A sentence or two under the title.                                   |
+| `alt`         | Screen-reader text. Falls back to `title`, then to empty.            |
+| `highlight`   | `true` puts it on the home page.                                     |
 
-**Anything absent is not rendered.** No heading, no empty row, no placeholder, and
-never the filename standing in for a title. A photo with nothing written about it is
-just a photograph, which is usually the right answer.
+**Anything absent is not rendered.** An item with none of them is just a picture and
+its navigation, which is usually the right answer.
 
 ## About the id
 

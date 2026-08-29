@@ -4,117 +4,67 @@
       "id": "1XNkb3TtE",
       "file": "IMG_1994.jpeg",
       "width": 3642,
-      "height": 2521,
-      "bytes": 1660045,
-      "taken": "2022-08-13T09:33:53",
-      "camera": "Apple iPhone 13 mini",
-      "lens": "iPhone 13 mini back dual wide camera 5.1mm f/1.6",
-      "settings": "5mm · f/1.6 · 1/122s · ISO 50"
+      "height": 2521
     },
     {
       "id": "1nHHwdYiH",
       "file": "IMG_3151.jpeg",
       "highlight": true,
       "width": 2322,
-      "height": 2958,
-      "bytes": 1306734,
-      "taken": "2023-04-01T11:42:56",
-      "camera": "Apple iPhone 13 mini",
-      "lens": "iPhone 13 mini back dual wide camera 5.1mm f/1.6",
-      "settings": "5mm · f/1.6 · 1/50s · ISO 400"
+      "height": 2958
     },
     {
       "id": "1RVeJaYtT",
       "file": "IMG_3706.jpeg",
       "highlight": true,
       "width": 3348,
-      "height": 2430,
-      "bytes": 2611126,
-      "taken": "2023-05-27T06:28:07",
-      "camera": "Apple iPhone 13 mini",
-      "lens": "iPhone 13 mini back dual wide camera 5.1mm f/1.6",
-      "settings": "5mm · f/1.6 · 1/3876s · ISO 50"
+      "height": 2430
     },
     {
       "id": "2wsuWTJZM",
       "file": "IMG_3718.jpeg",
       "width": 2849,
-      "height": 1561,
-      "bytes": 1090655,
-      "taken": "2023-05-27T06:36:12",
-      "camera": "Apple iPhone 13 mini",
-      "lens": "iPhone 13 mini back dual wide camera 1.54mm f/2.4",
-      "settings": "2mm · f/2.4 · 1/2096s · ISO 32"
+      "height": 1561
     },
     {
       "id": "1JnTQUZ1K",
       "file": "IMG_3735.jpeg",
       "highlight": true,
       "width": 1703,
-      "height": 2632,
-      "bytes": 1303463,
-      "taken": "2023-05-27T08:15:36",
-      "camera": "Apple iPhone 13 mini",
-      "lens": "iPhone 13 mini back dual wide camera 5.1mm f/1.6",
-      "settings": "5mm · f/1.6 · 1/4484s · ISO 50"
+      "height": 2632
     },
     {
       "id": "1o7b9Uu7a",
       "file": "IMG_3853.jpeg",
       "highlight": true,
       "width": 2785,
-      "height": 1794,
-      "bytes": 1181957,
-      "taken": "2023-05-29T09:41:21",
-      "camera": "Apple iPhone 13 mini",
-      "lens": "iPhone 13 mini back dual wide camera 5.1mm f/1.6",
-      "settings": "5mm · f/1.6 · 1/4651s · ISO 50"
+      "height": 1794
     },
     {
       "id": "2nEiBSoVP",
       "file": "IMG_3893.jpeg",
       "width": 4032,
-      "height": 3024,
-      "bytes": 4081197,
-      "taken": "2023-05-31T10:18:58",
-      "camera": "Apple iPhone 13 mini",
-      "lens": "iPhone 13 mini back dual wide camera 5.1mm f/1.6",
-      "settings": "5mm · f/1.6 · 1/4149s · ISO 50"
+      "height": 3024
     },
     {
       "id": "1hnozF81E",
       "file": "IMG_3926.jpeg",
       "highlight": true,
       "width": 3248,
-      "height": 2576,
-      "bytes": 3215201,
-      "taken": "2023-06-02T13:08:14",
-      "camera": "Apple iPhone 13 mini",
-      "lens": "iPhone 13 mini back dual wide camera 5.1mm f/1.6",
-      "settings": "5mm · f/1.6 · 1/322s · ISO 50"
+      "height": 2576
     },
     {
       "id": "1DuCMS2yG",
       "file": "IMG_5767.jpeg",
       "highlight": true,
       "width": 4032,
-      "height": 3024,
-      "bytes": 6580253,
-      "taken": "2024-04-26T10:47:07",
-      "camera": "Apple iPhone 13 mini",
-      "lens": "iPhone 13 mini back dual wide camera 1.54mm f/2.4",
-      "settings": "2mm · f/2.4 · 1/99s · ISO 64"
+      "height": 3024
     },
     {
       "id": "1burdSnEp",
       "file": "IMG_8760.jpeg",
       "width": 4032,
-      "height": 3024,
-      "bytes": 3321810,
-      "taken": "2026-02-20T16:41:21",
-      "camera": "Apple iPhone 13 mini",
-      "lens": "iPhone 13 mini back dual wide camera 5.1mm f/1.6",
-      "settings": "5mm · f/1.6 · 1/50s · ISO 320"
+      "height": 3024
     }
   ]
 }
