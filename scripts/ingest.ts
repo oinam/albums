@@ -100,7 +100,9 @@ function ensureAlbumMeta(slug: string, albumDir: string, items: Item[]): void {
     path,
     `---
 title: ${parsed.title || slug}
-date: ${date}
+# The folder's date prefix already sorts this album. Uncomment to show a date
+# to readers as well — any precision, or free text like 1945-46.
+# date: ${date}
 # date_end: ${date}
 # location:
 ${items[0] ? `cover: ${items[0].file}` : "# cover:"}

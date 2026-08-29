@@ -17,17 +17,22 @@ YYYY-MM-DD-album-title
 ```
 
 The first ten characters are the date and everything after them is the title. If you
-do not know the day, use `01`; likewise the month. `2005-01-01-childhood-scans` is a
-perfectly good name for a box of undated prints.
+do not know the day, use `01`; likewise the month.
+
+**The folder's date is for sorting, not for reading.** It decides where the album
+sits on the home page and nothing else — it is never displayed. What a visitor sees
+is `date` in `album.md`, which is optional and independent.
+
+Keeping the two apart means renaming a folder to move an album up the page does not
+rewrite what the page says, and writing `1945-46` for readers does not scramble the
+shelf. An album whose folder has no date prefix falls back to its `album.md` date for
+ordering, and sorts last if it has neither.
 
 This used to accept month-only, year-only and two range forms, which sounds more
 flexible and was worse: `2005-06-14-24-hours-in-tokyo` had no correct reading — `24`
 could be the end of a range or the start of the title. One shape removes the
-question entirely.
-
-A folder that does not start with a valid `YYYY-MM-DD` still works. It gets no date
-from its name — falling back to EXIF, then to today — and the whole folder name
-becomes the title, digits and all, which is deliberately conspicuous.
+question. A folder that does not match still works: it gets no sort date from its
+name, and the whole folder name becomes the title, digits and all.
 
 ### The title is a starting point
 
@@ -70,13 +75,13 @@ cover: dsc_0142.jpg
 The week we built half the office out of Lego. Nobody got any work done.
 ```
 
-| Field      | Required | Notes                                                                                                                                                       |
-| ---------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `title`    | yes      | Shown everywhere. Nothing derives from the folder name after the first ingest.                                                                              |
-| `date`     | no       | `YYYY-MM-DD`, `YYYY-MM` or `YYYY`. Anything else is printed verbatim, so `1945-46` renders as written. Omit it entirely and the album shows no date at all. |
-| `date_end` | no       | Makes it a range. Rendered as `Jun 14–17, 2005`.                                                                                                            |
-| `location` | no       | Free text, shown under the title.                                                                                                                           |
-| `cover`    | no       | Filename shown as the album's cover on the home page. Defaults to the first item.                                                                           |
+| Field      | Required | Notes                                                                                                                                                                                                 |
+| ---------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `title`    | yes      | Shown everywhere. Nothing derives from the folder name after the first ingest.                                                                                                                        |
+| `date`     | no       | What readers see — nothing to do with ordering, which the folder name handles. `YYYY-MM-DD`, `YYYY-MM`, `YYYY`, or free text like `1945-46`, printed as written. Omit it and the album shows no date. |
+| `date_end` | no       | Makes it a range. Rendered as `Jun 14–17, 2005`.                                                                                                                                                      |
+| `location` | no       | Free text, shown under the title.                                                                                                                                                                     |
+| `cover`    | no       | Filename shown as the album's cover on the home page. Defaults to the first item.                                                                                                                     |
 
 Everything below the frontmatter is Markdown and is rendered on the album page.
 The ingest script writes this file once and never touches it again.

@@ -2,6 +2,7 @@ import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { extname, join } from "node:path";
 import matter from "gray-matter";
 import { marked } from "marked";
+import { parseSlug } from "./slug.ts";
 
 export type MediaKind = "photo" | "video" | "audio";
 export type Orientation = "wide" | "tall";
@@ -42,6 +43,13 @@ export interface AlbumMeta {
 export interface Album {
   slug: string;
   meta: AlbumMeta;
+  /**
+   * Ordering only, never displayed. The folder's date prefix is how you arrange
+   * albums; `date` in album.md is what a visitor reads. Keeping them apart means
+   * renaming for sort order does not rewrite the page, and writing `1945-46` for
+   * readers does not scramble the shelf.
+   */
+  sortKey: string;
   description: string;
   descriptionHtml: string;
   items: Item[];
@@ -107,8 +115,12 @@ function readAlbum(root: string, slug: string): Album | null {
   }
 
   const description = parsed.content.trim();
+  const fromFolder = parseSlug(slug).date;
+  const fromMeta = meta.date ? sortableDate(meta.date) : undefined;
+
   return {
     slug,
+    sortKey: fromFolder ?? fromMeta ?? "",
     meta: meta as AlbumMeta,
     description,
     descriptionHtml: description ? marked.parse(description, { async: false }) : "",
@@ -124,12 +136,10 @@ export function loadAlbums(root = "albums"): Album[] {
     .map((entry) => readAlbum(root, entry.name))
     .filter((album): album is Album => album !== null)
     .sort((a, b) => {
-      const left = a.meta.date;
-      const right = b.meta.date;
-      if (!left && !right) return a.meta.title.localeCompare(b.meta.title);
-      if (!left) return 1;
-      if (!right) return -1;
-      return sortableDate(right).localeCompare(sortableDate(left));
+      if (!a.sortKey && !b.sortKey) return a.meta.title.localeCompare(b.meta.title);
+      if (!a.sortKey) return 1;
+      if (!b.sortKey) return -1;
+      return b.sortKey.localeCompare(a.sortKey);
     });
 }
 
@@ -230,9 +240,7 @@ export function chronological(albums: Album[]): StreamEntry[] {
         album,
         item,
         at:
-          item.date ??
-          item.taken ??
-          (album.meta.date ? `${sortableDate(album.meta.date)}T00:00:00` : ""),
+          item.date ?? item.taken ?? (album.sortKey ? `${album.sortKey}T00:00:00` : ""),
       })),
     )
     .sort((a, b) => b.at.localeCompare(a.at))
