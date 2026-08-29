@@ -30,16 +30,18 @@ changing anything; keep it current when you do. This file stays short on purpose
 ## Commands
 
 ```bash
-npm run ingest      # _incoming/ → EXIF → R2 → photos.json   (needs .env)
-npm run describe    # photos.json → Claude → photos.json     (needs .env)
-npm run dev         # local preview on :8788, watches + rebuilds
-npm run build       # → dist/                                (no credentials)
-npm run lint        # eslint + prettier --check
-npm run typecheck   # tsc --noEmit
-npm run docs        # ovellum build
+mise run ingest     # _incoming/ → EXIF → R2 → photos.json   (needs mise.local.toml)
+mise run describe   # photos.json → Claude → photos.json     (needs mise.local.toml)
+mise run dev        # local preview on :8788, watches + rebuilds
+mise run build      # → dist/                                (no credentials)
+mise run check      # types + lint + formatting + docs links
 ```
 
-`npm run build` must never require a secret — Cloudflare Pages runs it with none.
+Secrets live in `mise.local.toml` (gitignored), never a `.env` file — mise owns env
+and tooling for this project. The npm scripts still exist because Cloudflare Pages
+runs `npm run build` and knows nothing about mise.
+
+`npm run build` must never require a secret — Pages runs it with none.
 
 `npm run dev` builds with `--local`, which rewrites every media URL to `/media/...`
 and has the dev server render the renditions Cloudflare would. Production output is

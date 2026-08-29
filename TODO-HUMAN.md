@@ -1,14 +1,13 @@
 # TODO — Brajeshwar
 
-Things only you can do. Claude cannot: touch your Cloudflare dashboard, force-push,
-or spend money on the API without asking.
+Things only you can do. Claude cannot: touch your Cloudflare dashboard, force-push, or spend money on the API without asking.
 
 ## Blocking — nothing works until these are done
 
-- [ ] **Create the R2 bucket** and attach `media.oinam.com` as its custom domain,
-      on the `oinam.com` zone. `docs/deploy.md` §1.
+- [x] **Create the R2 bucket** and attach `media.oinam.com` as its custom domain. Done: `oinam-media`, European region.
+- [ ] **Check whether that bucket has a jurisdiction or only a location hint.** Its page in the dashboard says which. If it shows a jurisdiction, set `R2_JURISDICTION = "eu"` in `mise.local.toml` — a jurisdictional bucket answers only on `<account>.eu.r2.cloudflarestorage.com`, and uploads to the ordinary endpoint fail with `NoSuchBucket`. A location hint needs nothing.
 - [ ] **Enable Images transformations** for the zone. `docs/deploy.md` §2.
-- [ ] **Create an R2 API token**, then `cp .env.example .env` and fill it in.
+- [ ] **Create an R2 API token**, then `cp mise.local.toml.example mise.local.toml`, fill it in, and run `mise trust`.
 - [ ] **Create the Pages project**: build command `npm run build`, output `dist`,
       Node 22+. `docs/deploy.md` §4.
 
@@ -35,7 +34,7 @@ git push --force-with-lease origin main
       built for plural. Pick one and add a zone Redirect Rule for the other.
 - [ ] **EXIF on originals.** Renditions are stripped, but the "Original" download
       link serves the untouched file with GPS coordinates intact. `docs/urls.md`.
-- [ ] **Run `npm run describe` for real.** It costs money, so I only dry-ran it.
+- [ ] **Run `mise run describe` for real.** It costs money, so I only dry-ran it.
       It also needs `media.oinam.com` live first.
 
 ## For the giveaway

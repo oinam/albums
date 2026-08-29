@@ -25,10 +25,10 @@ The edge cache is the derivative store, and it refills itself on demand.
 ## Four commands
 
 ```bash
-npm run ingest     # stage → EXIF → R2, writes photos.json
-npm run describe   # Claude writes titles, alt text, captions
-npm run dev        # local preview on http://localhost:8788
-npm run build      # renders dist/
+mise run ingest     # stage → EXIF → R2, writes photos.json
+mise run describe   # Claude writes titles, alt text, captions
+mise run dev        # local preview on http://localhost:8788
+mise run build      # renders dist/
 ```
 
 Then commit and push. Cloudflare Pages does the rest.

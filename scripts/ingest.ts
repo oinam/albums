@@ -2,7 +2,6 @@ import { existsSync, mkdirSync, readdirSync, statSync, writeFileSync } from "nod
 import { join } from "node:path";
 import exifr from "exifr";
 import { loadConfig } from "./lib/config.ts";
-import { loadEnv } from "./lib/env.ts";
 import { kindFor, readItems } from "./lib/albums.ts";
 import type { Item } from "./lib/albums.ts";
 import { deriveId } from "./lib/ids.ts";
@@ -209,7 +208,6 @@ async function ingestAlbum(
 }
 
 async function main(): Promise<void> {
-  loadEnv();
   const cfg = loadConfig();
   const args = process.argv.slice(2);
   const noUpload = args.includes("--no-upload");

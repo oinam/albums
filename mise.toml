@@ -1,0 +1,38 @@
+# albums.oinam.com toolchain + tasks — mise-en-place (https://mise.jdx.dev).
+# Pins the Node version everyone builds with (and that Cloudflare Pages should be set to),
+# and hosts the repo tasks. Local secrets (R2 + Anthropic) live in the gitignored
+# mise.local.toml — copy mise.local.toml.example to get started.
+#
+#   mise install        # fetch the tools, once
+#   mise trust          # after creating mise.local.toml
+#
+# The npm scripts stay: Cloudflare Pages runs `npm run build` and knows nothing about mise.
+# The tasks below are the local entry points, because ingest and describe need the env
+# that mise loads and `npm run` on its own does not.
+
+[tools]
+node = "22" # set Cloudflare Pages NODE_VERSION to match
+
+[tasks.dev]
+description = "Local preview on :8788 — builds with local media, watches, rebuilds"
+run = "npm run dev"
+
+[tasks.build]
+description = "Render the site into dist/ (no credentials needed)"
+run = "npm run build"
+
+[tasks.ingest]
+description = "Stage → dimensions + EXIF → R2 → photos.json (`mise run ingest -- --no-upload`)"
+run = "npm run ingest --"
+
+[tasks.describe]
+description = "Claude writes titles, alt text and captions (`mise run describe -- --dry-run` first)"
+run = "npm run describe --"
+
+[tasks.docs]
+description = "Build the Ovellum docs site from docs/"
+run = "npm run docs"
+
+[tasks.check]
+description = "Everything CI would care about: types, lint, formatting, docs links"
+run = "npm run typecheck && npm run lint && npx ovellum check"

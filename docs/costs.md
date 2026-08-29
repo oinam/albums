@@ -44,7 +44,7 @@ rarely reaches the threshold.
 
 ## Describing images
 
-`npm run describe` is the only line that isn't Cloudflare. Each image is one request
+`mise run describe` is the only line that isn't Cloudflare. Each image is one request
 to Claude carrying a 1024px rendition — roughly 1,000 input tokens and a couple of
 hundred output. At Opus 5 rates that is well under a cent per photo, paid once.
 Run `--dry-run` first to see exactly how many items would be sent.

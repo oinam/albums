@@ -60,7 +60,6 @@ scripts/
     albums.ts     album.md + photos.json loading, ordering, orientation
     config.ts     site.config.json and environment
     dimensions.ts pixel dimensions from file headers
-    env.ts        .env loading
     ids.ts        stable base58 media ids
     media.ts      every media URL the site emits
     mime.ts       content types, shared by R2 upload and the dev server

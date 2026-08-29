@@ -7,7 +7,6 @@ import { loadConfig } from "./lib/config.ts";
 import type { SiteConfig } from "./lib/config.ts";
 import { loadAlbums, formatDate } from "./lib/albums.ts";
 import type { Album, Item } from "./lib/albums.ts";
-import { loadEnv } from "./lib/env.ts";
 import { posterUrl, visionUrl } from "./lib/media.ts";
 
 const VISION_WIDTH = 1024;
@@ -110,7 +109,6 @@ async function describeItem(
 }
 
 async function main(): Promise<void> {
-  loadEnv();
   const cfg = loadConfig();
   const args = process.argv.slice(2);
   const force = args.includes("--force");

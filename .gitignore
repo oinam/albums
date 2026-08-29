@@ -1,8 +1,7 @@
 node_modules/
 dist/
-.env
-.env.*
-!.env.example
+# mise — local secrets and overrides. The .example template stays tracked.
+mise.local.toml
 .DS_Store
 *.log
 

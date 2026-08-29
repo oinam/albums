@@ -13,7 +13,7 @@ host must sit on the **same zone** so transformations are allowed by default.
 Create a bucket, then attach a custom domain to it under **R2 → your bucket →
 Settings → Public access → Custom domain**:
 
-- Bucket: `oinam-albums`
+- Bucket: `oinam-media`
 - Custom domain: `media.oinam.com`
 
 The custom domain is what makes the originals fetchable, which is what
@@ -33,18 +33,36 @@ media later moved to a separate zone.
 ## 3. R2 API token
 
 **R2 → Manage API tokens → Create token**, with Object Read & Write on that bucket.
-Copy `.env.example` to `.env` and fill in:
+Secrets live in mise, not a `.env` file:
 
-```
-R2_ACCOUNT_ID=…
-R2_ACCESS_KEY_ID=…
-R2_SECRET_ACCESS_KEY=…
-R2_BUCKET=oinam-albums
-ANTHROPIC_API_KEY=…
+```bash
+cp mise.local.toml.example mise.local.toml
+# fill in the values, then
+mise trust
 ```
 
-These are for `npm run ingest` and `npm run describe` on your machine. The build
-never needs them, which is why Pages can build with no secrets configured.
+`mise.local.toml` is gitignored and holds `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`,
+`R2_SECRET_ACCESS_KEY`, `R2_BUCKET` and `ANTHROPIC_API_KEY`. With mise active in
+your shell, entering the repository loads them; `mise run ingest` and
+`mise run describe` then work with no further setup.
+
+These are for ingest and describe on your machine. The build never needs them,
+which is why Pages can build with no secrets configured at all.
+
+### Location hint or jurisdiction?
+
+If the bucket was created under a **jurisdiction** (EU or FedRAMP) rather than a
+**location hint**, it answers only on its own S3 endpoint —
+`<account>.eu.r2.cloudflarestorage.com` instead of
+`<account>.r2.cloudflarestorage.com` — and uploads against the wrong one fail with
+`NoSuchBucket`. Set `R2_JURISDICTION = "eu"` in `mise.local.toml` and ingest uses
+the right endpoint.
+
+A location hint needs nothing: it is only a placement preference and the endpoint
+is unchanged. The bucket's page in the dashboard shows which one applies.
+
+Neither affects delivery. Transformations and the site read the bucket over HTTPS
+through `media.oinam.com`, not through the S3 API.
 
 ## 4. Pages project
 

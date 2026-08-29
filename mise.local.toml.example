@@ -1,0 +1,34 @@
+# Copy to `mise.local.toml` (gitignored), fill in, and run `mise trust` once. Mise then loads
+# these into the project env, so `mise run ingest` and `mise run describe` both see them with no
+# separate .env file. (Your shell already runs `mise activate`, so entering the repo loads them.)
+#
+#   cp mise.local.toml.example mise.local.toml
+#   # edit the values below, then:
+#   mise trust
+#
+# LOCAL DEV ONLY. Nothing here is needed to build the site — `npm run build` reads only the
+# repository, which is why Cloudflare Pages can build with no secrets configured at all.
+
+[env]
+
+# ---------------------------------------------------------------------------------------------
+# R2 — where the originals live.
+#
+# https://dash.cloudflare.com → R2 → Manage API tokens → Create token:
+#   Object Read & Write, scoped to this one bucket.
+# Account ID is on the R2 overview page.
+R2_ACCOUNT_ID = ""
+R2_ACCESS_KEY_ID = ""
+R2_SECRET_ACCESS_KEY = ""
+R2_BUCKET = "oinam-media"
+
+# Only for a bucket created under a JURISDICTION rather than a location hint. A jurisdictional
+# bucket is reachable *only* through its own endpoint — <account>.eu.r2.cloudflarestorage.com
+# rather than <account>.r2.cloudflarestorage.com — and uploads fail with NoSuchBucket against
+# the wrong one. Leave empty unless the bucket page shows a jurisdiction.
+R2_JURISDICTION = ""
+
+# ---------------------------------------------------------------------------------------------
+# Anthropic — writes the titles, alt text and captions. Only `mise run describe` uses it.
+# https://console.anthropic.com → API keys
+ANTHROPIC_API_KEY = ""

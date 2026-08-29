@@ -26,7 +26,7 @@ no format conversion. JPEG, PNG, GIF, WebP and HEIC all work as-is.
 ## 2. Ingest
 
 ```bash
-npm run ingest
+mise run ingest
 ```
 
 For each file this reads the dimensions and EXIF, assigns a permanent media id,
@@ -36,8 +36,8 @@ first time with the title and date guessed from the folder name.
 Useful flags:
 
 ```bash
-npm run ingest -- 2005-06-14-macromedia-lego-team   # just one album
-npm run ingest -- --no-upload                       # metadata only, no R2, no credentials
+mise run ingest -- 2005-06-14-macromedia-lego-team   # just one album
+mise run ingest -- --no-upload                       # metadata only, no R2, no credentials
 ```
 
 Re-running is safe. Existing entries keep their id and any wording you have written;
@@ -52,8 +52,8 @@ delete the object from R2.
 ## 3. Describe
 
 ```bash
-npm run describe -- --dry-run   # list what would be sent, spend nothing
-npm run describe                # generate titles, alt text, captions, keywords
+mise run describe -- --dry-run   # list what would be sent, spend nothing
+mise run describe                # generate titles, alt text, captions, keywords
 ```
 
 This sends each image to Claude and writes the result back into `photos.json`.
@@ -81,12 +81,12 @@ you like. To stop an item being regenerated, set `"edited": true` on it:
 }
 ```
 
-`npm run describe` skips every item marked that way, even with `--force`.
+`mise run describe` skips every item marked that way, even with `--force`.
 
 ## 5. Preview it locally
 
 ```bash
-npm run dev
+mise run dev
 ```
 
 Then open <http://localhost:8788>. The whole site is there — album pages, photo
@@ -111,13 +111,13 @@ a fresh clone previews with empty tiles until you put something in it — the la
 is all still there.
 
 ```bash
-npm run dev -- --port=3000    # if 8788 is taken
+mise run dev -- --port=3000    # if 8788 is taken
 ```
 
 ## 6. Build and push
 
 ```bash
-npm run build
+mise run build
 git add albums/ && git commit -m "Add Macromedia Lego team album" && git push
 ```
 

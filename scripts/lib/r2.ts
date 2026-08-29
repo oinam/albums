@@ -8,13 +8,27 @@ export interface Bucket {
   name: string;
 }
 
+/**
+ * A bucket created under a jurisdiction is reachable only through that
+ * jurisdiction's endpoint — `<account>.eu.r2.cloudflarestorage.com` rather than
+ * `<account>.r2.cloudflarestorage.com`. A location hint does not change this;
+ * only a jurisdiction does.
+ */
+function endpointFor(account: string): string {
+  const jurisdiction = process.env.R2_JURISDICTION?.trim();
+  const host = jurisdiction
+    ? `${account}.${jurisdiction}.r2.cloudflarestorage.com`
+    : `${account}.r2.cloudflarestorage.com`;
+  return `https://${host}`;
+}
+
 export function openBucket(): Bucket {
   const account = requireEnv("R2_ACCOUNT_ID");
   return {
     name: requireEnv("R2_BUCKET"),
     client: new S3Client({
       region: "auto",
-      endpoint: `https://${account}.r2.cloudflarestorage.com`,
+      endpoint: endpointFor(account),
       credentials: {
         accessKeyId: requireEnv("R2_ACCESS_KEY_ID"),
         secretAccessKey: requireEnv("R2_SECRET_ACCESS_KEY"),
