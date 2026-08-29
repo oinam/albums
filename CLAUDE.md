@@ -22,6 +22,8 @@ changing anything; keep it current when you do. This file stays short on purpose
 - **Comment less.** If something needs explaining, explain it in `docs/`, not in a
   comment. Comments in the source are reserved for the non-obvious _why_.
 - **Never change a published `id` in `photos.json`.** It is a permalink.
+- **Commit each meaningful change; never push.** Pushing happens at a release
+  point, and only when Brajeshwar asks for it.
 - **Unprocessed originals never enter the repository.** They stage in `_incoming/`
   (gitignored), go to R2, and only their metadata is committed.
 
