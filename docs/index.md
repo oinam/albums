@@ -22,12 +22,13 @@ static HTML, generated on your machine and deployed by pushing to GitHub.
 Nothing is generated at upload time and no derivative is ever written back into R2.
 The edge cache is the derivative store, and it refills itself on demand.
 
-## Three commands
+## Four commands
 
 ```bash
 mise run ingest     # stage → EXIF → R2, writes photos.json
 mise run dev        # local preview on http://localhost:8788
 mise run build      # renders dist/
+mise run doctor     # is Cloudflare wired up correctly?
 ```
 
 Then commit and push. Cloudflare Pages does the rest.

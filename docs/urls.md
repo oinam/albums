@@ -62,6 +62,16 @@ depends on a file's current encoding is not a permalink.
 of thing you are about to see — and buys an address that never moves. The id was
 already opaque, so the loss is smaller than it first looks.
 
+### When a page does not exist
+
+The build emits a `404.html`, which Cloudflare Pages serves with a real 404 status.
+
+That file is not decoration. Without it Pages falls back to the site root and answers
+**200** — the visitor sees the home page and every crawler is told the missing URL
+exists. The local dev server returns a correct 404 either way, so this is a class of
+bug that only shows up in production; it was found by checking the deployed site
+rather than the preview.
+
 ### Redirects
 
 `/albums/`, `/album/`, `/media/` and `/photos/` all land on `/`. Per album, the

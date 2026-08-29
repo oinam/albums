@@ -55,6 +55,7 @@ scripts/
   build.ts        entry point — loads config, calls buildSite
   dev.ts          local preview server: static files, renditions, watch
   ingest.ts       _incoming/ → dimensions + EXIF → R2 → photos.json
+  doctor.ts       checks R2, the media domain and transformations end to end
   lib/
     albums.ts     album.md + photos.json loading, ordering, orientation
     config.ts     site.config.json and environment
@@ -64,6 +65,7 @@ scripts/
     mime.ts       content types, shared by R2 upload and the dev server
     probe.ts      optional ffprobe read of duration and dimensions
     r2.ts         S3-compatible R2 client
+    slug.ts       album folder name → date and title
     site.ts       the build itself — every page written into dist/
     templates.ts  HTML
 assets/site.css   the whole stylesheet

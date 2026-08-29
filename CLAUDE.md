@@ -33,7 +33,9 @@ changing anything; keep it current when you do. This file stays short on purpose
 mise run ingest     # _incoming/ → EXIF → R2 → photos.json   (needs mise.local.toml)
 mise run dev        # local preview on :8788, watches + rebuilds
 mise run build      # → dist/                                (no credentials)
+mise run doctor     # is Cloudflare wired up correctly?      (needs mise.local.toml)
 mise run check      # types + lint + formatting + docs links
+mise run docs       # ovellum build
 ```
 
 Secrets live in `mise.local.toml` (gitignored), never a `.env` file — mise owns env

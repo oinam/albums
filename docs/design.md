@@ -40,6 +40,26 @@ span 4 × 3 cells and tall tiles 3 × 4, with `grid-auto-flow: dense` to pack th
 Below 400px the cell drops to 64px, because a wide tile spans four of them and four
 80px cells will not fit a small phone.
 
+## Images load eagerly above the fold
+
+The first eight tiles carry `loading="eager"`, the first of each grid also
+`fetchpriority="high"`, and everything past that is lazy.
+
+Marking every tile lazy is the obvious default and it is wrong twice over. It delays
+the largest contentful paint for no saving, since those images are needed
+immediately. And the deferral decision is not dependable: on the live site a tile
+sitting at `top: 262` in an 861px viewport was never fetched at all, while a forced
+`Image()` with the same source loaded instantly. Content blockers make it worse.
+
+Lazy loading is for what is genuinely off-screen.
+
+## Alt text is empty rather than wrong
+
+`alt` falls back to the item's title, and then to the empty string — never to the
+filename. A screen reader announcing "dsc_0142.jpg" is worse than announcing nothing,
+and an empty `alt` is the correct markup for an image with no caption. Write one by
+hand in `photos.json` when the picture carries meaning the title does not.
+
 ## Spacing and type
 
 Spacing is a golden-ratio scale carried over from the site's first version:

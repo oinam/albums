@@ -27,8 +27,8 @@ Deploying from here is just `git push`.
 - [ ] **Images paid plan.** The free plan hard-stops at 5,000 transformations a
       month with error 9422 — images stop rendering rather than costing money.
       Decide deliberately. `docs/costs.md`.
-- [ ] **`album.oinam.com` vs `albums.oinam.com`.** README says singular, the site is built for plural. Pick one and add a zone Redirect Rule for the other.
-- [ ] **EXIF on originals.** Renditions are stripped, but the "Original" download link serves the untouched file with GPS coordinates intact. `docs/urls.md`. It also needs `media.oinam.com` live first.
+- [ ] **`album.oinam.com` is a dangling CNAME.** It points at `abstract-coyote.pikapod.net`, which no longer resolves — so the singular host is dead, not free. Your README still links to it as the site's home. Either delete the record and add a zone Redirect Rule sending it to `albums.oinam.com`, or point it straight at the Pages project. Until then that README link is broken. (README is yours; I have not touched it.)
+- [ ] **EXIF on originals.** Renditions carry `metadata=none`, but the "Original" download link serves the untouched file — camera serial, timestamp and GPS included. `docs/urls.md`. Strip it before staging if that is not what you want.
 
 ## For the giveaway
 
