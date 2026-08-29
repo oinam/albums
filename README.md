@@ -2,20 +2,17 @@
 
 > Oinam Albums — Pictures, Audio, and Videos.
 
-## Uploading photos
+by [Oinam](https://oinam.com/)
+
+## Media Upload
 
 Stage the originals in `_incoming/YYYY-MM-DD-album-title/`, then:
 
 ```bash
-mise run ingest   # dimensions + EXIF → R2 → albums/<slug>/photos.json
-mise run dev      # preview on http://localhost:8788
+mise run ingest                               # dimensions + EXIF → R2 → albums/<slug>/photos.json
+mise run ingest -- --album 2026-06-16-london  # just that one
+mise run dev                                  # preview on http://localhost:8788
 ```
 
-Ingest gives every file a permanent id and never removes one, so re-running is safe
-and you only ever stage what you are adding. Write the title, date and description
-into `albums/<slug>/album.md`.
+Ingest gives every file a permanent id and never removes one, so re-running is safe and you only ever stage what you are adding. `--album` may be repeated, and a name that is not staged lists the ones that are. Write the title, date and description into `albums/<slug>/album.md`.
 
-R2 credentials live in `mise.local.toml`. Everything else is in
-[docs/workflow.md](docs/workflow.md).
-
-by [Oinam](https://oinam.com/)
