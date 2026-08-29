@@ -222,6 +222,18 @@ ${items.map((item, index) => tile(cfg, album, item, index)).join("\n")}
 </ul>`;
 }
 
+/**
+ * "Calcutta, India (1945-46)" — the album named the way the item page names it.
+ * Location and dates are both optional and simply absent when the album has none.
+ */
+function albumCaption(album: Album): string {
+  const location = album.meta.location ? `, ${album.meta.location}` : "";
+  const dates = album.meta.date
+    ? ` (${formatDate(album.meta.date, album.meta.date_end)})`
+    : "";
+  return `${album.meta.title}${location}${dates}`;
+}
+
 function albumSubtitle(album: Album): string {
   const parts: string[] = [];
   if (album.meta.date) parts.push(formatDate(album.meta.date, album.meta.date_end));
@@ -432,7 +444,7 @@ export function renderItem(
     body: `${stage(cfg, album, item)}
 ${itemMeta(item)}
 <nav class="pager">
-<a class="pager-album" href="${albumPath(album)}">${esc(album.meta.title)}</a>
+<a class="pager-album" href="${albumPath(album)}">${esc(albumCaption(album))}</a>
 <span class="pager-icons">
 ${prev ? `<a class="icon" href="${itemPath(prev)}" rel="prev" aria-label="Previous" title="Previous (←)">${ICON.prev}</a>` : `<span class="icon is-off" aria-hidden="true">${ICON.prev}</span>`}
 <a class="icon" href="/random/" aria-label="A random item" title="Random (R)">${ICON.random}</a>
