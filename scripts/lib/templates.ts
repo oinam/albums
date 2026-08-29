@@ -165,7 +165,6 @@ function altFor(item: Item): string {
   return item.alt ?? item.title ?? "";
 }
 
-/** Album covers are always wide, so the album list stays a tidy uniform grid. */
 /**
  * How many tiles load eagerly. Anything plausibly above the fold must not be
  * lazy: the browser defers it until layout says it is near the viewport, and

@@ -30,11 +30,15 @@ Nobody is looking at the site yet, so none of this is urgent.
       uploaded with a one-year `immutable` header and still answer 200 at their old
       URLs. Nothing links to them — it is stale, not broken. Caching → Configuration
       → Purge Everything. Uploads since carry a one-day TTL, so it will not recur.
-- [ ] **Mark some highlights.** Nothing is flagged, so the home page has no
-      Highlights section at all. Set `"highlight": true` on any item in
-      `photos.json`.
-- [ ] Add the Deploy button to `README.md` — yours to edit, so I left it alone.
-- [ ] Confirm `LICENSE` (MIT) is what you want before making the repo public.
+- [ ] **Mark six more highlights.** Six are flagged; the home page mosaic is
+      4 x 3 and needs twelve, so the page is currently falling back to the
+      justified grid. Open any photo in `mise run dev` and tick "Highlight on the
+      home page" — that is what the editor is for.
+- [ ] **Ten orphaned objects in R2.** Renaming the Random album left the originals
+      at `albums/1111-11-11-random/` behind; the live copies are under
+      `albums/1111-11-11-unsorted/`. Nothing references the old prefix. Deleting
+      them was refused by a permission gate on my side, so they are yours to
+      remove — or to leave, at a few megabytes.
 - [ ] Fix the README's title link: it still points at `album.oinam.com`, which now
       301s to the plural host, so it works but goes the long way round.
 

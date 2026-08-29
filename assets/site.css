@@ -150,7 +150,7 @@ video {
   display: block;
 }
 
-/* Header and footer: one row each, alternate ground, never fixed. */
+/* The footer: one row, on the page background, never fixed. */
 .bar {
   display: flex;
   flex-wrap: wrap;
@@ -232,28 +232,6 @@ main {
 }
 
 /* Media reaches the edges of the viewport; text does not. */
-/*
- * A photo wall. `columns` fits as many ~320px columns as the viewport allows and
- * then stretches them to fill it exactly, so the media reaches both edges at any
- * width — which a fixed tile width cannot do, since whatever is left over after
- * the last whole tile becomes dead space.
- *
- * The trade is reading order: items flow down each column before moving to the
- * next, rather than left to right. For a wall of pictures that is the right
- * trade, and it is what every masonry photo grid does.
- */
-/* A quiet label, not a headline — the pictures are the headline. */
-.section-head {
-  margin-top: var(--space-large);
-  margin-bottom: var(--space-small);
-  font-size: 0.8rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--text-muted);
-  border-bottom: 1px solid var(--border-color);
-  padding-bottom: var(--space-small);
-}
-
 .crumb {
   font-size: 0.85rem;
   color: var(--text-muted);
@@ -579,15 +557,6 @@ main > .grid:first-child {
 
 .icon.is-off {
   opacity: 0.25;
-}
-
-.tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-small);
-  margin: 0 0 var(--space) 0;
-  font-size: 0.8rem;
-  color: var(--text-muted);
 }
 
 .empty {
