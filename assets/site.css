@@ -288,24 +288,44 @@ main {
   padding: var(--gutter);
 }
 
+/*
+ * A justified gallery, the way Flickr and Google Photos lay one out — and with no
+ * JavaScript at all.
+ *
+ * Each item gets a flex-basis and a flex-grow both proportional to its aspect
+ * ratio. Flexbox distributes a row's free space in proportion to grow factors, so
+ * every item's final width stays proportional to its ratio, which means every item
+ * in a row resolves to the *same height*. Rows are therefore flush left and flush
+ * right, and the bottom of the grid is flush too.
+ *
+ * Separation comes from `gap` rather than padding on purpose: padding sits inside
+ * the border-box basis and would break the proportionality, leaving rows a few
+ * pixels uneven.
+ *
+ * The ::after absorbs the last row's free space so a half-full final row keeps its
+ * natural size instead of stretching a lone picture across the viewport.
+ */
 .grid {
-  columns: 320px;
-  column-gap: 0;
-  margin-inline: calc(-1 * var(--edge));
+  --row: 240px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(var(--gutter) * 2);
   margin-top: var(--space-small);
+  margin-inline: calc(-1 * var(--edge));
+}
+
+.grid::after {
+  content: "";
+  flex-grow: 1000000;
 }
 
 .cell {
-  break-inside: avoid;
-  padding: var(--gutter);
+  flex: var(--ar) 1 calc(var(--ar) * var(--row));
 }
 
-.cell--wide .tile {
-  aspect-ratio: 4 / 3;
-}
-
-.cell--tall .tile {
-  aspect-ratio: 3 / 4;
+.tile {
+  aspect-ratio: var(--ar);
+  width: 100%;
 }
 
 .audio-tile {

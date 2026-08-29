@@ -40,28 +40,28 @@ span 4 × 3 cells and tall tiles 3 × 4, with `grid-auto-flow: dense` to pack th
 Below 400px the cell drops to 64px, because a wide tile spans four of them and four
 80px cells will not fit a small phone.
 
-## The media reaches both edges
+## The media reaches both edges, and the rows are flush
 
-The grid is column-based masonry — `columns: 320px` — which fits as many columns
-as the viewport allows and stretches them to fill it exactly.
+The grid is a justified gallery — the shape Flickr and Google Photos use — and it
+needs no JavaScript.
 
-A fixed tile width cannot do that. Whatever is left after the last whole tile is
-dead space, and at 1512px that was 220px of it. Stretching the columns instead
-means the pictures touch both edges at any width.
+Each item carries its aspect ratio as `--ar`, and gets a `flex-basis` and a
+`flex-grow` both proportional to it. Flexbox hands a row's free space out in
+proportion to grow factors, so each item's final width stays proportional to its
+ratio, which means **every item in a row resolves to the same height**. Rows come
+out flush left and flush right, and the bottom of the grid is flush with them.
 
-The trade is reading order: items flow down each column before moving to the next,
-rather than left to right. For a wall of pictures that is the right trade, and it
-is what every masonry photo grid does. Text keeps its margin; only the media bleeds.
+Two details make it work:
 
-## The pages open with the pictures
+- Separation is `gap`, not padding. Padding sits inside the border-box basis and
+  breaks the proportionality, leaving rows a few pixels uneven.
+- `.grid::after` has an enormous `flex-grow`, which absorbs the last row's free
+  space so a half-full final row keeps its natural size instead of stretching one
+  picture across the viewport.
 
-No masthead, no section heading above the first grid. The home page is photographs
-from the first pixel, and an item page is the picture, then its caption block, then
-the navigation. The site name is already in the header bar; repeating it as a page
-heading only pushed the work further down.
-
-The item caption block is centred and capped at 640px so it reads as a caption
-rather than a column of data.
+This replaced a column-based masonry, which filled the width but flowed top-to-
+bottom down each column. The justified layout reads left to right, the way the
+items are actually ordered.
 
 ## Header and footer
 

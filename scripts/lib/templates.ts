@@ -178,10 +178,13 @@ function tile(cfg: SiteConfig, album: Album, item: Item, index: number): string 
   const alt = esc(altFor(item));
 
   const orientation = orientationOf(item);
-  const cell = `cell cell--${orientation}`;
+  // The ratio drives both the crop and the row maths: an item's flex-basis and
+  // flex-grow are both proportional to it, so every item in a row lands on the
+  // same height and the row fills the width exactly.
+  const cell = `class="cell" style="--ar:${orientation === "wide" ? "1.3333" : "0.75"}"`;
 
   if (item.kind === "audio") {
-    return `<li class="${cell}"><div class="audio-tile">
+    return `<li ${cell}><div class="audio-tile">
 <span>${esc(item.title ?? item.file)}</span>
 <audio controls preload="none" src="${esc(originalUrl(cfg, album.slug, item.file))}"></audio>
 <a href="${href}">Details</a>
@@ -195,7 +198,7 @@ function tile(cfg: SiteConfig, album: Album, item: Item, index: number): string 
       : esc(thumbUrl(cfg, album.slug, item.file, orientation));
   const badge = item.kind === "video" ? `<span class="badge">Video</span>` : "";
 
-  return `<li class="${cell}"><a class="tile" href="${href}">
+  return `<li ${cell}><a class="tile" href="${href}">
 <img src="${src}" alt="${alt}" width="${width}" height="${height}"${loadingAttrs(index)} decoding="async">
 ${badge}
 </a></li>`;
