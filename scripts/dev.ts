@@ -5,6 +5,7 @@ import {
   mkdirSync,
   readFileSync,
   readdirSync,
+  rmSync,
   statSync,
   watch,
 } from "node:fs";
@@ -229,6 +230,21 @@ async function handleEdit(req: IncomingMessage, res: ServerResponse): Promise<vo
       }
       await remove(openBucket(), `${cfg.media.prefix}/${slug}/${target.file}`);
       removeItem(slug, id);
+
+      // The staged original goes too, or the next ingest puts the photo straight
+      // back with a new id. Its absence is not a failure: the album folder and the
+      // staging folder can legitimately be named differently, and a deleted item
+      // may simply have been staged under some other name.
+      const staged = join(staging, slug, target.file);
+      const hadStaged = existsSync(staged);
+      if (hadStaged) rmSync(staged);
+      console.log(
+        `  deleted ${slug}/${target.file}` +
+          (hadStaged
+            ? " — metadata, R2 and staged original"
+            : " — metadata and R2; nothing staged under that name"),
+      );
+
       editedAt = Date.now();
       rebuild();
       plain(res, 200, `/album/${parseSlug(slug).name}/`);

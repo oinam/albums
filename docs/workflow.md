@@ -166,10 +166,14 @@ object from R2, and sends you back to the album. R2 goes first: if the credentia
 are missing the whole thing stops there, rather than leaving an item whose metadata
 is gone and whose original is still sitting in the bucket.
 
-One thing it deliberately does not touch is your staged original. `_incoming/` may
-be the only copy you have, so it stays — which means the next `mise run ingest`
-puts the photo straight back, with a new id. Move the file out of staging if you
-want it gone for good.
+The staged original in `_incoming/` goes with it. It has to: leaving it means the
+next `mise run ingest` puts the photo straight back with a new id, and a delete
+that undoes itself is not a delete. What is in the bucket is meant to be exactly
+what is on the site, so all three copies go at once.
+
+That makes this the one place the editor destroys something you cannot get back
+from the repository. Keep your originals somewhere other than `_incoming/` —
+staging is a loading dock, not an archive.
 
 Nothing about this changes the model. The files on disk are still the truth, git
 still records the change, and the editor is only a faster way to type into them.
