@@ -1,4 +1,4 @@
-# [Oinam’s Album](https://album.oinam.com/)
+# [Oinam’s Album](https://albums.oinam.com/)
 
 > Oinam Albums — Pictures, Audio, and Videos.
 
@@ -16,3 +16,6 @@ mise run dev                                  # preview on http://localhost:8788
 
 Ingest gives every file a permanent id and never removes one, so re-running is safe and you only ever stage what you are adding. `--album` may be repeated, and a name that is not staged lists the ones that are. Write the title, date and description into `albums/<slug>/album.md`.
 
+## Deploy your own
+
+[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/oinam/albums)

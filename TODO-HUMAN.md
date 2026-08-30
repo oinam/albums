@@ -36,17 +36,14 @@ Nobody is looking at the site yet, so none of this is urgent.
       accumulating, and this ages out on its own within the week. Nothing links to
       any of it. Caching → Configuration → Purge Everything.
 
-- [ ] **Mark one more highlight.** Eleven are flagged — six in Unsorted, five in
-      London. The mosaic is 4 x 3 and needs twelve, so the home page is still one
-      short and falling back to the justified grid. Open any photo in
-      `mise run dev` and tick "Highlight on the home page".
+- [x] **Twelve highlights.** London's cover made the twelfth, so the home page
+      opens on the mosaic. Unmark one and it falls back to the justified grid.
 - [ ] **Ten orphaned objects in R2.** Renaming the Random album left the originals
       at `albums/1111-11-11-random/` behind; the live copies are under
       `albums/1111-11-11-unsorted/`. Nothing references the old prefix. Deleting
       them was refused by a permission gate on my side, so they are yours to
       remove — or to leave, at a few megabytes.
-- [ ] Fix the README's title link: it still points at `album.oinam.com`, which now
-      301s to the plural host, so it works but goes the long way round.
+- [x] README's title link points at `albums.oinam.com` directly.
 
 ## Decisions I did not make for you
 
@@ -58,10 +55,5 @@ Nobody is looking at the site yet, so none of this is urgent.
 
 ## For the giveaway
 
-- [ ] Add the Deploy button to `README.md` — yours to edit, so I left it alone:
-
-```markdown
-[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/oinam/albums)
-```
-
+- [x] Deploy button is in `README.md`.
 - [ ] Confirm `LICENSE` (MIT) is what you want before making the repo public.
