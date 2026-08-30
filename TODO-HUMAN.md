@@ -26,25 +26,20 @@ Deploying from here is just `git push`.
 
 Nobody is looking at the site yet, so none of this is urgent.
 
-- [ ] **Purge the Cloudflare cache once.** Two separate leftovers, same fix.
-
+- [ ] **Purge the Cloudflare cache once.** Two separate leftovers, one fix.
       The eleven deleted demo objects were uploaded with a one-year `immutable`
-          header and still answer 200 at their old URLs. Uploads since carry a one-day
-          TTL, so that will not recur.
+      header and still answer 200 at their old URLs; uploads since carry a one-day
+      TTL, so that will not recur. Deleted _pages_ linger the same way —
+      `/about/`, `/contact/` and the old `/album/1111-11-11-random/` still return
+      their old HTML from the edge, though the origin is correct and any query
+      string on them gets a 404. Fresh 404s are `no-store`, so nothing new is
+      accumulating, and this ages out on its own within the week. Nothing links to
+      any of it. Caching → Configuration → Purge Everything.
 
-          Deleted *pages* linger too. `/about/`, `/contact/` and the old
-          `/album/1111-11-11-random/` still answer 200 with their old HTML, served from
-          the edge with `s-maxage=604800` and an age of a few hours. The origin is
-          correct — add any query string and all three return 404 — so this is a
-          cached copy, not a broken build, and it ages out within the week. Fresh 404s
-          are `no-store`, so nothing new is accumulating.
-
-          Nothing links to any of it. Caching → Configuration → Purge Everything.
-
-- [ ] **Mark six more highlights.** Six are flagged; the home page mosaic is
-      4 x 3 and needs twelve, so the page is currently falling back to the
-      justified grid. Open any photo in `mise run dev` and tick "Highlight on the
-      home page" — that is what the editor is for.
+- [ ] **Mark one more highlight.** Eleven are flagged — six in Unsorted, five in
+      London. The mosaic is 4 x 3 and needs twelve, so the home page is still one
+      short and falling back to the justified grid. Open any photo in
+      `mise run dev` and tick "Highlight on the home page".
 - [ ] **Ten orphaned objects in R2.** Renaming the Random album left the originals
       at `albums/1111-11-11-random/` behind; the live copies are under
       `albums/1111-11-11-unsorted/`. Nothing references the old prefix. Deleting
@@ -58,7 +53,7 @@ Nobody is looking at the site yet, so none of this is urgent.
 - [ ] **Images paid plan.** The free plan hard-stops at 5,000 transformations a
       month with error 9422 — images stop rendering rather than costing money.
       Decide deliberately. `docs/costs.md`.
-- [ ] **`album.oinam.com` is a dangling CNAME.** It points at `abstract-coyote.pikapod.net`, which no longer resolves — so the singular host is dead, not free. Your README still links to it as the site's home. Either delete the record and add a zone Redirect Rule sending it to `albums.oinam.com`, or point it straight at the Pages project. Until then that README link is broken. (README is yours; I have not touched it.)
+- [x] **`album.oinam.com` resolves again.** It now answers `301 → https://albums.oinam.com/`, so the README's link works; it just takes the extra hop.
 - [ ] **EXIF on originals.** Renditions carry `metadata=none`, but the "Original" download link serves the untouched file — camera serial, timestamp and GPS included. `docs/urls.md`. Strip it before staging if that is not what you want.
 
 ## For the giveaway
