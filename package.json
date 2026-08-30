@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "description": "A static photo, video, and audio album that runs entirely on Cloudflare.",
-  "license": "MIT",
+  "license": "UNLICENSED",
   "engines": {
     "node": ">=22"
   },

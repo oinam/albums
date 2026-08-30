@@ -51,4 +51,10 @@ Nobody is looking at the site yet, so none of this is urgent.
 ## For the giveaway
 
 - [x] Deploy button is in `README.md`.
-- [ ] Confirm `LICENSE` (MIT) is what you want before making the repo public.
+- [ ] **Decide the licence split before publishing.** `LICENSE` is removed and
+      `package.json` says `UNLICENSED`, so nothing currently grants anyone rights
+      to anything — which is the safe state while you decide. What you want is a
+      split: a licence on the code, and none on the photographs. The usual shape
+      is an MIT `LICENSE` covering the source, plus a line in `README.md` saying
+      the images in `albums/` and on R2 are not covered by it and remain all
+      rights reserved. Nothing is published yet, so there is no hurry.
