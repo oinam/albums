@@ -162,9 +162,14 @@ YAML turns that into a timestamp and a bare `1965` into a number.
 
 **Delete removes the item and its original.** It takes two clicks — the button arms
 itself and says so — and then drops the entry from `photos.json`, deletes the
-object from R2, and sends you back to the album. R2 goes first: if the credentials
-are missing the whole thing stops there, rather than leaving an item whose metadata
-is gone and whose original is still sitting in the bucket.
+object from R2, and moves you on to the next item in the album. R2 goes first: if
+the credentials are missing the whole thing stops there, rather than leaving an
+item whose metadata is gone and whose original is still sitting in the bucket.
+
+Landing on the next item rather than the album is what makes a clear-out bearable:
+deleting is a pass down the album, and going back to the grid meant finding your
+place again after every one. The item before it stands in when you delete the last
+one, and the album page when you delete the only one.
 
 The staged original in `_incoming/` goes with it. It has to: leaving it means the
 next `mise run ingest` puts the photo straight back with a new id, and a delete

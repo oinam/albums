@@ -222,7 +222,8 @@ async function handleEdit(req: IncomingMessage, res: ServerResponse): Promise<vo
       // photos.json has been touched — better than a half-deleted item whose
       // metadata is gone and whose original is still sitting in the bucket.
       const items = readItems(join("albums", slug));
-      const target = items.find((item) => item.id === id);
+      const index = items.findIndex((item) => item.id === id);
+      const target = items[index];
       if (!target) {
         plain(res, 400, `No item ${id} in ${slug}`);
         return;
@@ -246,7 +247,16 @@ async function handleEdit(req: IncomingMessage, res: ServerResponse): Promise<vo
 
       editedAt = Date.now();
       rebuild();
-      plain(res, 200, `/album/${parseSlug(slug).name}/`);
+
+      // Deleting is a pass down the album rather than a visit to one picture, so
+      // the next item keeps you going the way you were. The one before it stands
+      // in when the deleted item was last, and the album when nothing is left.
+      const after = items[index + 1] ?? items[index - 1];
+      plain(
+        res,
+        200,
+        after ? `/media/${after.id}/` : `/album/${parseSlug(slug).name}/`,
+      );
       return;
     } else if (body.kind === "album") {
       const title = text("title");
