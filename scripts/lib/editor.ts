@@ -38,11 +38,16 @@ function area(name: string, label: string, value: string | undefined): string {
 }
 
 const STYLE = `
-.edit-open{position:fixed;right:12px;bottom:12px;z-index:9998;font:inherit;font-size:.8rem;
-padding:.35rem .7rem;border-radius:4px;border:1px solid var(--border-color);
-background:var(--bg);color:var(--text-color);cursor:pointer}
+.edit-host{position:relative;display:inline-block;line-height:0}
+.edit-open{position:fixed;right:16px;bottom:16px;z-index:9998;font:inherit;font-size:1rem;
+padding:.7rem 1.6rem;border-radius:8px;cursor:pointer;line-height:1.2;
+border:1px solid oklch(100% 0 0 / .4);background:oklch(0% 0 0 / .35);color:oklch(100% 0 0);
+-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);
+transition:background .15s ease,border-color .15s ease}
+.edit-open:hover,.edit-open:focus-visible{background:oklch(0% 0 0 / .68);border-color:oklch(100% 0 0 / .8)}
+.edit-open.edit-over{position:absolute;right:16px;bottom:16px}
 .edit-panel[hidden]{display:none}
-.edit-panel{position:fixed;right:12px;bottom:52px;z-index:9999;width:min(360px,calc(100vw - 24px));
+.edit-panel{position:fixed;right:12px;bottom:72px;z-index:9999;width:min(360px,calc(100vw - 24px));
 max-height:min(70vh,640px);overflow:auto;padding:1rem;border-radius:6px;
 border:1px solid var(--border-color);background:var(--bg);
 box-shadow:0 8px 32px oklch(0% 0 0 / .25);font-size:.85rem}
@@ -67,6 +72,16 @@ const SCRIPT = `(function(){
 var b=document.querySelector(".edit-open"),p=document.querySelector(".edit-panel"),
 f=p&&p.querySelector("form"),s=p&&p.querySelector(".edit-status");
 if(!b||!p||!f||!s)return;
+// He asked for the button on the picture, not in the corner of the window. The
+// stage is centred and wider than the photo, so anchoring to it would miss on
+// anything portrait — wrap the media itself in a shrink-to-fit box and sit
+// inside that. Album pages have no single picture, so the button stays put.
+var media=document.querySelector(".stage img, .stage video");
+if(media&&media.parentNode){
+var host=document.createElement("div");host.className="edit-host";
+media.parentNode.insertBefore(host,media);host.appendChild(media);host.appendChild(b);
+b.classList.add("edit-over");
+}
 function show(v){p.hidden=!v;try{localStorage.setItem("edit-open",v?"1":"0")}catch(e){}}
 try{if(localStorage.getItem("edit-open")==="1")show(true)}catch(e){}
 b.addEventListener("click",function(){show(p.hidden)});

@@ -133,8 +133,10 @@ terminal. The server says so in one line and stops, rather than throwing.
 
 ## Editing metadata while you look at it
 
-`mise run dev` puts an **Edit** button in the corner of every album and item page.
-It opens a panel holding exactly the fields described above — title, date,
+`mise run dev` puts an **Edit** button on every album and item page — on an item
+it sits in the bottom-right of the picture itself, translucent, so the thing you
+are describing is under your eye while you describe it. It opens a panel holding
+exactly the fields described above — title, date,
 description, alt and the highlight flag on an item; title, dates, location, cover
 and description on an album — prefilled with what is there now. Save writes the
 file, rebuilds, and reloads the page under you.
