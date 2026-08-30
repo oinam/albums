@@ -1,7 +1,7 @@
 ---
-title: San Francisco 2023may Jun
+title: San Francisco
 cover: IMG_3688.jpeg
-# Optional: date, date_end, location. Anything below this block is the
-# album's description. See docs/album-metadata.md
+date: 2023-MAY-JUN
+location: California, USA
 ---
 
