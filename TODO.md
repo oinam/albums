@@ -7,8 +7,6 @@ Work Claude tracks. Anything needing Brajeshwar's hands or credentials lives in
 
 - [ ] Album pagination on the home page, once the archive passes roughly a hundred
       albums. Not before — the whole list fits comfortably until then.
-- [ ] Marking a highlight means editing `photos.json` by hand. A `--highlight`
-      flag on ingest would be friendlier.
 
 ## Considered and deliberately not done
 
@@ -25,8 +23,8 @@ Work Claude tracks. Anything needing Brajeshwar's hands or credentials lives in
 
 - **A chronological stream at `/`.** Built, then removed. Paginating newest-first
   means inserting one item rewrites every page in the chain, invalidating all of
-  their caches — a bad property for a static site. Highlights plus album covers
-  has no such coupling. See `docs/urls.md`.
+  their caches — a bad property for a static site. A page of album covers has no
+  such coupling. See `docs/urls.md`.
 - **Pre-baking renditions into R2.** Cheaper only if transformation volume ever
   dominates. Request-time transformations need no build step; revisit if the bill
   justifies it. See `docs/costs.md`.

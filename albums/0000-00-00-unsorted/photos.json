@@ -3,26 +3,25 @@
     {
       "id": "1XNkb3TtE",
       "file": "IMG_1994.jpeg",
-      "title": "A Test Title",
+      "title": "Laptop but Immobile",
       "date": "2024-06-01",
-      "description": "Placeholder description for testing.",
+      "description": "Saw this clamped laptop at a big, popular private hospital in Bangalore.",
+      "alt": "Laptop but Immobile",
       "width": 3642,
       "height": 2521
     },
     {
       "id": "1nHHwdYiH",
       "file": "IMG_3151.jpeg",
-      "title": "Another Test Title",
+      "title": "TV",
       "date": "2022-08-13",
-      "highlight": true,
+      "alt": "TV",
       "width": 2322,
       "height": 2958
     },
     {
       "id": "1RVeJaYtT",
       "file": "IMG_3706.jpeg",
-      "title": "Title Only, No Date",
-      "highlight": true,
       "width": 3348,
       "height": 2430
     },
@@ -35,14 +34,12 @@
     {
       "id": "1JnTQUZ1K",
       "file": "IMG_3735.jpeg",
-      "highlight": true,
       "width": 1703,
       "height": 2632
     },
     {
       "id": "1o7b9Uu7a",
       "file": "IMG_3853.jpeg",
-      "highlight": true,
       "width": 2785,
       "height": 1794
     },
@@ -55,20 +52,21 @@
     {
       "id": "1hnozF81E",
       "file": "IMG_3926.jpeg",
-      "highlight": true,
       "width": 3248,
       "height": 2576
     },
     {
       "id": "1DuCMS2yG",
       "file": "IMG_5767.jpeg",
-      "highlight": true,
       "width": 4032,
       "height": 3024
     },
     {
       "id": "1burdSnEp",
       "file": "IMG_8760.jpeg",
+      "title": "System Restore Disk - Do Not Erase",
+      "description": "A floppy disk recreating the popular meme, \"System Restore Disk - Do Not Erase.\"",
+      "alt": "System Restore Disk - Do Not Erase",
       "width": 4032,
       "height": 3024
     }

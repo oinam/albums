@@ -137,8 +137,7 @@ Two kinds of field: what ingest reads off the file, and what you choose to write
       "title": "The Lego wall, half finished",
       "description": "Built over three afternoons and dismantled the following Monday.",
       "date": "2005-06-14",
-      "location": "San Francisco, CA",
-      "highlight": true
+      "location": "San Francisco, CA"
     }
   ]
 }
@@ -167,7 +166,6 @@ All optional. Ingest never touches them, so re-running it is always safe.
 | `date`        | `YYYY-MM-DD`, `YYYY-MM`, `YYYY`, or free text. Also orders the item. |
 | `description` | A sentence or two under the title.                                   |
 | `alt`         | Screen-reader text. Falls back to `title`, then to empty.            |
-| `highlight`   | `true` puts it on the home page.                                     |
 
 **Anything absent is not rendered.** An item with none of them is just a picture and
 its navigation, which is usually the right answer.

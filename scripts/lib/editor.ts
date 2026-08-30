@@ -119,7 +119,6 @@ f.addEventListener("submit",function(e){
 e.preventDefault();s.textContent="Saving\\u2026";
 var body={};
 new FormData(f).forEach(function(v,k){body[k]=v});
-var h=f.elements.highlight;if(h)body.highlight=h.checked;
 fetch("/_edit",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(body)})
 .then(function(r){return r.ok?(s.textContent="Saved",location.reload()):r.text().then(function(t){s.textContent=t||("Failed ("+r.status+")")})})
 .catch(function(err){s.textContent="Failed: "+err});
@@ -150,8 +149,7 @@ export function itemEditor(album: Album, item: Item): string {
     `${field("title", "Title", item.title)}
 ${field("date", "Date", item.date, "2005-06-14, 2005-06, 2005")}
 ${area("description", "Description", item.description)}
-${field("alt", "Alt text", item.alt)}
-<label class="edit-check"><input type="checkbox" name="highlight"${item.highlight === true ? " checked" : ""}> Highlight on the home page</label>`,
+${field("alt", "Alt text", item.alt)}`,
     ` data-slug="${esc(album.slug)}" data-delete="${esc(item.id)}"`,
   );
 }

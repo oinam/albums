@@ -23,7 +23,6 @@ export interface Item {
   date?: string;
   description?: string;
   alt?: string;
-  highlight?: boolean;
 }
 
 export interface AlbumMeta {
@@ -263,13 +262,6 @@ export function coverOf(album: Album): Item | undefined {
     if (match) return match;
   }
   return album.items[0];
-}
-
-/** Highlighted items, newest first — what the home page leads with. */
-export function highlightsOf(albums: Album[], limit: number): StreamEntry[] {
-  return chronological(albums)
-    .filter((entry) => entry.item.highlight === true)
-    .slice(0, limit);
 }
 
 /**

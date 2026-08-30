@@ -211,7 +211,6 @@ async function handleEdit(req: IncomingMessage, res: ServerResponse): Promise<vo
         date: text("date"),
         description: text("description"),
         alt: text("alt"),
-        highlight: body.highlight === true,
       });
     } else if (body.kind === "delete") {
       const id = text("id");

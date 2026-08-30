@@ -10,7 +10,7 @@ import {
 import { dirname, join } from "node:path";
 import type { SiteConfig } from "./config.ts";
 import type { Album, Item } from "./albums.ts";
-import { chronological, highlightsOf, loadAlbums } from "./albums.ts";
+import { chronological, loadAlbums } from "./albums.ts";
 import { renderFeed } from "./feed.ts";
 import {
   configureChrome,
@@ -111,10 +111,7 @@ export function buildSite(cfg: SiteConfig): BuildResult {
   rmSync(OUT, { recursive: true, force: true });
   mkdirSync(OUT, { recursive: true });
 
-  write(
-    "index.html",
-    renderHome(cfg, albums, highlightsOf(albums, cfg.site.highlights)),
-  );
+  write("index.html", renderHome(cfg, albums));
 
   let items = 0;
   for (const album of albums) {

@@ -23,7 +23,6 @@
   - [x] Images paid plan in motion; lifts the 5,000-a-month hard stop.
   - [x] `album.oinam.com` answers `301 → albums.oinam.com`.
   - [x] Ten orphaned objects from the Random rename deleted.
-  - [x] Twelve highlights, so the home page opens on the mosaic.
   - [x] README title link points straight at `albums.oinam.com`.
   - [x] Deploy button in `README.md`.
   - [x] EXIF on originals: decided to leave it. Renditions still carry

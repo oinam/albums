@@ -7,7 +7,6 @@ export interface SiteConfig {
     host: string;
     author: string;
     locale: string;
-    highlights: number;
   };
   media: { host: string; prefix: string; local?: boolean };
   sizes: { thumb: number; phone: number; desktop: number };

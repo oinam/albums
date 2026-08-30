@@ -10,15 +10,14 @@ description: The Flickr-shaped routes, and the three-rung size ladder behind the
 | `/random/` | Redirects to one item at random |
 | `/feed.xml` | RSS, the 50 most recent items |
 
-| Route            | Shows                                         |
-| ---------------- | --------------------------------------------- |
-| `/`              | Highlights, then every album by cover picture |
-| `/album/{name}/` | One album                                     |
-| `/media/{id}/`   | One item — photo, video, or audio             |
+| Route            | Shows                             |
+| ---------------- | --------------------------------- |
+| `/`              | Every album, by cover picture     |
+| `/album/{name}/` | One album                         |
+| `/media/{id}/`   | One item — photo, video, or audio |
 
 Three routes, and only one of them is a list. There is no separate `/albums/`
-page: the home page _is_ the album index, with a curated strip of highlights
-above it.
+page: the home page _is_ the album index.
 
 Albums run newest first, by the date prefix on the folder. An album with no usable
 prefix — `0000-00-00-unsorted`, or a folder with no prefix at all — falls back to
@@ -34,19 +33,8 @@ top pushes one item off the bottom of page one, onto page two, and so on down th
 whole chain — so adding a single file changes the bytes of every page and
 invalidates all of their caches.
 
-Highlights plus album covers has no such coupling. The home page changes when you
-mark a highlight or add an album. An album page changes when that album changes.
-Nothing else moves.
-
-### Highlights
-
-Set `"highlight": true` on any item in `photos.json`. The home page shows the most
-recent `site.highlights` of them (default 12), newest first. Mark none and the
-section is omitted entirely — the home page is then just albums.
-
-Twelve is not an arbitrary default: it is the 4 x 3 mosaic the home page opens
-with. Mark fewer than twelve and the page falls back to the justified grid rather
-than leaving holes — see [Design](/design/).
+A page of album covers has no such coupling. The home page changes when you add
+an album. An album page changes when that album changes. Nothing else moves.
 
 ### Album covers
 
