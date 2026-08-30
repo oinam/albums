@@ -112,8 +112,15 @@ What stops an image being embedded elsewhere is the `Referer` header, checked at
 
 ### The rule that actually does it
 
-A WAF custom rule on the zone, matching the media host and blocking when the referer is
-present and is not yours:
+The media host is an R2 custom domain, so its traffic still passes through the zone's
+edge — `server: cloudflare` and a `cf-ray` on every response — which is what makes a
+zone-level rule able to see it at all.
+
+**Security → WAF → Custom rules → Create rule**, on the `oinam.com` zone. Give it a name,
+switch the editor to **Expression Preview** to paste the expression, and set the action to
+**Block**.
+
+Match on the media host, and block when the referer is present and is not yours:
 
 ```
 http.host eq "media.oinam.com"
@@ -136,6 +143,42 @@ Action: **Block**. Three things about it are deliberate:
 The trailing `(/|$)` is not decoration. Without it `https://oinam.com.evil.example/` would
 match as a prefix and be waved through — the anchor is what makes the domain the whole
 host rather than the start of one.
+
+### If the editor will not take `matches`
+
+Regex is not on every plan. The same rule without it, anchored by the trailing slash
+instead, costs you wildcards — each host has to be named:
+
+```
+http.host eq "media.oinam.com"
+and http.referer ne ""
+and not (
+  starts_with(http.referer, "https://oinam.com/")
+  or starts_with(http.referer, "https://albums.oinam.com/")
+  or starts_with(http.referer, "https://brajeshwar.com/")
+  or starts_with(http.referer, "https://laaija.com/")
+)
+```
+
+The trailing slash does the same job as the anchor in the regex: `https://oinam.com/`
+cannot match `https://oinam.com.evil.example/`.
+
+Zero-config alternative: Scrape Shield's **Hotlink Protection** needs no rule at all, but
+it permits only the zone it runs on — `brajeshwar.com` and `laaija.com` would be turned
+away with everyone else. Use it only if `oinam.com` is the whole list.
+
+### Check it before and after
+
+```bash
+IMG=https://media.oinam.com/albums/<album>/<file>
+
+curl -s -o /dev/null -w '%{http_code}\n' -H 'Referer: https://albums.oinam.com/x' "$IMG"
+curl -s -o /dev/null -w '%{http_code}\n' -H 'Referer: https://someoneelse.example/x' "$IMG"
+curl -s -o /dev/null -w '%{http_code}\n' "$IMG"
+```
+
+Expect `200`, `403`, `200`. The third is the one people get wrong: no referer must still
+pass, or you have blocked every visitor whose browser withholds it.
 
 It is deterrence, not security. `Referer` is a request header like any other and anyone
 determined can send yours. It stops pages, not people.
