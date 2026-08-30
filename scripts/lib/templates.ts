@@ -64,6 +64,13 @@ const THEME_ICON = {
 const THEME_TOGGLE = `<button type="button" class="theme-toggle" data-theme-toggle title="Theme: auto" aria-label="Theme: auto. Click to change.">${THEME_ICON.auto}</button>`;
 
 /**
+ * The site has no header bar, so until now the only link home was the site name
+ * in the footer. Prefixing the album title with it turns the title into a
+ * breadcrumb and puts the way back where a visitor already looks.
+ */
+const HOME_CRUMB = `<a class="crumb-home" href="/" title="Home (H)">Home</a> <span class="crumb-sep" aria-hidden="true">/</span> `;
+
+/**
  * Keyboard shortcuts, on top of tabbing — never instead of it. Every target is a
  * real link, so Tab and Enter already work and these are a shortcut over the same
  * hrefs rather than a parallel mechanism.
@@ -302,7 +309,7 @@ export function renderAlbum(cfg: SiteConfig, album: Album): string {
     description,
     path: albumPath(album),
     edit: cfg.media.local === true ? albumEditor(album) : "",
-    body: `<h1>${esc(album.meta.title)}</h1>
+    body: `<h1>${HOME_CRUMB}${esc(album.meta.title)}</h1>
 <p class="meta">${albumSubtitle(album)}</p>
 ${album.descriptionHtml ? `<div class="caption">${album.descriptionHtml}</div>` : ""}
 ${grid(cfg, album, album.items)}`,
@@ -374,7 +381,7 @@ export function renderItem(
     body: `${stage(cfg, album, item)}
 ${itemMeta(item)}
 <nav class="pager">
-<a class="pager-album" href="${albumPath(album)}">${esc(albumCaption(album))}</a>
+<p class="pager-crumb">${HOME_CRUMB}<a class="pager-album" href="${albumPath(album)}">${esc(albumCaption(album))}</a></p>
 <span class="pager-icons">
 ${prev ? `<a class="icon" href="${itemPath(prev)}" rel="prev" aria-label="Previous" title="Previous (←)">${ICON.prev}</a>` : `<span class="icon is-off" aria-hidden="true">${ICON.prev}</span>`}
 <a class="icon" href="/random/" aria-label="A random item" title="Random (R)">${ICON.random}</a>

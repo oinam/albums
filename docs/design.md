@@ -77,6 +77,12 @@ There is no header bar. A page opens with its content — pictures on the home p
 the album's own title on an album page — because a bar carrying the site name above
 every one of them repeated what the tab title and the footer already say.
 
+The way home rides on that title instead. An album page's `h1` reads
+`Home / Amsterdam 2024JUN`, and the item pager carries the same crumb above its
+album link — so every page below the root shows a link back without a bar to hold
+one. It is a breadcrumb rather than a button: the crumb is muted, the current page
+is plain text, and both sit at the size the title was already set in.
+
 The footer is the only chrome: the site name on the left, and RSS, About, Contact,
 oinam.com and the theme control on the right. It sits on the page background with a
 border doing the separating, and it is not fixed — `margin-top: auto` pushes it

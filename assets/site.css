@@ -238,6 +238,20 @@ main {
   margin: 0 0 var(--space-small) 0;
 }
 
+/*
+ * The album title doubles as a breadcrumb. There is no header bar, so this and
+ * the site name in the footer are the only links home.
+ */
+.crumb-home,
+.crumb-sep {
+  color: var(--text-muted);
+}
+
+.crumb-home:hover,
+.crumb-home:focus-visible {
+  color: var(--text-strong);
+}
+
 .prose {
   max-width: 68ch;
 }
@@ -462,6 +476,12 @@ main > .album-grid:first-child {
   align-items: center;
   gap: var(--space-small);
   padding-top: var(--space-large);
+}
+
+.pager-crumb {
+  margin: 0;
+  text-align: center;
+  text-wrap: balance;
 }
 
 .pager-album {
