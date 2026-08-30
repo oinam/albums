@@ -7,6 +7,10 @@
   - [ ] Finish `bangalore`'s metadata. `greenage` and `imphal-peace-museum` now have
         their descriptions; bangalore has a location and nothing else. Quickest
         through `mise run dev` and the Edit button.
+  - [ ] Name the three albums ingested on 2026-08-30. `london-2015may-jul`,
+        `los-angeles-2023may` and `san-francisco-2023may-jun` carry the titles
+        ingest guessed from the folder names — "London 2015may Jul" and the like —
+        and no date, location or description. They are live in that state.
   - [ ] Decide the licence split before publishing. `LICENSE` is gone and `package.json`
         says `UNLICENSED`, so nothing grants rights to anything. The shape you want is a
         licence on the code and none on the photographs.
@@ -21,7 +25,8 @@
   - [x] Ten orphaned objects from the Random rename deleted.
   - [x] README title link points straight at `albums.oinam.com`.
   - [x] Deploy button in `README.md`.
-  - [x] Four stale R2 prefixes deleted — 125 objects. The bucket now holds 285 objects
-        against 285 items in the repo, so it mirrors the site exactly.
+  - [x] Four stale R2 prefixes deleted — 125 objects. The bucket mirrors the site
+        exactly: 455 objects against 455 items, prefix by prefix, verified with
+        `mise run prune` on 2026-08-30.
   - [x] EXIF on originals: decided to leave it. Renditions still carry
         `metadata=none`; the Original download serves the untouched file.
