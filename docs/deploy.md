@@ -99,6 +99,10 @@ with a zone-level **Redirect Rule**. Path-level legacy links are handled by the
 
 ## Keeping other people's pages off your bandwidth
 
+**Nothing here is switched on.** Hotlinking costs nothing until somebody actually does
+it, and the bandwidth is free either way — this is the recipe for the day you notice it in
+the logs, not a job waiting to be done.
+
 Two different things get confused here, and the confusion points the wrong way.
 
 **CORS will not stop hotlinking.** It governs whether a _script_ on another origin may
