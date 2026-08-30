@@ -148,7 +148,7 @@ ${edit}</body>
 }
 
 function albumPath(album: Album): string {
-  return `/album/${album.slug}/`;
+  return `/album/${album.path}/`;
 }
 
 /**

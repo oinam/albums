@@ -20,8 +20,13 @@ The first ten characters are the date and everything after them is the title. If
 do not know the day, use `01`; likewise the month.
 
 **The folder's date is for sorting, not for reading.** It decides where the album
-sits on the home page and nothing else — it is never displayed. What a visitor sees
-is `date` in `album.md`, which is optional and independent.
+sits on the home page and nothing else. It is never displayed, and it is not in the
+URL either: `2005-06-14-macromedia-lego-team` is served at
+`/album/macromedia-lego-team/`. What a visitor sees is `date` in `album.md`, which
+is optional and independent.
+
+The part after the date has to be unique across albums, since it is the URL. The
+build stops if two folders collide there.
 
 Keeping the two apart means renaming a folder to move an album up the page does not
 rewrite what the page says, and writing `1945-46` for readers does not scramble the

@@ -36,7 +36,18 @@ export interface AlbumMeta {
 }
 
 export interface Album {
+  /**
+   * The folder name, date prefix and all. It is the album's identity on disk and
+   * its prefix in R2, so it must not follow the URL when the folder is renamed
+   * for sorting.
+   */
   slug: string;
+  /**
+   * The folder name without its date prefix — `/album/macromedia-lego/`. The date
+   * in the folder is how you arrange albums, and arranging them is not something
+   * a visitor should have to read.
+   */
+  path: string;
   meta: AlbumMeta;
   /**
    * Ordering only, never displayed. The folder's date prefix is how you arrange
@@ -113,12 +124,13 @@ function readAlbum(root: string, slug: string): Album | null {
   }
 
   const description = parsed.content.trim();
-  const fromFolder = parseSlug(slug).date;
+  const fromFolder = parseSlug(slug);
   const fromMeta = meta.date ? sortableDate(meta.date) : undefined;
 
   return {
     slug,
-    sortKey: fromFolder ?? fromMeta ?? "",
+    path: fromFolder.name,
+    sortKey: fromFolder.date ?? fromMeta ?? "",
     meta: meta as AlbumMeta,
     description,
     descriptionHtml: description ? marked.parse(description, { async: false }) : "",

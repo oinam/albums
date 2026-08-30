@@ -1,6 +1,8 @@
 export interface ParsedSlug {
   /** `YYYY-MM-DD`, or absent when the folder did not start with one. */
   date?: string;
+  /** The folder name with the date prefix removed. This is the album's URL. */
+  name: string;
   title: string;
 }
 
@@ -64,16 +66,18 @@ function titleCase(rest: string): string {
  */
 export function parseSlug(slug: string): ParsedSlug {
   const match = /^(\d{4})-(\d{2})-(\d{2})-(.+)$/.exec(slug);
-  if (!match?.[1]) return { title: titleCase(slug) };
+  if (!match?.[1]) return { name: slug, title: titleCase(slug) };
 
   const month = Number(match[2]);
   const day = Number(match[3]);
   if (month < 1 || month > MONTH_MAX || day < 1 || day > DAY_MAX) {
-    return { title: titleCase(slug) };
+    return { name: slug, title: titleCase(slug) };
   }
 
+  const name = match[4] ?? "";
   return {
     date: `${match[1]}-${match[2]}-${match[3]}`,
-    title: titleCase(match[4] ?? ""),
+    name,
+    title: titleCase(name),
   };
 }

@@ -13,7 +13,7 @@ description: The Flickr-shaped routes, and the three-rung size ladder behind the
 | Route            | Shows                                         |
 | ---------------- | --------------------------------------------- |
 | `/`              | Highlights, then every album by cover picture |
-| `/album/{slug}/` | One album                                     |
+| `/album/{name}/` | One album                                     |
 | `/media/{id}/`   | One item — photo, video, or audio             |
 
 Three routes, and only one of them is a list. There is no separate `/albums/`
@@ -79,11 +79,27 @@ exists. The local dev server returns a correct 404 either way, so this is a clas
 bug that only shows up in production; it was found by checking the deployed site
 rather than the preview.
 
+### The album's name is not its folder
+
+An album folder is `YYYY-MM-DD-album-title`, but the URL is only the part after
+the date: `albums/1945-08-15-calcutta/` is served at `/album/calcutta/`. The date
+is how you arrange the shelf, and arranging the shelf is not something a visitor
+should have to read.
+
+The folder name does not disappear — it is still the album's identity on disk and
+still its prefix in R2, so renaming a folder to reorder the home page would move
+every object in the bucket. Only the URL drops the date.
+
+Two folders whose names match after the date — `2005-06-07-london` and
+`2026-06-16-london` — would both want `/album/london/`. The build stops with both
+folder names rather than writing one album over the other.
+
 ### Redirects
 
 `/albums/`, `/album/`, `/media/` and `/photos/` all land on `/`. Per album, the
-build emits a redirect from the bare slug and from the older `/albums/{slug}/`
-form, so nothing published earlier breaks.
+build emits a redirect from the bare name, from the older `/albums/{name}/` form,
+and from the dated `/album/{folder}/` URLs that were published before the date
+came out of them — so nothing published earlier breaks.
 
 ## Thumbnails: two ratios, nothing else
 

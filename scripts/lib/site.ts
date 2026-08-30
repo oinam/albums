@@ -61,11 +61,37 @@ function assertUniqueIds(albums: Album[]): void {
   }
 }
 
+/**
+ * Two folders can reduce to the same URL — `2005-06-07-london` and
+ * `2026-06-16-london` are different albums that both want `/album/london/`. The
+ * build must stop rather than write one album over the other.
+ */
+function assertUniqueAlbumPaths(albums: Album[]): void {
+  const seen = new Map<string, string>();
+  for (const album of albums) {
+    const previous = seen.get(album.path);
+    if (previous) {
+      throw new Error(
+        `Albums "${previous}" and "${album.slug}" both resolve to /album/${album.path}/. ` +
+          `Rename one folder — the part after the date has to be unique.`,
+      );
+    }
+    seen.set(album.path, album.slug);
+  }
+}
+
 function redirects(albums: Album[]): string {
   const lines = ["/albums/ / 301", "/album/ / 301", "/media/ / 301", "/photos/ / 301"];
   for (const album of albums) {
-    lines.push(`/${album.slug}/ /album/${album.slug}/ 301`);
-    lines.push(`/albums/${album.slug}/ /album/${album.slug}/ 301`);
+    const to = `/album/${album.path}/`;
+    lines.push(`/${album.path}/ ${to} 301`);
+    lines.push(`/albums/${album.path}/ ${to} 301`);
+    // The dated URLs were live before the folder date stopped being part of them.
+    if (album.slug !== album.path) {
+      lines.push(`/album/${album.slug}/ ${to} 301`);
+      lines.push(`/${album.slug}/ ${to} 301`);
+      lines.push(`/albums/${album.slug}/ ${to} 301`);
+    }
   }
   return `${lines.join("\n")}\n`;
 }
@@ -78,6 +104,7 @@ export interface BuildResult {
 export function buildSite(cfg: SiteConfig): BuildResult {
   const albums = loadAlbums();
   assertUniqueIds(albums);
+  assertUniqueAlbumPaths(albums);
 
   configureChrome(stylesheetHref());
 
@@ -91,7 +118,7 @@ export function buildSite(cfg: SiteConfig): BuildResult {
 
   let items = 0;
   for (const album of albums) {
-    write(`album/${album.slug}/index.html`, renderAlbum(cfg, album));
+    write(`album/${album.path}/index.html`, renderAlbum(cfg, album));
     album.items.forEach((item: Item, index: number) => {
       write(
         `media/${item.id}/index.html`,
@@ -115,7 +142,7 @@ export function buildSite(cfg: SiteConfig): BuildResult {
     "sitemap.txt",
     `${[
       `https://${cfg.site.host}/`,
-      ...albums.map((a) => `https://${cfg.site.host}/album/${a.slug}/`),
+      ...albums.map((a) => `https://${cfg.site.host}/album/${a.path}/`),
       ...albums.flatMap((a) =>
         a.items.map((i) => `https://${cfg.site.host}/media/${i.id}/`),
       ),
