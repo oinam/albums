@@ -97,6 +97,75 @@ it cannot catch a different hostname. Send `album.oinam.com` → `albums.oinam.c
 with a zone-level **Redirect Rule**. Path-level legacy links are handled by the
 `_redirects` file the build emits.
 
+## Keeping other people's pages off your bandwidth
+
+Two different things get confused here, and the confusion points the wrong way.
+
+**CORS will not stop hotlinking.** It governs whether a _script_ on another origin may
+read a response — `fetch`, `XMLHttpRequest`, a canvas that would otherwise be tainted. A
+plain `<img src="https://media.oinam.com/...">` on somebody else's page is not a
+cross-origin read; the browser never consults CORS for it. `media.oinam.com` currently
+sends no `Access-Control-Allow-Origin` at all, which is the _closed_ state. Adding a CORS
+policy would open a door, not shut one.
+
+What stops an image being embedded elsewhere is the `Referer` header, checked at the edge.
+
+### The rule that actually does it
+
+A WAF custom rule on the zone, matching the media host and blocking when the referer is
+present and is not yours:
+
+```
+http.host eq "media.oinam.com"
+and http.referer ne ""
+and not http.referer matches "^https?://([^/]*\.)?(oinam\.[a-z]+|brajeshwar\.com|laaija\.com)(/|$)"
+```
+
+Action: **Block**. Three things about it are deliberate:
+
+- **`http.referer ne ""` lets empty referers through.** A browser sent from an HTTPS page
+  under `Referrer-Policy: no-referrer`, or a direct paste into the address bar, sends
+  nothing. Blocking those breaks your own visitors to no purpose.
+- **`matches` is a regex**, which WAF custom rules only offer on Pro and above. On Free,
+  the nearest equivalent is Scrape Shield's Hotlink Protection — but that allows only the
+  zone itself, so `brajeshwar.com` and `laaija.com` would be blocked with everyone else.
+- **`*.oinam.*` cannot be written literally.** The regex above accepts any TLD on `oinam`;
+  a CORS origin list cannot, since a CORS wildcard may only stand in for one subdomain
+  label.
+
+The trailing `(/|$)` is not decoration. Without it `https://oinam.com.evil.example/` would
+match as a prefix and be waved through — the anchor is what makes the domain the whole
+host rather than the start of one.
+
+It is deterrence, not security. `Referer` is a request header like any other and anyone
+determined can send yours. It stops pages, not people.
+
+### If you ever do want CORS
+
+Only when something of yours needs to _read_ the bytes cross-origin — a canvas, a
+`fetch` that inspects the image. Set it on the bucket, not the zone:
+
+```json
+[
+  {
+    "AllowedOrigins": [
+      "https://oinam.com",
+      "https://*.oinam.com",
+      "https://brajeshwar.com",
+      "https://*.brajeshwar.com",
+      "https://laaija.com",
+      "https://*.laaija.com"
+    ],
+    "AllowedMethods": ["GET", "HEAD"],
+    "AllowedHeaders": ["*"],
+    "MaxAgeSeconds": 86400
+  }
+]
+```
+
+R2 → your bucket → Settings → CORS policy. Every TLD has to be named; there is no
+`*.oinam.*`.
+
 ## Giving this away
 
 The repository is a working template. Someone else needs to change
