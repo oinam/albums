@@ -9,18 +9,25 @@
     {
       "id": "22ECMPAZo",
       "file": "IMG_9023.jpeg",
+      "title": "Red telephone box",
+      "date": "2026-06-19",
+      "description": "These days, they are being removed, and the surviving boxes have found delightfully unexpected second lives as mini libraries, defibrillator stations, art galleries, ATMs, and even tiny coffee shops.\n\nThey’re legally protected as objects of historical and architectural significance, ensuring at least some will remain a permanent fixture on the streets.",
+      "alt": "Red telephone box",
+      "highlight": true,
       "width": 2513,
       "height": 2358
     },
     {
       "id": "1Lv19c9t2",
       "file": "IMG_9031.jpeg",
+      "highlight": true,
       "width": 9718,
       "height": 3414
     },
     {
       "id": "2M8VRwWr1",
       "file": "IMG_9034.jpeg",
+      "highlight": true,
       "width": 2627,
       "height": 1876
     },
@@ -129,6 +136,7 @@
     {
       "id": "13rWtyMfQ",
       "file": "IMG_9214.jpeg",
+      "highlight": true,
       "width": 4032,
       "height": 3024
     },
@@ -171,6 +179,11 @@
     {
       "id": "1B8doSzax",
       "file": "IMG_9295.jpeg",
+      "title": "Millennium Bridge",
+      "date": "2026-06-21",
+      "description": "The Millennium Bridge, officially known as the London Millennium Footbridge, is a steel suspension bridge for pedestrians crossing the River Thames in London, England, linking Bankside with the City of London.",
+      "alt": "Millennium Bridge",
+      "highlight": true,
       "width": 3955,
       "height": 2251
     },
