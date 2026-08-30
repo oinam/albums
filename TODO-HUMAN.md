@@ -14,8 +14,6 @@
   - [ ] Decide the licence split before publishing. `LICENSE` is gone and `package.json`
         says `UNLICENSED`, so nothing grants rights to anything. The shape you want is a
         licence on the code and none on the photographs.
-  - [ ] EXIF on originals. Renditions carry `metadata=none`, but the Original download
-        link serves the untouched file — camera serial, timestamp, GPS. `docs/urls.md`.
 - DONE
   - [x] R2 bucket `oinam-media`, EU jurisdiction, mapped to `media.oinam.com`.
   - [x] `R2_JURISDICTION` set to a real jurisdiction, not a location hint.
@@ -28,3 +26,5 @@
   - [x] Twelve highlights, so the home page opens on the mosaic.
   - [x] README title link points straight at `albums.oinam.com`.
   - [x] Deploy button in `README.md`.
+  - [x] EXIF on originals: decided to leave it. Renditions still carry
+        `metadata=none`; the Original download serves the untouched file.
