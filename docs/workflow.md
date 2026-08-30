@@ -137,7 +137,7 @@ terminal. The server says so in one line and stops, rather than throwing.
 sits just under the picture, where the title would be — which on an item that has
 no title yet is empty space, and an item with no title is exactly the one you
 opened this for. Next to it is **Delete**. Edit opens a panel holding exactly the
-fields described above — title, date,
+fields described above — close it with the × in its corner or with `Esc` — — title, date,
 description, alt and the highlight flag on an item; title, dates, location, cover
 and description on an album — prefilled with what is there now. Save writes the
 file, rebuilds, and reloads the page under you.

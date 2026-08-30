@@ -53,8 +53,15 @@ border:1px solid var(--border-color);background:var(--bg-subtle);color:var(--tex
 max-height:min(70vh,640px);overflow:auto;padding:1rem;border-radius:6px;
 border:1px solid var(--border-color);background:var(--bg);
 box-shadow:0 8px 32px oklch(0% 0 0 / .25);font-size:.85rem}
-.edit-panel h2{font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;
-color:var(--text-muted);margin:0 0 .75rem 0;border:0}
+.edit-panel h2{position:sticky;top:-1rem;z-index:1;display:flex;align-items:center;
+justify-content:space-between;gap:1rem;background:var(--bg);
+margin:-1rem -1rem .75rem;padding:1rem 1rem .6rem;
+font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;
+color:var(--text-muted);border:0}
+.edit-close{flex:none;font:inherit;font-size:1.1rem;line-height:1;padding:.1rem .5rem .2rem;
+border-radius:6px;border:1px solid var(--border-color);background:var(--bg-subtle);
+color:var(--text-strong);cursor:pointer}
+.edit-close:hover,.edit-close:focus-visible{border-color:var(--text-muted)}
 .edit-field{display:block;margin-bottom:.6rem}
 .edit-field span{display:block;font-size:.7rem;letter-spacing:.06em;text-transform:uppercase;
 color:var(--text-muted);margin-bottom:.2rem}
@@ -106,6 +113,7 @@ location.href=t;});})
 function show(v){p.hidden=!v;try{localStorage.setItem("edit-open",v?"1":"0")}catch(e){}}
 try{if(localStorage.getItem("edit-open")==="1")show(true)}catch(e){}
 b.addEventListener("click",function(){show(p.hidden)});
+var x=p.querySelector(".edit-close");if(x)x.addEventListener("click",function(){show(false)});
 document.addEventListener("keydown",function(e){if(e.key==="Escape"&&!p.hidden)show(false)});
 f.addEventListener("submit",function(e){
 e.preventDefault();s.textContent="Saving\\u2026";
@@ -122,7 +130,7 @@ fetch("/_edit",{method:"POST",headers:{"content-type":"application/json"},body:J
 function panel(heading: string, hidden: string, fields: string, data = ""): string {
   return `<button type="button" class="edit-open">Edit</button>
 <aside class="edit-panel"${data} hidden>
-<h2>${heading}</h2>
+<h2>${heading}<button type="button" class="edit-close" aria-label="Close the editor" title="Close (Esc)">&times;</button></h2>
 <form>
 ${hidden}
 ${fields}
