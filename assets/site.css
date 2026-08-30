@@ -469,12 +469,17 @@ main > .album-grid:first-child {
   margin: 0 0 var(--space) 0;
 }
 
-/* Centred: album title above, then three targets big enough to hit. */
+/*
+ * Centred: album title above, then three targets big enough to hit. The gap is a
+ * full --space rather than the small step because the crumb is a link sitting
+ * directly over the icon row, and eight pixels of separation made it easy to hit
+ * the album on the way to Next.
+ */
 .pager {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--space-small);
+  gap: var(--space);
   padding-top: var(--space-large);
 }
 
