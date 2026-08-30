@@ -17,6 +17,10 @@ node = "22" # set Cloudflare Pages NODE_VERSION to match
 description = "Local preview on :8788 — builds with local media, watches, rebuilds"
 run = "npm run dev"
 
+[tasks.prune]
+description = "Delete R2 prefixes no album claims — dry run unless --apply"
+run = "npx tsx scripts/prune.ts"
+
 [tasks.build]
 description = "Render the site into dist/ (no credentials needed)"
 run = "npm run build"
