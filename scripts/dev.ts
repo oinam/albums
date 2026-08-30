@@ -66,7 +66,7 @@ function readRedirects(): Map<string, string> {
 function mediaPath(pathname: string): string | null {
   const prefix = `/_media/${cfg.media.prefix}/`;
   if (!pathname.startsWith(prefix)) return null;
-  return within(staging, pathname.slice(prefix.length));
+  return within(staging, decodeURIComponent(pathname.slice(prefix.length)));
 }
 
 function sitePath(pathname: string): string | null {

@@ -15,9 +15,20 @@ export interface Rendition {
   format: "auto" | "jpeg";
 }
 
+/**
+ * A filename is whatever the camera or the phone wrote, and that includes spaces:
+ * `Image 2023-03-28 at 7.33 PM.jpeg` is a real file here. Unencoded it makes a URL
+ * the edge rejects outright, and inside `srcset` — where the space is the
+ * delimiter — it destroys the whole attribute. The slug never needs this; the
+ * filename always does.
+ */
+function encodeFile(file: string): string {
+  return encodeURIComponent(file);
+}
+
 export function originalUrl(cfg: SiteConfig, slug: string, file: string): string {
   const base = cfg.media.local ? "/_media" : `https://${cfg.media.host}`;
-  return `${base}/${cfg.media.prefix}/${slug}/${file}`;
+  return `${base}/${cfg.media.prefix}/${slug}/${encodeFile(file)}`;
 }
 
 /**
@@ -50,7 +61,7 @@ function transform(
     "metadata=none",
   );
 
-  return `https://${cfg.media.host}/cdn-cgi/image/${params.join(",")}/${cfg.media.prefix}/${slug}/${file}`;
+  return `https://${cfg.media.host}/cdn-cgi/image/${params.join(",")}/${cfg.media.prefix}/${slug}/${encodeFile(file)}`;
 }
 
 /**
