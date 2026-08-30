@@ -1,10 +1,6 @@
 # TODO-HUMAN
 
 - TODO
-  - [ ] Delete four stale R2 prefixes. `mise run prune` lists them; `mise run prune -- --apply`
-        removes them. Mine was refused by a permission gate, twice. They are
-        `1111-11-11-unsorted`, `1945-08-15-calcutta`, `2025-06-07-macromedia-lego` and
-        `2026-06-16-london` — 125 objects, every file already living under a current album.
   - [ ] Purge three cached pages. `/about/`, `/contact/` and `/album/1111-11-11-random/`
         still answer 200 with old HTML. The origin returns 404 for all three, so only the
         edge copy is stale and it expires within a week on its own.
@@ -25,5 +21,7 @@
   - [x] Ten orphaned objects from the Random rename deleted.
   - [x] README title link points straight at `albums.oinam.com`.
   - [x] Deploy button in `README.md`.
+  - [x] Four stale R2 prefixes deleted — 125 objects. The bucket now holds 285 objects
+        against 285 items in the repo, so it mirrors the site exactly.
   - [x] EXIF on originals: decided to leave it. Renditions still carry
         `metadata=none`; the Original download serves the untouched file.
