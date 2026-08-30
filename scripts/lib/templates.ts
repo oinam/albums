@@ -66,9 +66,10 @@ const THEME_TOGGLE = `<button type="button" class="theme-toggle" data-theme-togg
 /**
  * The site has no header bar, so until now the only link home was the site name
  * in the footer. Prefixing the album title with it turns the title into a
- * breadcrumb and puts the way back where a visitor already looks.
+ * breadcrumb and puts the way back where a visitor already looks. It is labelled
+ * for what the root actually holds — a list of albums — rather than "Home".
  */
-const HOME_CRUMB = `<a class="crumb-home" href="/" title="Home (H)">Home</a> <span class="crumb-sep" aria-hidden="true">/</span> `;
+const HOME_CRUMB = `<a class="crumb-home" href="/" title="Albums (H)">Albums</a> <span class="crumb-sep" aria-hidden="true">/</span> `;
 
 /**
  * Keyboard shortcuts, on top of tabbing — never instead of it. Every target is a
