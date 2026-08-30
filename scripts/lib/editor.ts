@@ -38,14 +38,16 @@ function area(name: string, label: string, value: string | undefined): string {
 }
 
 const STYLE = `
-.edit-host{position:relative;display:inline-block;line-height:0}
-.edit-open{position:fixed;right:16px;bottom:16px;z-index:9998;font:inherit;font-size:1rem;
-padding:.7rem 1.6rem;border-radius:8px;cursor:pointer;line-height:1.2;
-border:1px solid oklch(100% 0 0 / .4);background:oklch(0% 0 0 / .35);color:oklch(100% 0 0);
--webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);
-transition:background .15s ease,border-color .15s ease}
-.edit-open:hover,.edit-open:focus-visible{background:oklch(0% 0 0 / .68);border-color:oklch(100% 0 0 / .8)}
-.edit-open.edit-over{position:absolute;right:16px;bottom:16px}
+.edit-bar{display:flex;justify-content:center;gap:.5rem;margin:var(--space-small) 0}
+.edit-bar button{font:inherit;font-size:.95rem;padding:.5rem 1.4rem;border-radius:8px;
+cursor:pointer;line-height:1.2;border:1px solid var(--border-color);
+background:var(--bg-subtle);color:var(--text-strong);transition:all .15s ease}
+.edit-bar button:hover,.edit-bar button:focus-visible{border-color:var(--text-muted)}
+.edit-delete[data-armed]{background:oklch(52% .19 27);border-color:oklch(52% .19 27);
+color:oklch(100% 0 0)}
+.edit-open{position:fixed;right:16px;bottom:16px;z-index:9998;font:inherit;font-size:.95rem;
+padding:.5rem 1.4rem;border-radius:8px;cursor:pointer;line-height:1.2;
+border:1px solid var(--border-color);background:var(--bg-subtle);color:var(--text-strong)}
 .edit-panel[hidden]{display:none}
 .edit-panel{position:fixed;right:12px;bottom:72px;z-index:9999;width:min(360px,calc(100vw - 24px));
 max-height:min(70vh,640px);overflow:auto;padding:1rem;border-radius:6px;
@@ -72,15 +74,34 @@ const SCRIPT = `(function(){
 var b=document.querySelector(".edit-open"),p=document.querySelector(".edit-panel"),
 f=p&&p.querySelector("form"),s=p&&p.querySelector(".edit-status");
 if(!b||!p||!f||!s)return;
-// He asked for the button on the picture, not in the corner of the window. The
-// stage is centred and wider than the photo, so anchoring to it would miss on
-// anything portrait — wrap the media itself in a shrink-to-fit box and sit
-// inside that. Album pages have no single picture, so the button stays put.
-var media=document.querySelector(".stage img, .stage video");
-if(media&&media.parentNode){
-var host=document.createElement("div");host.className="edit-host";
-media.parentNode.insertBefore(host,media);host.appendChild(media);host.appendChild(b);
-b.classList.add("edit-over");
+// The controls belong where the title goes. itemMeta() renders nothing at all
+// when an item has no title, date or description, which is exactly the item you
+// want to edit — so the bar goes straight after the picture either way, and is
+// the only thing in that space when the item is still blank.
+var stage=document.querySelector(".stage");
+var del=p.getAttribute("data-delete");
+if(stage){
+var bar=document.createElement("div");bar.className="edit-bar";
+stage.insertAdjacentElement("afterend",bar);
+b.classList.remove("edit-open");bar.appendChild(b);
+if(del){
+var d=document.createElement("button");d.type="button";d.className="edit-delete";
+d.textContent="Delete";bar.appendChild(d);
+var timer;
+d.addEventListener("click",function(){
+if(!d.hasAttribute("data-armed")){
+d.setAttribute("data-armed","");d.textContent="Delete for good?";
+timer=setTimeout(function(){d.removeAttribute("data-armed");d.textContent="Delete"},4000);
+return;}
+clearTimeout(timer);d.textContent="Deleting\u2026";d.disabled=true;
+fetch("/_edit",{method:"POST",headers:{"content-type":"application/json"},
+body:JSON.stringify({kind:"delete",slug:p.getAttribute("data-slug"),id:del})})
+.then(function(r){return r.text().then(function(t){
+if(!r.ok){d.disabled=false;d.textContent="Delete";d.removeAttribute("data-armed");s.textContent=t;return;}
+location.href=t;});})
+.catch(function(err){d.disabled=false;d.textContent="Delete";s.textContent=String(err)});
+});
+}
 }
 function show(v){p.hidden=!v;try{localStorage.setItem("edit-open",v?"1":"0")}catch(e){}}
 try{if(localStorage.getItem("edit-open")==="1")show(true)}catch(e){}
@@ -98,9 +119,9 @@ fetch("/_edit",{method:"POST",headers:{"content-type":"application/json"},body:J
 })()`;
 
 /** `heading` is HTML — callers escape whatever they interpolate into it. */
-function panel(heading: string, hidden: string, fields: string): string {
+function panel(heading: string, hidden: string, fields: string, data = ""): string {
   return `<button type="button" class="edit-open">Edit</button>
-<aside class="edit-panel" hidden>
+<aside class="edit-panel"${data} hidden>
 <h2>${heading}</h2>
 <form>
 ${hidden}
@@ -123,6 +144,7 @@ ${field("date", "Date", item.date, "2005-06-14, 2005-06, 2005")}
 ${area("description", "Description", item.description)}
 ${field("alt", "Alt text", item.alt)}
 <label class="edit-check"><input type="checkbox" name="highlight"${item.highlight === true ? " checked" : ""}> Highlight on the home page</label>`,
+    ` data-slug="${esc(album.slug)}" data-delete="${esc(item.id)}"`,
   );
 }
 

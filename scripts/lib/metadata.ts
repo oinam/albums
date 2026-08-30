@@ -63,6 +63,19 @@ export function updateItem(slug: string, id: string, patch: Partial<Item>): void
   writeItems(albumDir, items);
 }
 
+/** Drops one item from an album and returns the file it pointed at. */
+export function removeItem(slug: string, id: string): string {
+  const albumDir = join(ALBUMS, slug);
+  const items = readItems(albumDir);
+  const gone = items.find((item) => item.id === id);
+  if (!gone) throw new Error(`No item ${id} in ${slug}`);
+  writeItems(
+    albumDir,
+    items.filter((item) => item.id !== id),
+  );
+  return gone.file;
+}
+
 const META_ORDER = ["title", "date", "date_end", "location", "cover"] as const;
 
 /**

@@ -133,10 +133,11 @@ terminal. The server says so in one line and stops, rather than throwing.
 
 ## Editing metadata while you look at it
 
-`mise run dev` puts an **Edit** button on every album and item page — on an item
-it sits in the bottom-right of the picture itself, translucent, so the thing you
-are describing is under your eye while you describe it. It opens a panel holding
-exactly the fields described above — title, date,
+`mise run dev` puts an **Edit** button on every album and item page. On an item it
+sits just under the picture, where the title would be — which on an item that has
+no title yet is empty space, and an item with no title is exactly the one you
+opened this for. Next to it is **Delete**. Edit opens a panel holding exactly the
+fields described above — title, date,
 description, alt and the highlight flag on an item; title, dates, location, cover
 and description on an album — prefilled with what is there now. Save writes the
 file, rebuilds, and reloads the page under you.
@@ -158,6 +159,17 @@ Two things it will not do. Frontmatter comments do not survive an edit, because
 the file is rewritten rather than patched. And every value is written quoted —
 `date: "2026-06-16"` rather than `date: 2026-06-16` — which is deliberate: bare
 YAML turns that into a timestamp and a bare `1965` into a number.
+
+**Delete removes the item and its original.** It takes two clicks — the button arms
+itself and says so — and then drops the entry from `photos.json`, deletes the
+object from R2, and sends you back to the album. R2 goes first: if the credentials
+are missing the whole thing stops there, rather than leaving an item whose metadata
+is gone and whose original is still sitting in the bucket.
+
+One thing it deliberately does not touch is your staged original. `_incoming/` may
+be the only copy you have, so it stays — which means the next `mise run ingest`
+puts the photo straight back, with a new id. Move the file out of staging if you
+want it gone for good.
 
 Nothing about this changes the model. The files on disk are still the truth, git
 still records the change, and the editor is only a faster way to type into them.

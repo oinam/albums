@@ -1,5 +1,10 @@
 import { createReadStream, statSync } from "node:fs";
-import { HeadObjectCommand, PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import {
+  DeleteObjectCommand,
+  HeadObjectCommand,
+  PutObjectCommand,
+  S3Client,
+} from "@aws-sdk/client-s3";
 import { requireEnv } from "./config.ts";
 import { contentType } from "./mime.ts";
 
@@ -82,4 +87,9 @@ export async function upload(
     }),
   );
   return "uploaded";
+}
+
+/** Removes one object. Deleting something already gone is not an error in S3. */
+export async function remove(bucket: Bucket, key: string): Promise<void> {
+  await bucket.client.send(new DeleteObjectCommand({ Bucket: bucket.name, Key: key }));
 }

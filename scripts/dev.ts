@@ -13,8 +13,11 @@ import type { IncomingMessage, ServerResponse } from "node:http";
 import { extname, join, normalize, resolve, sep } from "node:path";
 import sharp from "sharp";
 import { loadConfig, stagingDir } from "./lib/config.ts";
+import { readItems } from "./lib/albums.ts";
 import { contentType } from "./lib/mime.ts";
-import { updateAlbum, updateItem } from "./lib/metadata.ts";
+import { parseSlug } from "./lib/slug.ts";
+import { removeItem, updateAlbum, updateItem } from "./lib/metadata.ts";
+import { openBucket, remove } from "./lib/r2.ts";
 import { OUT, buildSite } from "./lib/site.ts";
 
 const CACHE = ".dev-cache";
@@ -209,6 +212,27 @@ async function handleEdit(req: IncomingMessage, res: ServerResponse): Promise<vo
         alt: text("alt"),
         highlight: body.highlight === true,
       });
+    } else if (body.kind === "delete") {
+      const id = text("id");
+      if (!id) {
+        plain(res, 400, "Missing item id.");
+        return;
+      }
+      // R2 first. If the credentials are missing the throw lands here, before
+      // photos.json has been touched — better than a half-deleted item whose
+      // metadata is gone and whose original is still sitting in the bucket.
+      const items = readItems(join("albums", slug));
+      const target = items.find((item) => item.id === id);
+      if (!target) {
+        plain(res, 400, `No item ${id} in ${slug}`);
+        return;
+      }
+      await remove(openBucket(), `${cfg.media.prefix}/${slug}/${target.file}`);
+      removeItem(slug, id);
+      editedAt = Date.now();
+      rebuild();
+      plain(res, 200, `/album/${parseSlug(slug).name}/`);
+      return;
     } else if (body.kind === "album") {
       const title = text("title");
       if (!title) {
