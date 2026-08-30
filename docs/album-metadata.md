@@ -38,6 +38,14 @@ sort date, so the album falls back to its `album.md` date and sorts last without
 one. Use `01` for a day or month you do not know; use `0000-00-00` for an album
 that is not on the timeline at all.
 
+Worth knowing, because it reads as a contradiction the first time: `0000-00-00`
+puts the folder **first** in a directory listing and the album **last** on the
+home page. Both are right. The listing sorts the characters; the page sorts by
+date, newest first, and an album with no date goes to the end. For a drawer of
+things that have not been filed yet, top of your folders and bottom of the page
+is usually what you want. If you want it at the top of the page instead, give it
+a `date` in `album.md` — the folder prefix does not have to carry that.
+
 **A date after the prefix is deliberate and is kept.** `2026-06-16-london-2026jun`
 is served at `/album/london-2026jun/`, which is how two visits to the same city
 stay apart — `london-2026jun` and `london-2015jun-aug` are different albums with
