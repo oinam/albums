@@ -20,6 +20,12 @@ Three routes, and only one of them is a list. There is no separate `/albums/`
 page: the home page _is_ the album index, with a curated strip of highlights
 above it.
 
+Albums run newest first, by the date prefix on the folder. An album with no usable
+prefix — `0000-00-00-unsorted`, or a folder with no prefix at all — falls back to
+its `album.md` date, and goes to the end if it has neither. Two albums with the
+same date fall back to their titles, so the order never depends on what the
+filesystem happened to return.
+
 ### Why there is no chronological stream
 
 A paginated newest-first stream reads well, but it has a property worth avoiding
