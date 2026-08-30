@@ -470,6 +470,17 @@ main > .album-grid:first-child {
 }
 
 /*
+ * A link inside an album's description is otherwise invisible: --link-color and
+ * --text-color are the same grey, so the underline is the only thing marking it.
+ * The chrome's links do not need one — their position says what they are.
+ */
+.caption a {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.15em;
+}
+
+/*
  * Centred: album title above, then three targets big enough to hit. The gap is a
  * full --space rather than the small step because the crumb is a link sitting
  * directly over the icon row, and eight pixels of separation made it easy to hit

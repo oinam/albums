@@ -20,6 +20,16 @@ to the media.
 If you ever add an accent colour, add it knowing it will be the single loudest
 non-photographic thing on the site.
 
+## Prose links are underlined; chrome links are not
+
+`--link-color` and `--text-color` are the same grey, so a link inside an album's
+description has nothing but its position to mark it — and inside a paragraph,
+position marks nothing. Those get an underline.
+
+The footer, the pager and the breadcrumb do not. What they are is obvious from
+where they sit, and underlining them would draw rules across a page whose whole
+job is to stay out of the pictures' way.
+
 ## The page has no width limit
 
 There is no `max-width` on `body`. Gutters come from
