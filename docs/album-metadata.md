@@ -16,28 +16,44 @@ YYYY-MM-DD-album-title
 2005-06-14-macromedia-lego-team
 ```
 
-The first ten characters are the date and everything after them is the title. If you
-do not know the day, use `01`; likewise the month.
+The first ten characters are yours. Everything after them is the album's name, in
+lowercase, exactly as written — `2005-06-14-macromedia-lego-team` is served at
+`/album/macromedia-lego-team/`.
 
-**The folder's date is for sorting, not for reading.** It decides where the album
-sits on the home page and nothing else. It is never displayed, and it is not in the
-URL either: `2005-06-14-macromedia-lego-team` is served at
-`/album/macromedia-lego-team/`. What a visitor sees is `date` in `album.md`, which
-is optional and independent.
+The prefix is for sorting and nothing else. It is never displayed and never
+reaches the URL. What a visitor reads is `date` in `album.md`, which is optional
+and independent, so renaming a folder to move an album up the page does not
+rewrite what the page says, and writing `1945-46` for readers does not scramble
+the shelf.
 
-The part after the date has to be unique across albums, since it is the URL. The
-build stops if two folders collide there.
+Two separate questions get asked of that prefix, and they have different answers:
 
-Keeping the two apart means renaming a folder to move an album up the page does not
-rewrite what the page says, and writing `1945-46` for readers does not scramble the
-shelf. An album whose folder has no date prefix falls back to its `album.md` date for
-ordering, and sorts last if it has neither.
+- **Is it shaped like a date?** Ten characters, `NNNN-NN-NN`, followed by a
+  hyphen. If so it comes off the name, always.
+- **Is it a real calendar date?** Only then does it also become a sort key.
 
-This used to accept month-only, year-only and two range forms, which sounds more
-flexible and was worse: `2005-06-14-24-hours-in-tokyo` had no correct reading — `24`
-could be the end of a range or the start of the title. One shape removes the
-question. A folder that does not match still works: it gets no sort date from its
-name, and the whole folder name becomes the title, digits and all.
+Which is why `0000-00-00-unsorted` works and means what it looks like: it is
+served at `/album/unsorted/`, and because there is no such day it contributes no
+sort date, so the album falls back to its `album.md` date and sorts last without
+one. Use `01` for a day or month you do not know; use `0000-00-00` for an album
+that is not on the timeline at all.
+
+**A date after the prefix is deliberate and is kept.** `2026-06-16-london-2026jun`
+is served at `/album/london-2026jun/`, which is how two visits to the same city
+stay apart — `london-2026jun` and `london-2015jun-aug` are different albums with
+different URLs. The build never strips a second date, because it cannot know
+whether you meant it. You always do.
+
+The part after the prefix has to be unique across albums, since it is the URL. The
+build stops and names both folders if two of them collide there.
+
+A folder with no prefix at all still works: the whole name becomes the URL, and
+the album takes its order from `album.md` or sorts last.
+
+The prefix used to accept month-only, year-only and two range forms, which sounds
+more flexible and was worse: `2005-06-14-24-hours-in-tokyo` had no correct reading
+— is `24` the end of a range or the start of the title? One shape removes the
+question.
 
 ### The title is a starting point
 

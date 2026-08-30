@@ -68,15 +68,18 @@ export function parseSlug(slug: string): ParsedSlug {
   const match = /^(\d{4})-(\d{2})-(\d{2})-(.+)$/.exec(slug);
   if (!match?.[1]) return { name: slug, title: titleCase(slug) };
 
+  // Two separate questions. The prefix comes off the name whenever it has the
+  // shape, because that prefix is yours and a visitor should never read it —
+  // `0000-00-00-unsorted` is a deliberate "no date, sort it first" and still
+  // belongs at /album/unsorted/. Whether it is a real calendar date only decides
+  // whether it also contributes a sort key.
+  const name = match[4] ?? "";
   const month = Number(match[2]);
   const day = Number(match[3]);
-  if (month < 1 || month > MONTH_MAX || day < 1 || day > DAY_MAX) {
-    return { name: slug, title: titleCase(slug) };
-  }
+  const real = month >= 1 && month <= MONTH_MAX && day >= 1 && day <= DAY_MAX;
 
-  const name = match[4] ?? "";
   return {
-    date: `${match[1]}-${match[2]}-${match[3]}`,
+    date: real ? `${match[1]}-${match[2]}-${match[3]}` : undefined,
     name,
     title: titleCase(name),
   };
