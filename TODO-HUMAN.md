@@ -8,9 +8,9 @@
   - [ ] Purge three cached pages. `/about/`, `/contact/` and `/album/1111-11-11-random/`
         still answer 200 with old HTML. The origin returns 404 for all three, so only the
         edge copy is stale and it expires within a week on its own.
-  - [ ] Write metadata for three new albums. `bangalore`, `greenage` and
-        `imphal-peace-museum` have generated `album.md` files; title, date, location and
-        description are yours. Quickest through `mise run dev` and the Edit button.
+  - [ ] Finish `bangalore`'s metadata. `greenage` and `imphal-peace-museum` now have
+        their descriptions; bangalore has a location and nothing else. Quickest
+        through `mise run dev` and the Edit button.
   - [ ] Decide the licence split before publishing. `LICENSE` is gone and `package.json`
         says `UNLICENSED`, so nothing grants rights to anything. The shape you want is a
         licence on the code and none on the photographs.
