@@ -26,30 +26,25 @@ Deploying from here is just `git push`.
 
 Nobody is looking at the site yet, so none of this is urgent.
 
-- [ ] **Purge the Cloudflare cache once.** Two separate leftovers, one fix.
-      The eleven deleted demo objects were uploaded with a one-year `immutable`
-      header and still answer 200 at their old URLs; uploads since carry a one-day
-      TTL, so that will not recur. Deleted _pages_ linger the same way —
-      `/about/`, `/contact/` and the old `/album/1111-11-11-random/` still return
-      their old HTML from the edge, though the origin is correct and any query
-      string on them gets a 404. Fresh 404s are `no-store`, so nothing new is
-      accumulating, and this ages out on its own within the week. Nothing links to
-      any of it. Caching → Configuration → Purge Everything.
+- [ ] **Three pages the purge did not reach.** `/about/`, `/contact/` and the old
+      `/album/1111-11-11-random/` still answer 200 with their old HTML. The cached
+      entries are ~13 hours old and still ageing, so the purge did not clear these
+      three — a purge would have reset them, and the origin cannot refill them
+      because it returns `404` with `no-store`. They hold a 7-day `s-maxage`, so
+      they expire on their own in about six days. Purge those three URLs if you
+      would rather not wait. Nothing links to any of them.
 
 - [x] **Twelve highlights.** London's cover made the twelfth, so the home page
       opens on the mosaic. Unmark one and it falls back to the justified grid.
-- [ ] **Ten orphaned objects in R2.** Renaming the Random album left the originals
-      at `albums/1111-11-11-random/` behind; the live copies are under
-      `albums/1111-11-11-unsorted/`. Nothing references the old prefix. Deleting
-      them was refused by a permission gate on my side, so they are yours to
-      remove — or to leave, at a few megabytes.
+- [x] **Ten orphaned R2 objects deleted.** Confirmed: the old
+      `albums/1111-11-11-random/` prefix returns 404 at origin. One edge copy is
+      still warm and will age out.
 - [x] README's title link points at `albums.oinam.com` directly.
 
 ## Decisions I did not make for you
 
-- [ ] **Images paid plan.** The free plan hard-stops at 5,000 transformations a
-      month with error 9422 — images stop rendering rather than costing money.
-      Decide deliberately. `docs/costs.md`.
+- [x] **Images paid plan** is in motion and will land on its own. That lifts the
+      5,000-transformations-a-month hard stop (error 9422). `docs/costs.md`.
 - [x] **`album.oinam.com` resolves again.** It now answers `301 → https://albums.oinam.com/`, so the README's link works; it just takes the extra hop.
 - [ ] **EXIF on originals.** Renditions carry `metadata=none`, but the "Original" download link serves the untouched file — camera serial, timestamp and GPS included. `docs/urls.md`. Strip it before staging if that is not what you want.
 
