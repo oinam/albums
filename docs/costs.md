@@ -19,6 +19,18 @@ Modelling a realistic archive: 5,000 photos averaging 4 MB, 50 videos averaging
 | Egress                | R2 never charges for it                                          | $0.00       |
 | **Total**             |                                                                  | **≈ $0.24** |
 
+## Where this library actually is
+
+The table models a full archive. Today the site holds **125 items, 0.12 GB** — about
+1% of the 10 GB storage free tier, and, if every item were viewed at all three
+rungs in one month, **375 transformations** against the 5,000 free. The bill is
+**$0.00** and stays there until roughly 1,600 photos are browsed at three sizes in
+a single month, or the library passes 10 GB.
+
+So the honest answer to "should I find something cheaper" is that there is nothing
+to be cheaper than yet. The paid plan matters for the failure mode below, not for
+the money.
+
 ## The line that can move
 
 Transformations bill per **unique image-plus-parameters requested per calendar
@@ -46,6 +58,16 @@ rarely reaches the threshold.
 
 Pre-bake the three renditions into R2 at ingest and serve them as plain objects.
 Delivery becomes ordinary R2 GETs at $0.36/million with free egress, and the
-recurring transformation line drops to zero. It costs about 30% more storage and a
-full rebuild whenever the ladder changes. Start with request-time transformations,
-because they need no build step at all.
+recurring transformation line drops to zero. `sharp` is already a dependency — the
+dev server resizes with it — so this is a change to ingest, not a new tool.
+
+It costs about 30% more storage, a full rebuild whenever the ladder changes, and
+one thing that is easy to miss: **`format=auto` goes away**. Choosing AVIF or WebP
+per browser is something the edge does at request time by reading `Accept`. A plain
+R2 object cannot; you would either serve JPEG to everyone and give back most of the
+bytes the ladder saved, or store all three formats and put a Worker in front to
+negotiate — at which point the thing you removed to save money is back, wearing a
+different hat.
+
+Start with request-time transformations. They need no build step, and at this
+library's size they are free.
