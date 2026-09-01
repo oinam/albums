@@ -7,9 +7,6 @@ description: The Flickr-shaped routes, and the three-rung size ladder behind the
 
 ## Page routes
 
-| `/random/` | Redirects to one item at random |
-| `/feed.xml` | RSS, the 50 most recent items |
-
 | Route            | Shows                             |
 | ---------------- | --------------------------------- |
 | `/`              | Every album, by cover picture     |
@@ -18,6 +15,13 @@ description: The Flickr-shaped routes, and the three-rung size ladder behind the
 
 Three routes, and only one of them is a list. There is no separate `/albums/`
 page: the home page _is_ the album index.
+
+Two more routes are not pages:
+
+| Route       | Serves                          |
+| ----------- | ------------------------------- |
+| `/random/`  | Redirects to one item at random |
+| `/feed.xml` | RSS, the 50 most recent items   |
 
 Albums run newest first, by the date prefix on the folder. An album with no usable
 prefix — `0000-00-00-unsorted`, or a folder with no prefix at all — falls back to
@@ -94,6 +98,61 @@ folder names rather than writing one album over the other.
 build emits a redirect from the bare name, from the older `/albums/{name}/` form,
 and from the dated `/album/{folder}/` URLs that were published before the date
 came out of them — so nothing published earlier breaks.
+
+## The feed
+
+`/feed.xml` is RSS 2.0 with two namespaces added, and it carries the picture —
+a subscriber sees the photograph in their reader, not a link promising one.
+
+| Element           | Carries                                                      |
+| ----------------- | ------------------------------------------------------------ |
+| `title` `link`    | The item, at its permalink                                   |
+| `guid`            | The permalink again, `isPermaLink="true"`                    |
+| `pubDate`         | The item's date, or its album's                              |
+| `category`        | The album name, with the album URL in `domain`               |
+| `description`     | Plain text. A summary, deliberately not markup               |
+| `content:encoded` | The body a reader renders: the image, the caption, the album |
+| `media:content`   | The media itself, with real dimensions                       |
+| `media:thumbnail` | The 4:3 or 3:4 grid thumbnail                                |
+
+`description` stays plain text and `content:encoded` holds the HTML. That is the
+split the spec intends — summary against full content — and it means a reader
+showing only the summary gets a sentence rather than a mouthful of tags.
+
+### What `media:content` points at
+
+A photo is published as its **1600px rendition**, never the original. Two
+reasons, and both matter:
+
+- Renditions carry `metadata=none`. The original carries its full EXIF block,
+  GPS included, and the site hands that out only behind a deliberate `Original`
+  click. A feed pushes to everyone who subscribed, which is not the same act.
+  See the privacy note at the end of this page.
+- It is an existing rung of the ladder below, so it bills nothing new. A feed
+  asking for some fourth width would add a transformation per photo per month.
+
+Video and audio have no ladder — the original _is_ the media, and it is already
+what the item page plays, so that is what the feed names.
+
+A photo carries no `type`. The rendition is `format=auto`, so what comes back is
+whatever the fetching client's `Accept` negotiated; naming `image/jpeg` would
+pick one of three possible answers. Video and audio have a fixed encoding and do
+carry theirs.
+
+### Why there is no `enclosure`
+
+RSS 2.0's `enclosure` requires a byte `length`, and nothing here stores one —
+`photos.json` records dimensions, not file sizes. Media RSS makes `fileSize`
+optional, so `media:content` says everything true without inventing a number.
+
+### Reading the feed from another site
+
+The feed is enough to build a photo grid elsewhere: `media:thumbnail` gives a
+URL and its exact dimensions, `category` groups by album, and `link` is where a
+tile should point. A consumer should use those URLs **verbatim** rather than
+composing its own `/cdn-cgi/image/` widths, for the billing reason above.
+
+The cap is 50 items, so a consumer sees the recent stream, not the archive.
 
 ## Thumbnails: two ratios, nothing else
 
