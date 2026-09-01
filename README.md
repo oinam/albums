@@ -1,4 +1,4 @@
-# [Oinam’s Album](https://albums.oinam.com/)
+# [Oinam Albums](https://albums.oinam.com/)
 
 > Oinam Albums — Pictures, Audio, and Videos.
 
