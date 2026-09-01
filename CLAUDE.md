@@ -50,5 +50,5 @@ unaffected; see `docs/workflow.md`.
 
 ## /odo
 
-- Queue: `~/_/Oinam/1-Projects/devCommands/albums.oinam.com.md`
-- Log: `~/_/Oinam/1-Projects/devLogs/albums.oinam.com.md`
+- Queue: `~/_/Oinam/1-Projects/devCommands/oinam.com-albums.md`
+- Log: `~/_/Oinam/1-Projects/devLogs/oinam.com-albums.md`
