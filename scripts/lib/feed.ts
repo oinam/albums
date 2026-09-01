@@ -146,7 +146,11 @@ class Entry {
     for (const para of (item.description ?? "").split(/\n\s*\n/)) {
       if (para.trim()) parts.push(`<p>${escapeXml(para.trim())}</p>`);
     }
-    parts.push(`<p><a href="${href}">${escapeXml(album.meta.title)}</a></p>`);
+    // The album, linking to the album — the reader already links the item itself,
+    // both as the headline and on the image above.
+    parts.push(
+      `<p><a href="${escapeXml(this.albumLink)}">${escapeXml(album.meta.title)}</a></p>`,
+    );
 
     return parts.join("");
   }
