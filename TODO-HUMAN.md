@@ -3,14 +3,17 @@
 - TODO
   - [ ] Purge three cached pages. `/about/`, `/contact/` and `/album/1111-11-11-random/`
         still answer 200 with old HTML. The origin returns 404 for all three, so only the
-        edge copy is stale and it expires within a week on its own.
+        edge copy is stale and it expires within a week on its own. Still 200 on
+        2026-09-01 at ~2.9 days of edge age, and still titled "Oinam's Album" — while an
+        unknown URL correctly 404s, so `404.html` is right in production and this really
+        is only the cache.
   - [ ] Finish `bangalore`'s metadata. `greenage` and `imphal-peace-museum` now have
-        their descriptions; bangalore has a location and nothing else. Quickest
-        through `mise run dev` and the Edit button.
-  - [ ] Name the three albums ingested on 2026-08-30. `london-2015may-jul`,
-        `los-angeles-2023may` and `san-francisco-2023may-jun` carry the titles
-        ingest guessed from the folder names — "London 2015may Jul" and the like —
-        and no date, location or description. They are live in that state.
+        their descriptions; bangalore has a title, cover and location but no date and no
+        description. Quickest through `mise run dev` and the Edit button.
+  - [ ] Describe the three albums ingested on 2026-08-30. `london-2015may-jul`,
+        `los-angeles-2023may` and `san-francisco-2023may-jun` were named since —
+        verified 2026-09-01, they carry proper titles, dates and locations — but none
+        of the three has a description.
   - [ ] Decide the licence split before publishing. `LICENSE` is gone and `package.json`
         says `UNLICENSED`, so nothing grants rights to anything. The shape you want is a
         licence on the code and none on the photographs.
