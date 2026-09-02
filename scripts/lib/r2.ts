@@ -67,7 +67,13 @@ async function sizeOf(bucket: Bucket, key: string): Promise<number | null> {
   }
 }
 
-/** Uploads unless an object of the same size is already there. */
+/**
+ * Uploads unless an object of the same size is already there.
+ *
+ * The body stays a plain read stream. Attaching a listener to it to count bytes
+ * puts it in flowing mode, and the SDK refuses to checksum a stream that is
+ * already flowing — which is why progress is reported as elapsed time instead.
+ */
 export async function upload(
   bucket: Bucket,
   key: string,

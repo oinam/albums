@@ -1,4 +1,4 @@
-import { existsSync, mkdirSync, readdirSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readdirSync, statSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import exifr from "exifr";
 import { loadConfig, stagingDir } from "./lib/config.ts";
@@ -9,6 +9,7 @@ import { deriveId } from "./lib/ids.ts";
 import { parseSlug } from "./lib/slug.ts";
 import { applyOrientation, readDimensions } from "./lib/dimensions.ts";
 import { probeMedia } from "./lib/probe.ts";
+import { formatBytes, progress } from "./lib/progress.ts";
 import { openBucket, upload } from "./lib/r2.ts";
 
 const ALBUMS = "albums";
@@ -107,8 +108,13 @@ async function ingestAlbum(
   const albumDir = join(ALBUMS, slug);
   mkdirSync(albumDir, { recursive: true });
 
+  const reading = progress("reading", files.length);
   const scanned: Item[] = [];
-  for (const file of files) scanned.push(await describeFile(slug, stageDir, file));
+  for (const file of files) {
+    reading.step(file);
+    scanned.push(await describeFile(slug, stageDir, file));
+  }
+  reading.done();
 
   const items = sortItems(merge(readItems(albumDir), scanned));
   ensureAlbumMeta(slug, albumDir, items);
@@ -120,14 +126,18 @@ async function ingestAlbum(
   }
 
   const bucket = openBucket();
+  const uploading = progress("uploading", items.length);
   let uploaded = 0;
   let skipped = 0;
   for (const item of items) {
     const key = `${prefix}/${slug}/${item.file}`;
-    const result = await upload(bucket, key, join(stageDir, item.file));
+    const path = join(stageDir, item.file);
+    uploading.step(item.file, formatBytes(statSync(path).size));
+    const result = await upload(bucket, key, path);
     if (result === "uploaded") uploaded += 1;
     else skipped += 1;
   }
+  uploading.done();
   console.log(`  uploaded ${uploaded}, already present ${skipped}`);
 }
 

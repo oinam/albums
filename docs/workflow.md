@@ -45,6 +45,21 @@ For each file this reads the dimensions and EXIF, assigns a permanent media id,
 uploads to R2, and writes `albums/<slug>/photos.json`. It creates `album.md` the
 first time with the title and date guessed from the folder name.
 
+It says where it is while it does it. Each album prints its file count and then a
+single line that rewrites in place, one for reading and one for uploading:
+
+```
+2015-05-17-london-2015may-jul: 50 file(s)
+  uploading 12/50  IMG_0325.jpeg  7.7 MB  3s
+```
+
+The clock rather than a percentage, because a percentage would lie: the R2 client
+pulls the whole file off disk into its own buffer in a fraction of a second and
+then waits on the network, so a byte counter reaches 100% almost immediately and
+sits there for the rest of the upload. The line is erased when the phase ends —
+what stays in the scrollback is the per-album summary. Piped to a file or a CI log
+there is no cursor to rewrite, so each file gets a plain line of its own instead.
+
 Useful flags:
 
 ```bash
