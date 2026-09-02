@@ -5,6 +5,11 @@ Work Claude tracks. Anything needing Brajeshwar's hands or credentials lives in
 
 ## Next
 
+- [ ] Ingest cannot handle a partly staged album. The upload loop walks the merged
+      item list but looks for every file in the staging folder, so staging only the
+      files being added — which `docs/workflow.md` says you may do — throws ENOENT
+      at the first item that is not there. Never hit yet, because every ingest so
+      far staged the whole folder. Found 2026-09-02.
 - [ ] Album pagination on the home page, once the archive passes roughly a hundred
       albums. Not before — the whole list fits comfortably until then.
 
