@@ -172,10 +172,26 @@ hand in `photos.json` when the picture carries meaning the title does not.
 
 ## Keyboard shortcuts sit on top of the links
 
-`←` and `→` follow the pager, `R` takes the random link, `H` goes home. They are a
-shortcut over hrefs that are already on the page, not a second way to navigate:
-every target is a real `<a>`, so Tab and Enter reach all of them with no script at
-all, and the script only saves the tabbing.
+`←` and `→` follow the pager, `A` goes back to the album, `R` takes the random
+link, `H` goes home. They are a shortcut over hrefs that are already on the page,
+not a second way to navigate: every target is a real `<a>`, so Tab and Enter reach
+all of them with no script at all, and the script only saves the tabbing.
+
+`?` and `/` open a panel listing them, which is the answer to the discoverability
+problem the rest of this section works around. It is a real `<dialog>` opened with
+`showModal()`, so the backdrop, the focus trap and Escape are the browser's rather
+than ours — the only reason to hand-roll any of that would be to do it worse.
+
+Both keys open it on purpose. `?` is Shift on most layouts, and the handler's first
+rule is that any modifier means do nothing, so `?` has to be tested before that
+guard — at which point binding the unshifted key costs one comparison and covers
+the layouts where `?` lives somewhere else entirely.
+
+The panel is not only keys. Four things about this site are true and invisible:
+that everything runs newest first and the album's title line can turn it around,
+that a picture's address never changes, that the feed carries the photographs
+themselves, and that the theme control has three states. A visitor has no way to
+learn any of it by looking, and a footer with a `?` in it is where people look.
 
 Bare keys, no modifier. That is what Flickr, Google Photos and every lightbox use,
 and it is what a visitor tries first. The modified forms are the ones to leave alone

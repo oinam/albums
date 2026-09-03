@@ -80,6 +80,40 @@ const THEME_TOGGLE = `<button type="button" class="theme-toggle" data-theme-togg
 const HOME_CRUMB = `<a class="crumb-home" href="/" title="Albums (H)">Albums</a> <span class="crumb-sep" aria-hidden="true">/</span> `;
 
 /**
+ * The shortcut panel, and the notes with it.
+ *
+ * A shortcut nobody can discover is a shortcut nobody uses, which is why the
+ * pager icons carry their key in `title` — but that only reaches someone already
+ * hovering the thing they were going to click anyway. This is the list, plus the
+ * four facts about the site that are worth knowing and are otherwise invisible.
+ *
+ * It is a real `<dialog>` opened with `showModal()`, so the focus trap, the
+ * backdrop and Escape are the browser's rather than ours.
+ */
+const HELP = `<dialog class="help" aria-labelledby="help-title">
+<div class="help-head">
+<h2 id="help-title">Getting around</h2>
+<button type="button" class="help-close" aria-label="Close" title="Close (Esc)">&times;</button>
+</div>
+<dl class="help-keys">
+<dt><kbd>&larr;</kbd><kbd>&rarr;</kbd></dt><dd>The picture before, and the one after</dd>
+<dt><kbd>A</kbd></dt><dd>Back to the album</dd>
+<dt><kbd>R</kbd></dt><dd>Something at random</dd>
+<dt><kbd>H</kbd></dt><dd>Every album</dd>
+<dt><kbd>?</kbd><kbd>/</kbd></dt><dd>This window</dd>
+</dl>
+<p class="help-note">The first three want a picture on screen. <kbd>H</kbd> and <kbd>?</kbd> work anywhere.</p>
+<ul class="help-notes">
+<li><strong>Newest first.</strong> Albums run that way and so do the pictures inside them. The button on an album's title line turns it around, and remembers.</li>
+<li><strong>Every picture has a permanent address.</strong> Renaming an album, or re-encoding a video, never moves one — a link that worked once keeps working.</li>
+<li><strong>The feed carries the pictures.</strong> Subscribe and a photograph shows up in your reader, not a link promising one.</li>
+<li><strong>Light, dark, or whatever your system says.</strong> The control in the footer cycles all three.</li>
+</ul>
+</dialog>`;
+
+const HELP_BUTTON = `<button type="button" class="help-open" title="Getting around (? or /)" aria-label="Getting around">?</button>`;
+
+/**
  * Keyboard shortcuts, on top of tabbing — never instead of it. Every target is a
  * real link, so Tab and Enter already work and these are a shortcut over the same
  * hrefs rather than a parallel mechanism.
@@ -90,13 +124,31 @@ const HOME_CRUMB = `<a class="crumb-home" href="/" title="Albums (H)">Albums</a>
  * already uses on a normal page — which is why Random is R and not Space: Space
  * is page-down, and taking it would break scrolling on exactly the pages where
  * these shortcuts are useful.
+ *
+ * `?` and `/` are the one exception to the first rule. `?` is Shift on most
+ * layouts, so a bare-key test would mean it never fires; both are checked before
+ * that guard, and only the three modifiers that would make either a browser
+ * command are rejected. Binding the unshifted key as well means the panel opens
+ * whether or not you reached for Shift, and on a layout that puts `?` somewhere
+ * else entirely.
  */
 const KEYS_SCRIPT = `(function(){
-var map={ArrowLeft:'[rel=prev]',ArrowRight:'[rel=next]',r:'.pager .icon[href="/random/"]',R:'.pager .icon[href="/random/"]',h:'.brand a',H:'.brand a'};
+var map={ArrowLeft:'[rel=prev]',ArrowRight:'[rel=next]',a:'.pager-album',A:'.pager-album',r:'.pager .icon[href="/random/"]',R:'.pager .icon[href="/random/"]',h:'.brand a',H:'.brand a'};
+var help=document.querySelector('.help'),opener=document.querySelector('.help-open'),
+closer=help&&help.querySelector('.help-close');
+function openHelp(){if(!help||help.open)return;if(help.showModal)help.showModal();else help.setAttribute('open','')}
+function closeHelp(){if(!help||!help.open)return;if(help.close)help.close();else help.removeAttribute('open')}
+if(opener)opener.addEventListener('click',openHelp);
+if(closer)closer.addEventListener('click',closeHelp);
+// A native dialog fills the whole top layer, so a click landing on the element
+// itself is a click on the backdrop rather than on anything inside it.
+if(help)help.addEventListener('click',function(e){if(e.target===help)closeHelp()});
 document.addEventListener('keydown',function(e){
-if(e.metaKey||e.ctrlKey||e.altKey||e.shiftKey)return;
 var t=e.target;
 if(t&&(t.isContentEditable||/^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName)))return;
+if((e.key==='?'||e.key==='/')&&!e.metaKey&&!e.ctrlKey&&!e.altKey){e.preventDefault();if(help&&help.open)closeHelp();else openHelp();return;}
+if(e.metaKey||e.ctrlKey||e.altKey||e.shiftKey)return;
+if(help&&help.open)return;
 var sel=map[e.key];if(!sel)return;
 var a=document.querySelector(sel);if(!a||!a.href)return;
 e.preventDefault();location.href=a.href;});
@@ -122,7 +174,7 @@ function siteFooter(cfg: SiteConfig): string {
 
   return `<footer class="bar site-footer">
 <p class="brand">&copy; ${year}. All Rights Reserved. <a href="/" title="Home (H)">${esc(cfg.site.title)}</a>.</p>
-<nav class="bar-nav">${links}${THEME_TOGGLE}</nav>
+<nav class="bar-nav">${links}${HELP_BUTTON}${THEME_TOGGLE}</nav>
 </footer>`;
 }
 
@@ -158,6 +210,7 @@ ${head}<script>${THEME_SCRIPT}</script>
 ${body}
 </main>
 ${siteFooter(cfg)}
+${HELP}
 <script>${TOGGLE_SCRIPT}</script>
 <script>${KEYS_SCRIPT}</script>
 <script>${SORT_SCRIPT}</script>
@@ -439,7 +492,7 @@ export function renderItem(
     body: `${stage(cfg, album, item)}
 ${itemMeta(item)}
 <nav class="pager">
-<p class="pager-crumb">${HOME_CRUMB}<a class="pager-album" href="${albumPath(album)}">${esc(albumCaption(album))}</a></p>
+<p class="pager-crumb">${HOME_CRUMB}<a class="pager-album" href="${albumPath(album)}" title="Album (A)">${esc(albumCaption(album))}</a></p>
 <span class="pager-icons">
 ${prev ? `<a class="icon" href="${itemPath(prev)}" rel="prev" aria-label="Previous" title="Previous (←)">${ICON.prev}</a>` : `<span class="icon is-off" aria-hidden="true">${ICON.prev}</span>`}
 <a class="icon" href="/random/" aria-label="A random item" title="Random (R)">${ICON.random}</a>

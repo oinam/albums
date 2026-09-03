@@ -91,5 +91,8 @@ unaffected.
   same photograph gets a different answer in a different country.
 - **The date prefix on an album folder is not in its URL.** `albums/2005-06-07-lego/`
   is served at `/album/lego/`. The prefix orders the shelf; a visitor never reads it.
+- **`?` and `/` both open the shortcut panel.** Not a duplicate: the key handler
+  rejects every modifier, `?` is Shift on most layouts, so it is tested before
+  that guard and the unshifted key comes along for free.
 - **The local editor is dev-only and must stay that way.** `npm run build` emits no
   editor markup, style, script or `/_edit` reference anywhere in `dist/`.
