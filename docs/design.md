@@ -41,14 +41,15 @@ Prose is the exception. Captions and the tagline cap at `68ch`, because a line o
 text three thousand pixels wide is unreadable no matter how much room exists. Grids
 expand; sentences do not.
 
-## The lattice
+## Two shapes, and only two
 
-Thumbnails are 4:3 or 3:4 and nothing else, which is what makes a pure-CSS masonry
-possible — see [URLs and sizes](/urls/). The grid is an 80px lattice, wide tiles
-span 4 × 3 cells and tall tiles 3 × 4, with `grid-auto-flow: dense` to pack them.
+Thumbnails are 4:3 or 3:4 and nothing else. Wide and tall have identical area —
+320 × 240 and 240 × 320 are both 76,800 px — so a portrait carries the same visual
+weight as a landscape beside it, and a grid of mixed shapes still reads as one
+wall. Only a photo taller than it is wide gets the tall crop; video and audio are
+always wide. See [URLs and sizes](/urls/) for the rendition sizes behind them.
 
-Below 400px the cell drops to 64px, because a wide tile spans four of them and four
-80px cells will not fit a small phone.
+Two shapes is also what makes the layout below possible without JavaScript.
 
 ## One spacing value
 
@@ -93,7 +94,7 @@ album link — so every page below the root shows a link back without a bar to h
 one. It is a breadcrumb rather than a button: the crumb is muted, the current page
 is plain text, and both sit at the size the title was already set in.
 
-The footer is the only chrome: the site name on the left, and RSS, About, Contact,
+The footer is the only chrome: the site name on the left, and RSS, Contact,
 oinam.com and the theme control on the right. It sits on the page background with a
 border doing the separating, and it is not fixed — `margin-top: auto` pushes it
 down rather than pinning it.

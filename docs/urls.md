@@ -206,39 +206,21 @@ Wide and tall have identical area — 320 × 240 and 240 × 320 are both 76,800 
 so a portrait carries the same visual weight as a landscape beside it. Each item
 needs exactly one of the two, so having two shapes costs no more than having one.
 
-## The masonry lattice
+## How the two shapes are laid out
 
-The two shapes share a factor of 80, which is what makes a pure-CSS masonry
-possible: 320 = 4 × 80 and 240 = 3 × 80. So the album grid is an 80px lattice
-where a wide tile spans 4 columns × 3 rows and a tall tile spans 3 × 4.
+Two ratios and nothing else is what lets the grid be a justified gallery — rows
+flush at both edges, every item in a row the same height, no JavaScript and no
+library. Each item carries its ratio as `--ar` and gets a `flex-basis` and
+`flex-grow` proportional to it; [Design](/design/) has the mechanism.
 
-```css
-.grid {
-  grid-template-columns: repeat(auto-fill, var(--cell));
-  grid-auto-rows: var(--cell);
-  grid-auto-flow: row dense;
-}
-.cell--wide {
-  grid-column: span 4;
-  grid-row: span 3;
-}
-.cell--tall {
-  grid-column: span 3;
-  grid-row: span 4;
-}
-```
+An earlier version packed the same two shapes into an 80px CSS-grid lattice with
+`grid-auto-flow: dense`. It filled the width, but `dense` let a later item slot
+into an earlier gap, so the visual order drifted from the file order — which is
+the wrong trade for a grid that is now explicitly sorted by when each picture was
+taken. The justified layout reads strictly left to right.
 
-No JavaScript, no column-major reading order, and no library. Two details make it
-work: `gap` is zero and the gutter is padding _inside_ each cell, so a span stays
-an exact multiple of the cell; and `dense` backfills holes a mixed run of shapes
-would otherwise leave.
-
-`dense` is the one trade. It lets a later item slot into an earlier gap, so the
-visual order can differ slightly from the file order. For an album grid that reads
-as a wall rather than a sequence, packing is worth more than strict order.
-
-Album covers are the exception: they are always wide, so the album list stays a
-tidy uniform grid rather than a ragged one.
+Album covers are the exception to the two shapes: they are always wide, so the
+album list stays a tidy uniform grid rather than a ragged one.
 
 ## The size ladder
 
