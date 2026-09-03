@@ -1,4 +1,4 @@
 ---
-title: Unsorted
-cover: IMG_1994.jpeg
+title: "Unsorted"
+cover: "F369538072.jpeg"
 ---

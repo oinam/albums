@@ -1,7 +1,6 @@
 ---
-title: London
-cover: IMG_0013.jpeg
-date: 2015-MAY-JUL
-location: UK
+title: "London"
+date: "2015-MAY-JUL"
+location: "UK"
+cover: "IMG_0142.jpeg"
 ---
-

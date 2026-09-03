@@ -1,7 +1,6 @@
 ---
-title: London
-cover: IMG_9018.jpeg
-date: 2026-JUN
-location: UK
+title: "London"
+date: "2026-JUN"
+location: "UK"
+cover: "IMG_9319.jpeg"
 ---
-

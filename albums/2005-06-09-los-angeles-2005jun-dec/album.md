@@ -1,7 +1,6 @@
 ---
-title: Los Angeles
-cover: F359822856.jpeg
-date: 2005-JUN-DEC
-location: California, USA
+title: "Los Angeles"
+date: "2005-JUN-DEC"
+location: "California, USA"
+cover: "F360248480.jpeg"
 ---
-

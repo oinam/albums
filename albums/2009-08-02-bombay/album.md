@@ -1,6 +1,5 @@
 ---
-title: Bombay
-cover: F372039024.jpeg
-location: Maharashtra, India
+title: "Bombay"
+location: "Maharashtra, India"
+cover: "F372209176.jpeg"
 ---
-

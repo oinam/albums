@@ -1,7 +1,6 @@
 ---
-title: Silicon Valley
-cover: Cars at San Francisco.jpeg
-date: 2010-2011
-location: California, USA
+title: "Silicon Valley"
+date: "2010-2011"
+location: "California, USA"
+cover: "DSC_0298.jpeg"
 ---
-

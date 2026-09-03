@@ -10,6 +10,7 @@
     {
       "id": "2rX9Ucd2L",
       "file": "Desk (2002).jpeg",
+      "title": "Early Work Command Center",
       "taken": "2003-10-31T20:44:08",
       "width": 558,
       "height": 342
@@ -25,6 +26,8 @@
     {
       "id": "15qKynX8A",
       "file": "F369538072.jpeg",
+      "title": "My photo that started a stir in Bombay",
+      "description": "In 2005, this was a bold advertisement by Lee Cooper. I thought, that is strange and took a photo. People saw the photo, then newspapers carried it, some stir happened, and was soon replaced.",
       "taken": "2007-04-03T05:30:28",
       "width": 1924,
       "height": 1454
@@ -58,6 +61,7 @@
     {
       "id": "2CLwqy5dm",
       "file": "IMG_2140.jpeg",
+      "title": "Caught by the Traffic Cop for the first time in Bangalore",
       "taken": "2022-09-19T16:10:19",
       "width": 3075,
       "height": 2293
@@ -110,6 +114,7 @@
     {
       "id": "2i9XgiiHW",
       "file": "IMG_7347.jpeg",
+      "title": "I’m watching you",
       "taken": "2025-03-03T09:01:05",
       "width": 2412,
       "height": 1715
@@ -141,6 +146,7 @@
     {
       "id": "1dLyJ59Lw",
       "file": "NAOBI001.jpeg",
+      "title": "Early Work Command Center",
       "taken": "2002-10-17T00:11:33",
       "width": 743,
       "height": 495
