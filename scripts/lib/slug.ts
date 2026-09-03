@@ -1,4 +1,4 @@
-export interface ParsedSlug {
+interface ParsedSlug {
   /** `YYYY-MM-DD`, or absent when the folder did not start with one. */
   date?: string;
   /** The folder name with the date prefix removed. This is the album's URL. */

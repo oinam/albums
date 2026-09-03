@@ -96,7 +96,7 @@ function redirects(albums: Album[]): string {
   return `${lines.join("\n")}\n`;
 }
 
-export interface BuildResult {
+interface BuildResult {
   albums: number;
   items: number;
 }

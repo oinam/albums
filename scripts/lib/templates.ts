@@ -123,7 +123,7 @@ function siteFooter(cfg: SiteConfig): string {
 </footer>`;
 }
 
-export function layout({
+function layout({
   cfg,
   title,
   description,

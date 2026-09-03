@@ -1,6 +1,5 @@
-import { readFileSync, writeFileSync } from "node:fs";
+import { writeFileSync } from "node:fs";
 import { join } from "node:path";
-import matter from "gray-matter";
 import type { AlbumMeta, Item } from "./albums.ts";
 import { readItems } from "./albums.ts";
 
@@ -17,7 +16,7 @@ const ALBUMS = "albums";
  * what the file told us. `kind` is left out — it is the extension, and storing it
  * only gives a second place for it to be wrong.
  */
-export function forFile(item: Item): Record<string, unknown> {
+function forFile(item: Item): Record<string, unknown> {
   const ordered: Record<string, unknown> = { id: item.id, file: item.file };
   const keys = [
     "title",
@@ -88,7 +87,7 @@ const META_ORDER = ["title", "date", "date_end", "location", "cover"] as const;
  * Comments in the frontmatter do not survive an edit — the file is rewritten, not
  * patched.
  */
-export function albumMarkdown(meta: AlbumMeta, description: string): string {
+function albumMarkdown(meta: AlbumMeta, description: string): string {
   const front = META_ORDER.filter((key) => meta[key] !== undefined && meta[key] !== "")
     .map((key) => `${key}: ${JSON.stringify(meta[key])}`)
     .join("\n");
@@ -99,10 +98,4 @@ export function albumMarkdown(meta: AlbumMeta, description: string): string {
 
 export function updateAlbum(slug: string, meta: AlbumMeta, description: string): void {
   writeFileSync(join(ALBUMS, slug, "album.md"), albumMarkdown(meta, description));
-}
-
-/** The album's description as written, not as rendered. */
-export function albumSource(slug: string): string {
-  const path = join(ALBUMS, slug, "album.md");
-  return matter(readFileSync(path, "utf8")).content.trim();
 }

@@ -20,7 +20,7 @@ const CLEAR = "\r\u001b[2K";
 
 const TICK_MS = 250;
 
-export interface Progress {
+interface Progress {
   /** Move on to the next item. `note` is anything fixed worth showing, like a size. */
   step: (label: string, note?: string) => void;
   /** Stop the clock and erase the line so whatever prints next starts clean. */

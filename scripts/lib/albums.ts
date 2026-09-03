@@ -4,7 +4,7 @@ import matter from "gray-matter";
 import { marked } from "marked";
 import { parseSlug } from "./slug.ts";
 
-export type MediaKind = "photo" | "video" | "audio";
+type MediaKind = "photo" | "video" | "audio";
 export type Orientation = "wide" | "tall";
 
 export interface Item {
@@ -257,7 +257,7 @@ export function formatDate(date: string, dateEnd?: string): string {
  * Unrecognised strings fall back to their leading year, so a hand-written
  * `1945-46` still sorts among 1945 rather than by accident of its characters.
  */
-export function sortableDate(date: string): string {
+function sortableDate(date: string): string {
   const p = parts(date);
   if (!p) {
     const year = /^(\d{4})/.exec(date)?.[1];
@@ -318,14 +318,4 @@ export function orientationOf(item: Item): Orientation {
     return item.height > item.width ? "tall" : "wide";
   }
   return "wide";
-}
-
-/** Seconds as m:ss, or h:mm:ss past an hour. */
-export function formatDuration(seconds: number): string {
-  const total = Math.round(seconds);
-  const s = total % 60;
-  const m = Math.floor(total / 60) % 60;
-  const h = Math.floor(total / 3600);
-  const pad = (n: number): string => String(n).padStart(2, "0");
-  return h > 0 ? `${h}:${pad(m)}:${pad(s)}` : `${m}:${pad(s)}`;
 }

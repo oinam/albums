@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 
-export interface Dimensions {
+interface Dimensions {
   width: number;
   height: number;
 }

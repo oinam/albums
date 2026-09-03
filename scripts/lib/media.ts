@@ -80,7 +80,7 @@ export function thumbSize(
 }
 
 /** Cropped rendition at an explicit long edge — 4:3 or 3:4, never anything else. */
-export function croppedUrl(
+function croppedUrl(
   cfg: SiteConfig,
   slug: string,
   file: string,
@@ -134,29 +134,6 @@ export function posterUrl(cfg: SiteConfig, slug: string, file: string): string {
   if (cfg.media.local) return LOCAL_POSTER;
   const source = originalUrl(cfg, slug, file);
   return `https://${cfg.media.host}/cdn-cgi/media/mode=frame,time=1s,width=${cfg.sizes.desktop},format=jpg/${source}`;
-}
-
-/**
- * Fixed-format rendition for handing to an API that negotiates its own Accept
- * header. `format=auto` could return AVIF, which such a consumer may reject.
- *
- * Both axes are bounded so the *long* edge is what gets constrained. Bounding
- * width alone leaves a portrait taller than a landscape is wide, and vision
- * tokens are billed on area — a 9:16 frame cost 2.7x a 3:2 one for no gain.
- */
-export function visionUrl(
-  cfg: SiteConfig,
-  slug: string,
-  file: string,
-  longEdge: number,
-): string {
-  return transform(cfg, slug, file, {
-    width: longEdge,
-    height: longEdge,
-    fit: "scale-down",
-    quality: QUALITY,
-    format: "jpeg",
-  });
 }
 
 /** Video still cropped to a grid thumbnail. */
