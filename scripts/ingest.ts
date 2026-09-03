@@ -49,8 +49,15 @@ async function describeFile(slug: string, dir: string, file: string): Promise<It
     return item;
   }
 
+  // Both flags are load-bearing. `reviveValues` off keeps DateTimeOriginal the
+  // raw wall-clock string; `translateValues` off keeps Orientation the number
+  // applyOrientation expects, rather than the prose "Rotate 90 CW".
   const exif = ((await exifr
-    .parse(path, { pick: ["Orientation", "DateTimeOriginal"], reviveValues: false })
+    .parse(path, {
+      pick: ["Orientation", "DateTimeOriginal"],
+      reviveValues: false,
+      translateValues: false,
+    })
     .catch(() => null)) ?? {}) as Exif;
   const dims = readDimensions(path);
   if (dims) {

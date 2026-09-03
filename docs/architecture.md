@@ -82,3 +82,13 @@ one reformatting the other's output, and the diff noise would hide the real chan
 `dimensions.ts` reads the container header rather than EXIF on purpose. Exported and
 edited files routinely carry an ICC profile and no camera tags at all, so EXIF
 cannot be trusted for something the layout depends on.
+
+The header is the pixels as stored, though, which is not always the picture as
+seen: EXIF orientations 5–8 turn it a quarter turn, and the stored dimensions have
+to be swapped to match. That is the one thing the header cannot tell you, so the
+orientation tag is read after all — as a **number**, which is why ingest asks exifr
+for `translateValues: false`. Left on, exifr helpfully returns `"Rotate 90 CW"`
+instead of `6`, the range check silently never matches, and a portrait photograph is
+laid out in a landscape frame. Nothing in this archive was affected, because these
+originals are all rotated upright before they are staged — which is exactly the kind
+of bug that waits for the one file that is not.
