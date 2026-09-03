@@ -41,7 +41,10 @@ carries one. Sorting on a field that is usually absent would lift the handful th
 have it out of the run they belong to and leave everything else arbitrary; reading
 the file backwards is the one rule that holds for every album.
 
-The item pager follows the same order, so `next` keeps moving down the page.
+The item pager follows the same order, so `next` keeps moving down the page. The
+album page can be flipped back to oldest first from the toggle on its title line —
+that is a reading preference held in the browser, not a different page, and the
+item pages keep the default order either way. See [Design](/design/).
 
 ### Why there is no chronological stream
 

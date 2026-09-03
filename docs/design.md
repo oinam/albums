@@ -108,6 +108,39 @@ degree hue. Both of those are valid CSS and both are the least widely implemente
 corners of `oklch()`, and a token that fails to parse leaves a background unpainted.
 Chroma is zero throughout, so the hue never carried any information anyway.
 
+## The album title's line carries the tools
+
+An album page opens with `Albums / Amsterdam 2024JUN` and, on the same rule, a
+toolbar on the right. It is not the header bar the site does without: it belongs to
+the album, it appears on no other page, and it holds controls for the thing directly
+below it rather than links away from it.
+
+Sorting is the only tool so far. The button reads the order it is currently in —
+**Newest first** or **Oldest first** — rather than the order it would switch to, and
+the arrow beside it points the way the bars shorten. A control labelled with its
+destination reads as a command; one labelled with its state reads as a fact, and a
+fact is what you want when you glanced up to check which way the album runs.
+
+An album of one item gets no toolbar. There is nothing to reorder, and a control
+that cannot change anything is worse than an empty corner.
+
+### It moves the tiles, it does not restyle them
+
+The toggle reorders the DOM rather than setting `order` on the flex items. `order`
+is visual only: the tab sequence would keep running the other way, so a keyboard
+visitor reversing the album would find the focus ring jumping from the first tile
+they see to the far end of the page.
+
+Reordering does invalidate what the build decided about loading, so the tiles that
+land at the top are marked eager afterwards — without that, a reversed album opens
+with a screenful of images the browser has been told it may defer, which is the
+failure described below.
+
+The choice is kept in `localStorage` and applies to every album. Someone who wants
+to read one album oldest first almost certainly wants the next one that way too. It
+does not reach the item pages: their `prev` and `next` are baked into static HTML
+and follow the album's default order.
+
 ## Images load eagerly above the fold
 
 The first eight tiles carry `loading="eager"`, the first of each grid also

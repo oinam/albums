@@ -252,6 +252,77 @@ main {
   color: var(--text-strong);
 }
 
+/*
+ * The album title's line doubles as a toolbar: breadcrumb on the left, tools on
+ * the right, both on the rule the h1 used to draw for itself. Moving the border
+ * out to the wrapper is what puts the tools *on* the line rather than above it.
+ *
+ * The title takes the free space and the tools keep their own, so a long title
+ * wraps within its own column instead of pushing the toolbar off the row.
+ */
+.album-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-small) var(--space);
+  margin-bottom: var(--space-small);
+  padding-bottom: var(--space-small);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.album-head h1 {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+/* `margin-inline-start` keeps them right when a narrow screen wraps them down. */
+.album-tools {
+  display: flex;
+  align-items: center;
+  gap: var(--space-small);
+  margin-inline-start: auto;
+}
+
+/*
+ * Bordered rather than bare, unlike the footer's theme control: this one sits
+ * beside a heading with nothing else around it, and without an edge it reads as
+ * part of the title.
+ */
+.tool {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.5rem;
+  font: inherit;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: var(--link-color);
+  background: none;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  cursor: pointer;
+}
+
+.tool:hover,
+.tool:focus-visible {
+  color: var(--link-hover-color);
+  background: var(--bg-subtle);
+}
+
+.tool svg {
+  width: 1.05rem;
+  height: 1.05rem;
+  flex: none;
+}
+
+.tool-label {
+  white-space: nowrap;
+}
+
 .prose {
   max-width: 68ch;
 }

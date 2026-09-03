@@ -48,6 +48,14 @@ const ICON = {
   random: `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 7h3l4 10h5M4 17h3l4-10h5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M17 4l3 3-3 3M17 14l3 3-3 3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
 } as const;
 
+/** Bars shortening downward with the arrow, lengthening against it. */
+const SORT_ICON = {
+  newest: `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 6h9M4 12h6M4 18h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M18 5v14m0 0l-3-3m3 3l3-3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  oldest: `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 6h3M4 12h6M4 18h9" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M18 19V5m0 0l-3 3m3-3l3 3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+} as const;
+
+const SORT_LABEL = { newest: "Newest first", oldest: "Oldest first" } as const;
+
 /**
  * Applied before the first paint, so a chosen theme never flashes the other one.
  * Three states: an explicit light or dark, or auto, which follows the system and
@@ -149,6 +157,7 @@ ${body}
 ${siteFooter(cfg)}
 <script>${TOGGLE_SCRIPT}</script>
 <script>${KEYS_SCRIPT}</script>
+<script>${SORT_SCRIPT}</script>
 ${edit}</body>
 </html>
 `;
@@ -185,6 +194,30 @@ function loadingAttrs(index: number): string {
     ? ` loading="eager"${index === 0 ? ' fetchpriority="high"' : ""}`
     : ` loading="lazy"`;
 }
+
+/**
+ * The album's sort toggle. It moves the tiles rather than reordering them with
+ * flexbox `order`, because `order` is visual only: the tab order would keep
+ * running the other way, and a gallery whose focus ring jumps to the far end of
+ * the page is worse than no toggle at all.
+ *
+ * Reordering also invalidates what the build decided about loading, so the tiles
+ * that are now at the top are marked eager. Without that, a reversed page opens
+ * with a screenful of images the browser has been told it may defer — and
+ * sometimes defers forever. See the eager/lazy note in docs/design.md.
+ *
+ * The choice is remembered across albums. Someone who wants to read an album
+ * oldest first almost certainly wants the next one that way too.
+ */
+const SORT_SCRIPT = `(function(){var b=document.querySelector("[data-sort-toggle]"),g=document.querySelector(".grid");if(!b||!g)return;
+var icons=${JSON.stringify(SORT_ICON)},labels=${JSON.stringify(SORT_LABEL)},now="newest";
+function stored(){try{return localStorage.getItem("album-sort")==="oldest"?"oldest":"newest"}catch(e){return "newest"}}
+function paint(v){var t="Sorted "+labels[v].toLowerCase();b.innerHTML=icons[v]+'<span class="tool-label">'+labels[v]+'</span>';b.title=t;b.setAttribute("aria-label",t+". Click to reverse.")}
+function set(v){if(v!==now){var c=[].slice.call(g.children).reverse();for(var i=0;i<c.length;i++)g.appendChild(c[i]);now=v;
+var m=g.querySelectorAll("img");for(var j=0;j<${EAGER_TILES}&&j<m.length;j++)m[j].loading="eager"}
+paint(v)}
+set(stored());
+b.addEventListener("click",function(){var v=now==="newest"?"oldest":"newest";try{localStorage.setItem("album-sort",v)}catch(e){}set(v)})})()`;
 
 function coverImage(cfg: SiteConfig, album: Album, item: Item): string {
   return item.kind === "video"
@@ -242,6 +275,20 @@ function albumCaption(album: Album): string {
     ? ` (${formatDate(album.meta.date, album.meta.date_end)})`
     : "";
   return `${album.meta.title}${location}${dates}`;
+}
+
+/**
+ * The tools that sit on the album title's line. Sorting is the only one so far.
+ *
+ * It is rendered in its default state and corrected by script, the way the theme
+ * control is — there is no server-side memory of a choice on a static site. An
+ * album of one has nothing to reorder, so it gets no toolbar at all.
+ */
+function albumTools(album: Album): string {
+  if (album.items.length < 2) return "";
+  return `<div class="album-tools">
+<button type="button" class="tool" data-sort-toggle title="Sorted newest first" aria-label="Sorted newest first. Click to reverse.">${SORT_ICON.newest}<span class="tool-label">${SORT_LABEL.newest}</span></button>
+</div>`;
 }
 
 function albumSubtitle(album: Album): string {
@@ -310,7 +357,10 @@ export function renderAlbum(cfg: SiteConfig, album: Album): string {
     description,
     path: albumPath(album),
     edit: cfg.media.local === true ? albumEditor(album) : "",
-    body: `<h1>${HOME_CRUMB}${esc(album.meta.title)}</h1>
+    body: `<div class="album-head">
+<h1>${HOME_CRUMB}${esc(album.meta.title)}</h1>
+${albumTools(album)}
+</div>
 <p class="meta">${albumSubtitle(album)}</p>
 ${album.descriptionHtml ? `<div class="caption">${album.descriptionHtml}</div>` : ""}
 ${grid(cfg, album, album.items)}`,
