@@ -9,6 +9,10 @@ mise.local.toml
 # to R2 by `npm run ingest`, and only their metadata is committed.
 _incoming/
 
+# The site owner's own chore list — cache purges, credentials, things only they
+# can do. Kept on disk, out of a repository meant to be handed to someone else.
+TODO-HUMAN.md
+
 # Ovellum build artefacts. Source markdown in docs/ is committed.
 .docs-site/
 .ovellum/

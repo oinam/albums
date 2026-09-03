@@ -1,7 +1,7 @@
 # TODO
 
-Work Claude tracks. Anything needing Brajeshwar's hands or credentials lives in
-[TODO-HUMAN.md](./TODO-HUMAN.md).
+Work on the project itself. Anything needing the site owner's own hands or
+credentials is tracked outside the repository, in a gitignored `TODO-HUMAN.md`.
 
 ## Next
 
