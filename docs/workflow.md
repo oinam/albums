@@ -103,7 +103,9 @@ of four optional fields:
 and no falling back to the filename. A photo with no title has no title.
 
 `date` overrides whatever EXIF claimed, which matters for scans and for anything
-whose camera clock was wrong. It also decides where the item sorts.
+whose camera clock was wrong. It also decides where the item lands in the feed and
+in `/random/`. It does not move the item within its album: that order is the file's
+own, newest first — see [URLs and sizes](/urls/).
 
 There is a fifth field, `alt`, for screen-reader text when the title alone is not
 descriptive enough. Without it the alt falls back to the title, and then to empty —

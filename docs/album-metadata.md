@@ -160,12 +160,12 @@ the file extension, and a second copy of it is only a second place to be wrong.
 
 All optional. Ingest never touches them, so re-running it is always safe.
 
-| Field         | Notes                                                                |
-| ------------- | -------------------------------------------------------------------- |
-| `title`       | Shown above the picture's caption block.                             |
-| `date`        | `YYYY-MM-DD`, `YYYY-MM`, `YYYY`, or free text. Also orders the item. |
-| `description` | A sentence or two under the title.                                   |
-| `alt`         | Screen-reader text. Falls back to `title`, then to empty.            |
+| Field         | Notes                                                                                                                                           |
+| ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| `title`       | Shown above the picture's caption block.                                                                                                        |
+| `date`        | `YYYY-MM-DD`, `YYYY-MM`, `YYYY`, or free text. Also places the item in the feed and in `/random/`; the album page orders by file, newest first. |
+| `description` | A sentence or two under the title.                                                                                                              |
+| `alt`         | Screen-reader text. Falls back to `title`, then to empty.                                                                                       |
 
 **Anything absent is not rendered.** An item with none of them is just a picture and
 its navigation, which is usually the right answer.

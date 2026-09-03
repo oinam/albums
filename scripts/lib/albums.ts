@@ -84,6 +84,20 @@ export function kindFor(file: string): MediaKind | null {
   return KIND_BY_EXT[extname(file).toLowerCase()] ?? null;
 }
 
+/**
+ * The order an album reads in: newest first.
+ *
+ * Ingest writes `photos.json` in filename order, which for a camera roll is the
+ * order the pictures were taken — so the stored order is oldest first and the
+ * displayed one is its reverse. It is a plain reversal rather than a sort on
+ * `date`, because almost no item carries a date: sorting on one would lift the
+ * handful that do out of the run they belong to and leave the rest arbitrary.
+ * Reversing the file order is the only ordering that holds for every album.
+ */
+export function newestFirst(items: Item[]): Item[] {
+  return [...items].reverse();
+}
+
 export function readItems(albumDir: string): Item[] {
   const path = join(albumDir, "photos.json");
   if (!existsSync(path)) return [];
@@ -133,7 +147,7 @@ function readAlbum(root: string, slug: string): Album | null {
     meta: meta as AlbumMeta,
     description,
     descriptionHtml: description ? marked.parse(description, { async: false }) : "",
-    items: readItems(dir),
+    items: newestFirst(readItems(dir)),
   };
 }
 
@@ -254,7 +268,7 @@ export function chronological(albums: Album[]): StreamEntry[] {
     .map(({ album, item }) => ({ album, item }));
 }
 
-/** The item named by `cover:` in album.md, falling back to the first one. */
+/** The item named by `cover:` in album.md, falling back to the newest. */
 export function coverOf(album: Album): Item | undefined {
   const named = album.meta.cover;
   if (named) {

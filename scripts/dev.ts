@@ -14,7 +14,7 @@ import type { IncomingMessage, ServerResponse } from "node:http";
 import { extname, join, normalize, resolve, sep } from "node:path";
 import sharp from "sharp";
 import { loadConfig, stagingDir } from "./lib/config.ts";
-import { readItems } from "./lib/albums.ts";
+import { newestFirst, readItems } from "./lib/albums.ts";
 import { contentType } from "./lib/mime.ts";
 import { parseSlug } from "./lib/slug.ts";
 import { removeItem, updateAlbum, updateItem } from "./lib/metadata.ts";
@@ -221,7 +221,7 @@ async function handleEdit(req: IncomingMessage, res: ServerResponse): Promise<vo
       // R2 first. If the credentials are missing the throw lands here, before
       // photos.json has been touched — better than a half-deleted item whose
       // metadata is gone and whose original is still sitting in the bucket.
-      const items = readItems(join("albums", slug));
+      const items = newestFirst(readItems(join("albums", slug)));
       const index = items.findIndex((item) => item.id === id);
       const target = items[index];
       if (!target) {

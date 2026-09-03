@@ -29,6 +29,20 @@ its `album.md` date, and goes to the end if it has neither. Two albums with the
 same date fall back to their titles, so the order never depends on what the
 filesystem happened to return.
 
+### Items run newest first too
+
+Inside an album the newest picture is at the top left, so what you added last is
+what a visitor sees first. `photos.json` stores the opposite order — ingest writes
+it in filename order, which for a camera roll is the order the pictures were taken
+— and the page is that file read backwards.
+
+It is a reversal rather than a sort on the item's `date`, because almost no item
+carries one. Sorting on a field that is usually absent would lift the handful that
+have it out of the run they belong to and leave everything else arbitrary; reading
+the file backwards is the one rule that holds for every album.
+
+The item pager follows the same order, so `next` keeps moving down the page.
+
 ### Why there is no chronological stream
 
 A paginated newest-first stream reads well, but it has a property worth avoiding
@@ -42,7 +56,9 @@ an album. An album page changes when that album changes. Nothing else moves.
 
 ### Album covers
 
-`cover:` in `album.md` names the file; without it the first item is used. Covers
+`cover:` in `album.md` names the file; without it the newest item is used — ingest
+writes an explicit `cover:` for a new album, so the fallback is a safety net rather
+than the usual path. Covers
 are rendered at the same wide 4:3 size as landscape grid tiles, so they add no
 transformation beyond the three rungs below.
 
