@@ -218,6 +218,18 @@ R2 → your bucket → Settings → CORS policy. Every TLD has to be named; ther
 The repository is a working template. Someone else needs to change
 `site.config.json`, point it at their own bucket, and nothing else.
 
+That file is the whole of what is personal to a site. Nothing else in the source
+names a domain, an author or an outbound link:
+
+| Field                       | What it is                                                                                                                        |
+| --------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| `site.title` `site.tagline` | The name and one line under it.                                                                                                   |
+| `site.host`                 | Where the site is served. Canonical URLs and the feed are built on it.                                                            |
+| `site.author` `site.locale` | The feed's author, and the `lang` attribute.                                                                                      |
+| `site.links`                | Footer links out of the site — `[{ label, href }]`. Optional; leave it off and the footer carries only RSS and the theme control. |
+| `media.host` `media.prefix` | The R2 custom domain, and the key prefix within the bucket.                                                                       |
+| `sizes`                     | The three rungs of the ladder — see [URLs and sizes](/urls/).                                                                     |
+
 A **Deploy to Cloudflare** button in a public repo's README sets up the fork and the
 Pages project in one flow:
 

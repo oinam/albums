@@ -109,10 +109,13 @@ paint(current());
 b.addEventListener("click",function(){var v=order[(order.indexOf(current())+1)%3];try{localStorage.setItem("theme",v)}catch(e){}paint(v)})})()`;
 
 function siteFooter(cfg: SiteConfig): string {
+  // RSS is the site's own and always there; everything after it points somewhere
+  // else and belongs to whoever owns the site, so it comes from the config.
   const links = [
     `<a href="/feed.xml">RSS</a>`,
-    `<a href="https://oinam.com/contact/">Contact</a>`,
-    `<a href="https://oinam.com/">oinam.com</a>`,
+    ...(cfg.site.links ?? []).map(
+      (link) => `<a href="${esc(link.href)}">${esc(link.label)}</a>`,
+    ),
   ].join("");
 
   const year = new Date().getFullYear();

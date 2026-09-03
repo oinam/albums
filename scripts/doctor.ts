@@ -84,7 +84,7 @@ async function main(): Promise<void> {
       new PutObjectCommand({
         Bucket: bucket.name,
         Key: PROBE_KEY,
-        Body: "albums.oinam.com connectivity probe",
+        Body: `${cfg.site.host} connectivity probe`,
         ContentType: "text/plain",
       }),
     );

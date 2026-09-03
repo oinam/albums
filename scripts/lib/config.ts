@@ -7,6 +7,8 @@ export interface SiteConfig {
     host: string;
     author: string;
     locale: string;
+    /** Footer links out of the site. Optional — an empty list renders just RSS. */
+    links?: { label: string; href: string }[];
   };
   media: { host: string; prefix: string; local?: boolean };
   sizes: { thumb: number; phone: number; desktop: number };

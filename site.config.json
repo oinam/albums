@@ -4,7 +4,17 @@
     "tagline": "Pictures, Audio, and Videos.",
     "host": "albums.oinam.com",
     "author": "Brajeshwar Oinam",
-    "locale": "en"
+    "locale": "en",
+    "links": [
+      {
+        "label": "Contact",
+        "href": "https://oinam.com/contact/"
+      },
+      {
+        "label": "oinam.com",
+        "href": "https://oinam.com/"
+      }
+    ]
   },
   "media": {
     "host": "media.oinam.com",

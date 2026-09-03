@@ -371,7 +371,7 @@ server.on("error", (err: NodeJS.ErrnoException) => {
 });
 
 server.listen(port, () => {
-  console.log(`\n  albums.oinam.com — local preview`);
+  console.log(`\n  ${cfg.site.host} — local preview`);
   console.log(`  http://localhost:${port}\n`);
   console.log(`  Media is rendered from ${staging}/ and cached in ${CACHE}/.`);
   console.log(`  Sizes mirror production; AVIF/WebP negotiation is edge-only.`);
