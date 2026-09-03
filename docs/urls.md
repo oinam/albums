@@ -141,7 +141,7 @@ a subscriber sees the photograph in their reader, not a link promising one.
 | ----------------- | ------------------------------------------------------------ |
 | `title` `link`    | The item, at its permalink                                   |
 | `guid`            | The permalink again, `isPermaLink="true"`                    |
-| `pubDate`         | The item's date, or its album's                              |
+| `pubDate`         | The item's date, else its capture time, else its album's     |
 | `category`        | The album name, with the album URL in `domain`               |
 | `description`     | Plain text. A summary, deliberately not markup               |
 | `content:encoded` | The body a reader renders: the image, the caption, the album |

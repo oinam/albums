@@ -21,8 +21,19 @@ function escapeXml(value: string): string {
     .replace(/"/g, "&quot;");
 }
 
+/**
+ * A reader sorts by this, not by the order of the document, so every item needs
+ * its own moment — without the capture time every photo in an album shared one
+ * timestamp and arrived as an undifferentiated heap.
+ *
+ * The `Z` is not decoration. `taken` is wall-clock with no zone, and a bare
+ * date-time string is parsed as local, so the same album would publish different
+ * timestamps from a laptop and from the build that runs on Pages. `date` and
+ * `sortKey` are date-only and already parse as UTC.
+ */
 function pubDate(entry: StreamEntry): string {
-  const raw = entry.item.date ?? entry.album.sortKey;
+  const taken = entry.item.taken ? `${entry.item.taken}Z` : undefined;
+  const raw = entry.item.date ?? taken ?? entry.album.sortKey;
   const parsed = raw ? new Date(raw) : new Date(Number.NaN);
   return (Number.isNaN(parsed.getTime()) ? new Date() : parsed).toUTCString();
 }
