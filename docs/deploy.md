@@ -16,6 +16,9 @@ Settings → Public access → Custom domain**:
 - Bucket: `oinam-media`
 - Custom domain: `media.oinam.com`
 
+Both are this site's; yours will differ. The bucket name goes in `mise.local.toml`
+as `R2_BUCKET`, the custom domain in `site.config.json` as `media.host`.
+
 The custom domain is what makes the originals fetchable, which is what
 transformations read from. Objects are written under `albums/<slug>/<file>`.
 

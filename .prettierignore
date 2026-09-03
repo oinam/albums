@@ -3,7 +3,7 @@ node_modules
 _incoming
 docs/.ovellum
 
-# README.md is hand-maintained by Brajeshwar. Never reformat it.
+# README.md is hand-maintained by the site owner. Never reformat it.
 README.md
 
 # Album metadata is content, not source. Left exactly as typed.

@@ -15,15 +15,15 @@ changing anything; keep it current when you do. This file stays short on purpose
 
 ## Rules
 
-- **`README.md` belongs to Brajeshwar.** Read it; never edit it unless he says so.
-  It is excluded from Prettier for the same reason.
+- **`README.md` belongs to the site owner.** Read it; never edit it unless they
+  say so. It is excluded from Prettier for the same reason.
 - **Write for a public audience.** This repository is meant to be given away. Clean,
   precise, linted.
 - **Comment less.** If something needs explaining, explain it in `docs/`, not in a
   comment. Comments in the source are reserved for the non-obvious _why_.
 - **Never change a published `id` in `photos.json`.** It is a permalink.
-- **Commit each meaningful change; never push.** Pushing happens at a release
-  point, and only when Brajeshwar asks for it.
+- **Commit each meaningful change; never push.** Pushing is a deploy here, so it
+  happens at a release point and only when the owner asks for it.
 - **Unprocessed originals never enter the repository.** They stage in `_incoming/`
   (gitignored), go to R2, and only their metadata is committed.
 - **The code is MIT; the pictures are not.** `LICENSE` covers the software,
@@ -52,6 +52,9 @@ and has the dev server render the renditions Cloudflare would. Production output
 unaffected; see `docs/workflow.md`.
 
 ## /odo
+
+The site owner's own task queue, outside the repository. Personal to this install —
+delete this section in a fork.
 
 - Queue: `~/_/Oinam/1-Projects/devCommands/oinam.com-albums.md`
 - Log: `~/_/Oinam/1-Projects/devLogs/oinam.com-albums.md`
