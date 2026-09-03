@@ -26,6 +26,9 @@ changing anything; keep it current when you do. This file stays short on purpose
   point, and only when Brajeshwar asks for it.
 - **Unprocessed originals never enter the repository.** They stage in `_incoming/`
   (gitignored), go to R2, and only their metadata is committed.
+- **The code is MIT; the pictures are not.** `LICENSE` covers the software,
+  `LICENSE-MEDIA.md` reserves the media and the album text. Keep the two apart — the
+  licence file is not the place for a note about photographs.
 
 ## Commands
 

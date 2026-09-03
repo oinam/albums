@@ -34,6 +34,17 @@ mise run check      # types, lint, formatting, docs links
 
 Then commit and push. Cloudflare Pages does the rest.
 
+## Licence
+
+The code is MIT — see `LICENSE`. Fork it, change it, publish your own album with
+it, sell what you build on it.
+
+The photographs, video and audio are not. Neither is the writing about them in
+`albums/`. Those are all rights reserved, and `LICENSE-MEDIA.md` says so in full. The
+media never enters the repository at all — it lives in R2 and is served from a
+separate domain — so a fork starts empty of it by default, and `albums/` is a
+folder you delete.
+
 ## Where to go next
 
 - [Adding an album](/workflow/) — the everyday loop.

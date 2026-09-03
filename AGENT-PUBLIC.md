@@ -38,9 +38,9 @@ anything, and keep it current when you do:
 3. **`mise run doctor`** answers whether Cloudflare is actually wired up — bucket,
    endpoint, read, write, the media domain and transformations — before you spend
    an upload finding out.
-4. **Delete `albums/` and start your own**, unless you want the example content.
-   The photographs are the author's and are not yours to republish — the code's
-   licence does not extend to them.
+4. **Delete `albums/` and start your own.** The code is MIT (`LICENSE`), but the
+   photographs and the writing about them are all rights reserved
+   (`LICENSE-MEDIA.md`). Nothing in the build depends on the example albums existing.
 
 ## Commands
 
