@@ -31,20 +31,34 @@ filesystem happened to return.
 
 ### Items run newest first too
 
-Inside an album the newest picture is at the top left, so what you added last is
-what a visitor sees first. `photos.json` stores the opposite order — ingest writes
-it in filename order, which for a camera roll is the order the pictures were taken
-— and the page is that file read backwards.
+Inside an album the newest picture is at the top left. Ingest reads each photo's
+EXIF capture time into `taken`, and that is what orders them; a `date` you wrote by
+hand beats it, because `taken` is only ever what the file claimed about itself.
 
-It is a reversal rather than a sort on the item's `date`, because almost no item
-carries one. Sorting on a field that is usually absent would lift the handful that
-have it out of the run they belong to and leave everything else arbitrary; reading
-the file backwards is the one rule that holds for every album.
+For a phone album the two agree — the filenames already run in capture order, so
+nothing moves. It earns its keep on everything else: Flickr exports, scans, and any
+folder where `DSC_1969 (1).jpeg` sorts nowhere near when it was taken.
 
 The item pager follows the same order, so `next` keeps moving down the page. The
 album page can be flipped back to oldest first from the toggle on its title line —
 that is a reading preference held in the browser, not a different page, and the
 item pages keep the default order either way. See [Design](/design/).
+
+### A file's own claim never moves it between albums
+
+The feed and `/random/` place an album's whole run by the album's date, and order
+the items inside that run the way the album page does. `taken` never reaches across
+albums.
+
+That restraint is load-bearing rather than fussy. One album here holds 103 pictures
+of a place in 2018 whose files were re-saved in 2026; trusting their capture times
+globally hands that album eighteen of the fifty slots in the feed and pushes a whole
+newer album out of it. The folder date is a decision you made about where an album
+belongs. What a JPEG says about itself is not.
+
+The exception is an album with no date at all — `0000-00-00-unsorted`. It has no run
+to sit in, so each of its items falls back to its own date, and things filed nowhere
+still reach the feed at the right moment.
 
 ### Why there is no chronological stream
 

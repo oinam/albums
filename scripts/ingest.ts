@@ -16,6 +16,23 @@ const ALBUMS = "albums";
 
 interface Exif {
   Orientation?: number;
+  DateTimeOriginal?: string;
+}
+
+/**
+ * EXIF records wall-clock time with no zone — `2011:09:08 10:55:35` — so it is
+ * kept exactly as the camera wrote it, reshaped into the form the rest of the
+ * code compares as a plain string.
+ *
+ * Letting exifr revive it into a `Date` would resolve those digits against
+ * whichever machine happened to run the ingest, and the same photograph would
+ * get a different answer on a laptop in another country.
+ */
+function takenAt(raw: unknown): string | undefined {
+  if (typeof raw !== "string") return undefined;
+  const m = /^(\d{4}):(\d{2}):(\d{2})[ T](\d{2}):(\d{2}):(\d{2})/.exec(raw.trim());
+  if (!m || m[1] === "0000") return undefined;
+  return `${m[1]}-${m[2]}-${m[3]}T${m[4]}:${m[5]}:${m[6]}`;
 }
 
 async function describeFile(slug: string, dir: string, file: string): Promise<Item> {
@@ -32,14 +49,18 @@ async function describeFile(slug: string, dir: string, file: string): Promise<It
     return item;
   }
 
-  const exif = ((await exifr.parse(path, ["Orientation"]).catch(() => null)) ??
-    {}) as Exif;
+  const exif = ((await exifr
+    .parse(path, { pick: ["Orientation", "DateTimeOriginal"], reviveValues: false })
+    .catch(() => null)) ?? {}) as Exif;
   const dims = readDimensions(path);
   if (dims) {
     const oriented = applyOrientation(dims, exif.Orientation);
     item.width = oriented.width;
     item.height = oriented.height;
   }
+
+  const taken = takenAt(exif.DateTimeOriginal);
+  if (taken) item.taken = taken;
 
   return item;
 }
@@ -74,7 +95,16 @@ function merge(existing: Item[], scanned: Item[]): Item[] {
   const updated = scanned.map((fresh) => {
     const prior = byFile.get(fresh.file);
     if (!prior) return fresh;
-    return { ...fresh, ...prior, width: fresh.width, height: fresh.height };
+    // What the file says about itself is ingest's to own, so a fresh read wins —
+    // but only when it read something. An unreadable file keeps what was there
+    // rather than erasing it.
+    return {
+      ...fresh,
+      ...prior,
+      width: fresh.width ?? prior.width,
+      height: fresh.height ?? prior.height,
+      taken: fresh.taken ?? prior.taken,
+    };
   });
 
   const staged = new Set(scanned.map((item) => item.file));

@@ -145,16 +145,29 @@ Two kinds of field: what ingest reads off the file, and what you choose to write
 
 ### Written by ingest
 
-| Field             | Notes                                                                                                            |
-| ----------------- | ---------------------------------------------------------------------------------------------------------------- |
-| `id`              | **A permalink.** Never change it after publishing — `/media/<id>/` depends on it.                                |
-| `file`            | The R2 object name within the album.                                                                             |
-| `width`, `height` | Read from the file header. Structural: they choose the 4:3 or 3:4 crop and reserve space before the image loads. |
+| Field             | Notes                                                                                                                   |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `id`              | **A permalink.** Never change it after publishing — `/media/<id>/` depends on it.                                       |
+| `file`            | The R2 object name within the album.                                                                                    |
+| `width`, `height` | Read from the file header. Structural: they choose the 4:3 or 3:4 crop and reserve space before the image loads.        |
+| `taken`           | EXIF capture time, `YYYY-MM-DDTHH:MM:SS`. Orders the item inside its album. Never shown, and never trusted over `date`. |
 
-Nothing else. Camera, lens, exposure, capture time and file size used to be stored
-and shown; they were data _about the photograph_ rather than about the picture, and
-they crowded out the three things worth reading. `kind` is not stored either — it is
-the file extension, and a second copy of it is only a second place to be wrong.
+Nothing else. Camera, lens, exposure and file size used to be stored and shown; they
+were data _about the photograph_ rather than about the picture, and they crowded out
+the three things worth reading. `kind` is not stored either — it is the file
+extension, and a second copy of it is only a second place to be wrong.
+
+`taken` is the one survivor of that group, and it survives because it does a job
+rather than fills a row: it is what puts an album in the order the pictures were
+made. It is kept exactly as the camera wrote it — wall-clock time, no zone — so
+ingesting the same photograph on a laptop in another country writes the same value.
+
+**Treat it as a claim, not a fact.** A scan carries the date of the scan, an export
+carries the date of the export, and a camera whose clock was never set carries
+whatever it invented. `date` is the correction, and it always wins. If an album's
+capture times are wrong in a way you care about, write `date` on **all** of its
+items or on none — a handful of corrected items among uncorrected ones sorts as two
+separate runs, because that is exactly what the data then says.
 
 ### Written by you
 

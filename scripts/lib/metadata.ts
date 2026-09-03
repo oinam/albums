@@ -19,7 +19,15 @@ const ALBUMS = "albums";
  */
 export function forFile(item: Item): Record<string, unknown> {
   const ordered: Record<string, unknown> = { id: item.id, file: item.file };
-  const keys = ["title", "date", "description", "alt", "width", "height"] as const;
+  const keys = [
+    "title",
+    "date",
+    "description",
+    "alt",
+    "taken",
+    "width",
+    "height",
+  ] as const;
   for (const key of keys) {
     const value = item[key];
     if (value !== undefined) ordered[key] = value;

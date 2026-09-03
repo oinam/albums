@@ -16,6 +16,13 @@ export interface Item {
   /** Structural: they choose the 4:3 or 3:4 crop and reserve space before load. */
   width?: number;
   height?: number;
+  /**
+   * EXIF capture time, `YYYY-MM-DDTHH:MM:SS`, in the camera's own wall clock.
+   * Ordering only — it is never shown. What the file claims about when it was
+   * made is frequently not when the picture was made: a scan carries the date of
+   * the scan. `date` is yours, and it wins.
+   */
+  taken?: string;
 
   // Yours. All optional, all left alone by ingest, none of them invented.
   // Anything absent is simply not rendered.
@@ -84,18 +91,33 @@ export function kindFor(file: string): MediaKind | null {
   return KIND_BY_EXT[extname(file).toLowerCase()] ?? null;
 }
 
+/** What an item sorts by: your date if you wrote one, else the camera's. */
+function itemKey(item: Item): string {
+  return item.date ? sortableDate(item.date) : (item.taken ?? "");
+}
+
 /**
  * The order an album reads in: newest first.
  *
- * Ingest writes `photos.json` in filename order, which for a camera roll is the
- * order the pictures were taken — so the stored order is oldest first and the
- * displayed one is its reverse. It is a plain reversal rather than a sort on
- * `date`, because almost no item carries a date: sorting on one would lift the
- * handful that do out of the run they belong to and leave the rest arbitrary.
- * Reversing the file order is the only ordering that holds for every album.
+ * `date` beats `taken` because `taken` is only ever what the file claimed — a
+ * scan of a 1945 photograph carries the date of the scan — and a hand-written
+ * date is the correction for exactly that.
+ *
+ * An item with neither keeps its place in the file, reversed, which is what the
+ * whole album fell back to before capture times were recorded: `photos.json` is
+ * written in filename order, and for a camera roll that is the order the
+ * pictures were taken. Items with no date at all go last, the way an undated
+ * album does on the home page.
  */
 export function newestFirst(items: Item[]): Item[] {
-  return [...items].reverse();
+  return [...items].reverse().sort((a, b) => {
+    const ka = itemKey(a);
+    const kb = itemKey(b);
+    if (!ka && !kb) return 0;
+    if (!ka) return 1;
+    if (!kb) return -1;
+    return kb.localeCompare(ka);
+  });
 }
 
 export function readItems(albumDir: string): Item[] {
@@ -252,8 +274,16 @@ export interface StreamEntry {
 }
 
 /**
- * Every item across every album, newest first. A hand-written item date wins;
- * otherwise the item inherits its album's position on the shelf.
+ * Every item across every album, newest first — the feed and `/random/`.
+ *
+ * The album's own date decides where its whole run sits, and the items inside it
+ * keep the order the album page shows them in. Nothing an item knows about itself
+ * moves it out of its album: `taken` is only what the file claimed, and one
+ * album's re-saved originals would otherwise crowd out newer albums entirely.
+ *
+ * An album with no date has no run to sit in, so each of its items falls back to
+ * its own. That is what makes the unsorted drawer work — things filed nowhere
+ * still reach the feed at the right moment.
  */
 export function chronological(albums: Album[]): StreamEntry[] {
   return albums
@@ -261,7 +291,7 @@ export function chronological(albums: Album[]): StreamEntry[] {
       album.items.map((item) => ({
         album,
         item,
-        at: item.date ?? (album.sortKey ? `${album.sortKey}T00:00:00` : ""),
+        at: album.sortKey ? `${album.sortKey}T00:00:00` : itemKey(item),
       })),
     )
     .sort((a, b) => b.at.localeCompare(a.at))
