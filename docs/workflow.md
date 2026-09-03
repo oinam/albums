@@ -178,6 +178,21 @@ the file is rewritten rather than patched. And every value is written quoted —
 `date: "2026-06-16"` rather than `date: 2026-06-16` — which is deliberate: bare
 YAML turns that into a timestamp and a bare `1965` into a number.
 
+**The cover is picked from the wall, not typed.** The album page carries a second
+button beside the sort control — a picture frame — and pressing it turns the grid
+into a chooser: click any thumbnail and it becomes the album's cover. `Esc` or a
+second press leaves without changing anything, and the current cover wears a
+**Cover** badge so you can see what you are replacing.
+
+Choosing a cover is a comparative act. You do it by looking at the wall and
+deciding which picture speaks for the rest, which is impossible while typing a
+filename into a text box from memory — and the filename is what `album.md`
+actually wants. The box is still in the panel for when you know exactly what you
+want; the picker is for when you have to look.
+
+It saves through the album form, so it is the same write as any other album edit
+and carries the same two caveats — comments go, values come back quoted.
+
 **Delete removes the item and its original.** It takes two clicks — the button arms
 itself and says so — and then drops the entry from `photos.json`, deletes the
 object from R2, and moves you on to the next item in the album. R2 goes first: if

@@ -14,6 +14,9 @@ import type { Album, Item } from "./albums.ts";
  * has to look exactly like the page that ships.
  */
 
+/** A picture frame. The button beside it says what it does. */
+const COVER_ICON = `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="5" width="18" height="14" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.5" cy="10" r="1.5" fill="currentColor"/><path d="M5 17l4.5-4.5 3 3L16 12l3 3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+
 function esc(value: string): string {
   return value
     .replace(/&/g, "&amp;")
@@ -75,6 +78,21 @@ background:var(--bg);color:var(--text-strong)}
 border:1px solid var(--border-color);background:var(--bg-subtle);
 color:var(--text-strong);cursor:pointer}
 .edit-status{color:var(--text-muted);font-size:.75rem}
+.edit-cover{display:inline-flex;align-items:center;justify-content:center;width:2rem;height:2rem;
+padding:0;color:var(--link-color);background:none;border:1px solid var(--border-color);
+border-radius:var(--border-radius);cursor:pointer}
+.edit-cover svg{width:1.1rem;height:1.1rem}
+.edit-cover:hover,.edit-cover:focus-visible{color:var(--link-hover-color);background:var(--bg-subtle)}
+.edit-cover[data-on]{background:var(--text-strong);color:var(--bg);border-color:var(--text-strong)}
+.edit-hint{margin:var(--space-small) 0 0;font-size:.8rem;color:var(--text-muted)}
+.edit-hint[hidden]{display:none}
+.edit-picking .grid .tile{cursor:copy}
+.edit-picking .grid .tile:hover,.edit-picking .grid .tile:focus-visible{outline:3px solid var(--text-strong);
+outline-offset:2px}
+.edit-is-cover .tile::after{content:"Cover";position:absolute;inset-block-start:.4rem;
+inset-inline-end:.4rem;padding:.1rem .4rem;border-radius:var(--border-radius);
+background:oklch(17% 0 0 / .72);color:oklch(100% 0 0);font-size:.7rem;letter-spacing:.06em;
+text-transform:uppercase}
 `.replace(/\n/g, "");
 
 const SCRIPT = `(function(){
@@ -108,6 +126,54 @@ if(!r.ok){d.disabled=false;d.textContent="Delete";d.removeAttribute("data-armed"
 location.href=t;});})
 .catch(function(err){d.disabled=false;d.textContent="Delete";s.textContent=String(err)});
 });
+}
+}
+// Choosing a cover is a comparative act — you pick it by looking at the wall,
+// not by remembering a filename — so the control lives on the album page and the
+// thumbnails themselves become the input. data-items is the only thing that has
+// to travel: a tile's href carries an id, and album.md wants a file name.
+var raw=p.getAttribute("data-items");
+if(raw){
+var byId=JSON.parse(raw),grid=document.querySelector(".grid"),
+head=document.querySelector(".album-head"),tools=document.querySelector(".album-tools"),
+cover=f.querySelector("[name=cover]");
+if(head&&!tools){tools=document.createElement("div");tools.className="album-tools";head.appendChild(tools);}
+if(grid&&tools){
+var cb=document.createElement("button");cb.type="button";cb.className="edit-cover";
+cb.innerHTML=${JSON.stringify(COVER_ICON)};
+tools.appendChild(cb);
+var hint=document.createElement("p");hint.className="edit-hint";hint.hidden=true;
+head.insertAdjacentElement("afterend",hint);
+function idOf(a){return a.getAttribute("href").split("/")[2]||"";}
+function mark(){
+var want=cover?cover.value:"";
+[].forEach.call(grid.children,function(li){
+var a=li.querySelector("a[href^='/media/']");
+li.classList.toggle("edit-is-cover",!!a&&byId[idOf(a)]===want);});}
+mark();
+var picking=false;
+function pick(v){
+picking=v;
+document.body.classList.toggle("edit-picking",v);
+if(v){cb.setAttribute("data-on","")}else{cb.removeAttribute("data-on")}
+cb.title=v?"Choosing a cover \u2014 Esc to cancel":"Set the cover picture";
+cb.setAttribute("aria-label",cb.title);
+hint.hidden=!v;
+hint.textContent="Click a picture to make it this album's cover. Esc to cancel.";}
+pick(false);
+cb.addEventListener("click",function(){pick(!picking)});
+document.addEventListener("keydown",function(e){if(e.key==="Escape"&&picking)pick(false)});
+grid.addEventListener("click",function(e){
+if(!picking)return;
+var a=e.target&&e.target.closest?e.target.closest("a[href^='/media/']"):null;
+if(!a)return;
+e.preventDefault();
+var file=byId[idOf(a)];if(!file)return;
+if(cover)cover.value=file;
+pick(false);
+hint.hidden=false;hint.textContent="Setting cover to "+file+"\u2026";
+mark();
+f.requestSubmit();},true);
 }
 }
 function show(v){p.hidden=!v;try{localStorage.setItem("edit-open",v?"1":"0")}catch(e){}}
@@ -155,6 +221,7 @@ ${field("alt", "Alt text", item.alt)}`,
 }
 
 export function albumEditor(album: Album): string {
+  const byId = Object.fromEntries(album.items.map((item) => [item.id, item.file]));
   return panel(
     `Album &middot; ${esc(album.slug)}`,
     `<input type="hidden" name="kind" value="album">
@@ -165,5 +232,6 @@ ${field("date_end", "Date end", album.meta.date_end)}
 ${field("location", "Location", album.meta.location)}
 ${field("cover", "Cover file", album.meta.cover)}
 ${area("description", "Description", album.description)}`,
+    ` data-items="${esc(JSON.stringify(byId))}"`,
   );
 }

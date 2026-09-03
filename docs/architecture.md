@@ -61,7 +61,7 @@ scripts/
     albums.ts     album.md + photos.json loading, ordering, orientation
     config.ts     site.config.json and environment
     dimensions.ts pixel dimensions from file headers
-    editor.ts     the local metadata panel — never rendered by a real build
+    editor.ts     the local metadata panel and cover picker — never in a real build
     ids.ts        stable base58 media ids
     media.ts      every media URL the site emits
     metadata.ts   the only writer of album.md and photos.json
