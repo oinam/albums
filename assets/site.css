@@ -288,6 +288,10 @@ main {
 }
 
 /*
+ * A fixed square, so the button is the same size in both states and the icon
+ * inside it does not move when pressed. It carries no word for the same reason:
+ * "Newest first" and "Oldest first" are different widths.
+ *
  * Bordered rather than bare, unlike the footer's theme control: this one sits
  * beside a heading with nothing else around it, and without an edge it reads as
  * part of the title.
@@ -295,11 +299,10 @@ main {
 .tool {
   display: inline-flex;
   align-items: center;
-  gap: 0.35rem;
-  padding: 0.25rem 0.5rem;
-  font: inherit;
-  font-size: 0.85rem;
-  line-height: 1.5;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
   color: var(--link-color);
   background: none;
   border: 1px solid var(--border-color);
@@ -314,13 +317,8 @@ main {
 }
 
 .tool svg {
-  width: 1.05rem;
-  height: 1.05rem;
-  flex: none;
-}
-
-.tool-label {
-  white-space: nowrap;
+  width: 1.1rem;
+  height: 1.1rem;
 }
 
 .prose {

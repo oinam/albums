@@ -115,11 +115,19 @@ toolbar on the right. It is not the header bar the site does without: it belongs
 the album, it appears on no other page, and it holds controls for the thing directly
 below it rather than links away from it.
 
-Sorting is the only tool so far. The button reads the order it is currently in —
-**Newest first** or **Oldest first** — rather than the order it would switch to, and
-the arrow beside it points the way the bars shorten. A control labelled with its
-destination reads as a command; one labelled with its state reads as a fact, and a
-fact is what you want when you glanced up to check which way the album runs.
+Sorting is the only tool so far, and it is an icon in a fixed square — bars that
+shorten under a downward arrow for newest first, lengthen under an upward one for
+oldest. It says the order the album is currently in rather than the order it would
+switch to: a control labelled with its destination reads as a command, one labelled
+with its state reads as a fact, and a fact is what you want when you glanced up to
+check which way the album runs. The words are still there, in `title` and the
+`aria-label`.
+
+They are not on the button because they moved it. "Newest first" and "Oldest first"
+set to different widths, so pressing the button resized it and the icon jumped
+sideways under the cursor that had just clicked it. A control that will be pressed
+twice in a row has to be the same size both times, which is why the square is fixed
+rather than fitted.
 
 An album of one item gets no toolbar. There is nothing to reorder, and a control
 that cannot change anything is worse than an empty corner.

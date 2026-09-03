@@ -212,7 +212,7 @@ function loadingAttrs(index: number): string {
 const SORT_SCRIPT = `(function(){var b=document.querySelector("[data-sort-toggle]"),g=document.querySelector(".grid");if(!b||!g)return;
 var icons=${JSON.stringify(SORT_ICON)},labels=${JSON.stringify(SORT_LABEL)},now="newest";
 function stored(){try{return localStorage.getItem("album-sort")==="oldest"?"oldest":"newest"}catch(e){return "newest"}}
-function paint(v){var t="Sorted "+labels[v].toLowerCase();b.innerHTML=icons[v]+'<span class="tool-label">'+labels[v]+'</span>';b.title=t;b.setAttribute("aria-label",t+". Click to reverse.")}
+function paint(v){b.innerHTML=icons[v];b.title=labels[v];b.setAttribute("aria-label","Sorted "+labels[v].toLowerCase()+". Click to reverse.")}
 function set(v){if(v!==now){var c=[].slice.call(g.children).reverse();for(var i=0;i<c.length;i++)g.appendChild(c[i]);now=v;
 var m=g.querySelectorAll("img");for(var j=0;j<${EAGER_TILES}&&j<m.length;j++)m[j].loading="eager"}
 paint(v)}
@@ -283,11 +283,15 @@ function albumCaption(album: Album): string {
  * It is rendered in its default state and corrected by script, the way the theme
  * control is — there is no server-side memory of a choice on a static site. An
  * album of one has nothing to reorder, so it gets no toolbar at all.
+ *
+ * The state is carried by the icon and by `title`, never by a visible word:
+ * "Newest first" and "Oldest first" are different widths, so a text label moved
+ * the button — and therefore the icon — every time it was pressed.
  */
 function albumTools(album: Album): string {
   if (album.items.length < 2) return "";
   return `<div class="album-tools">
-<button type="button" class="tool" data-sort-toggle title="Sorted newest first" aria-label="Sorted newest first. Click to reverse.">${SORT_ICON.newest}<span class="tool-label">${SORT_LABEL.newest}</span></button>
+<button type="button" class="tool" data-sort-toggle title="${SORT_LABEL.newest}" aria-label="Sorted newest first. Click to reverse.">${SORT_ICON.newest}</button>
 </div>`;
 }
 
