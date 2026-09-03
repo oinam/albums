@@ -34,7 +34,7 @@ job is to stay out of the pictures' way.
 
 There is no `max-width` on `body`. Gutters come from
 `padding-inline: clamp(1rem, 3vw, 3.25rem)`, so they grow with the viewport, and the
-thumbnail lattice keeps adding columns for as long as there is room. A wider monitor
+thumbnail grid keeps adding columns for as long as there is room. A wider monitor
 shows more photographs rather than more empty margin.
 
 Prose is the exception. Captions and the tagline cap at `68ch`, because a line of

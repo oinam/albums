@@ -22,13 +22,14 @@ static HTML, generated on your machine and deployed by pushing to GitHub.
 Nothing is generated at upload time and no derivative is ever written back into R2.
 The edge cache is the derivative store, and it refills itself on demand.
 
-## Four commands
+## The commands
 
 ```bash
 mise run ingest     # stage → EXIF → R2, writes photos.json
 mise run dev        # local preview on http://localhost:8788
 mise run build      # renders dist/
 mise run doctor     # is Cloudflare wired up correctly?
+mise run check      # types, lint, formatting, docs links
 ```
 
 Then commit and push. Cloudflare Pages does the rest.
@@ -38,7 +39,7 @@ Then commit and push. Cloudflare Pages does the rest.
 - [Adding an album](/workflow/) — the everyday loop.
 - [Album metadata](/album-metadata/) — every field you can edit by hand.
 - [URLs and sizes](/urls/) — the Flickr-shaped routes and the size ladder.
-- [Design](/design/) — grayscale chrome, fluid width, the lattice.
+- [Design](/design/) — grayscale chrome, fluid width, the justified grid.
 - [Architecture](/architecture/) — why each piece is where it is.
 - [Deploying](/deploy/) — Cloudflare setup, start to finish.
 - [What it costs](/costs/) — the bill, with the arithmetic shown.

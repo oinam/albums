@@ -57,16 +57,18 @@ scripts/
   ingest.ts       _incoming/ → dimensions + EXIF → R2 → photos.json
   doctor.ts       checks R2, the media domain and transformations end to end
   prune.ts        deletes R2 prefixes no album claims any more
+  lint-css.ts     fails the build if a class the templates emit has no rule
   lib/
     albums.ts     album.md + photos.json loading, ordering, orientation
     config.ts     site.config.json and environment
     dimensions.ts pixel dimensions from file headers
     editor.ts     the local metadata panel and cover picker — never in a real build
+    feed.ts       RSS, with the picture in it
     ids.ts        stable base58 media ids
     media.ts      every media URL the site emits
     metadata.ts   the only writer of album.md and photos.json
     mime.ts       content types, shared by R2 upload and the dev server
-    probe.ts      optional ffprobe read of duration and dimensions
+    probe.ts      optional ffprobe read of video dimensions
     progress.ts   the one-line progress readout ingest prints while it works
     r2.ts         S3-compatible R2 client
     slug.ts       album folder name → date and title
