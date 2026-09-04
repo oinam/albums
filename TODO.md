@@ -12,6 +12,17 @@ credentials is tracked outside the repository, in a gitignored `TODO-HUMAN.md`.
       far staged the whole folder. Found 2026-09-02; still unexercised after the
       2026-09-03 run, which staged whole folders throughout and used `--no-upload`
       for the one scoped album — and the upload loop is where the bug lives.
+- [ ] A transient upload error ends the whole ingest, and leaves the bucket short
+      of what the metadata already claims. Hit on 2026-09-04: an HTTP 502 from R2 on
+      an 8.5 MB file killed the run 13 of 15 into an album, and the AWS SDK could not
+      retry because it had already consumed the stream — it surfaced as
+      `@aws-sdk XML parse error: unexpected content`, which is Cloudflare's HTML
+      error page arriving where XML was expected. `photos.json` is written before the
+      upload loop, so the album claimed 15 items while R2 held 12.
+      Re-running fixes it, because uploads skip what is already present — but nothing
+      says it happened. `mise run prune` is what caught it. Two things would help:
+      retry a failed PUT by re-opening the file (`upload()` already takes a path), and
+      compare the album against the bucket at the end of a run.
 - [ ] Album pagination on the home page, once the archive passes roughly a hundred
       albums. Not before — the whole list fits comfortably until then.
 
