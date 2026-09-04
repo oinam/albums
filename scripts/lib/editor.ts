@@ -111,7 +111,7 @@ stage.insertAdjacentElement("afterend",bar);
 b.classList.remove("edit-open");bar.appendChild(b);
 if(del){
 var d=document.createElement("button");d.type="button";d.className="edit-delete";
-d.textContent="Delete";bar.appendChild(d);
+d.textContent="Delete";d.title="Delete (D)";bar.appendChild(d);
 var timer;
 d.addEventListener("click",function(){
 if(!d.hasAttribute("data-armed")){
@@ -181,6 +181,29 @@ try{if(localStorage.getItem("edit-open")==="1")show(true)}catch(e){}
 b.addEventListener("click",function(){show(p.hidden)});
 var x=p.querySelector(".edit-close");if(x)x.addEventListener("click",function(){show(false)});
 document.addEventListener("keydown",function(e){if(e.key==="Escape"&&!p.hidden)show(false)});
+/*
+ * E opens the panel, D deletes. Both are the buttons' own behaviour rather than a
+ * second path to it — D calls click(), so it arms the button and waits for a
+ * second press exactly as the mouse does. A key that deleted on the first press
+ * would be a key that deletes something you were not looking at.
+ *
+ * The guards matter more here than on the public shortcuts. Typing "d" into the
+ * description field must not delete the item, and neither must a keystroke aimed
+ * at an open dialog.
+ */
+document.addEventListener("keydown",function(e){
+if(e.metaKey||e.ctrlKey||e.altKey||e.shiftKey)return;
+var t=e.target;
+if(t&&(t.isContentEditable||/^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName)))return;
+if(document.querySelector("dialog[open]"))return;
+if(e.key==="e"||e.key==="E"){e.preventDefault();show(p.hidden);return;}
+if((e.key==="d"||e.key==="D")&&d){e.preventDefault();d.click();}});
+// The panel that lists the public keys gains these two while the editor is on.
+var keys=document.querySelector(".help-keys");
+if(keys){
+var rows="<dt><kbd>E</kbd></dt><dd>Edit this "+(del?"item":"album")+"</dd>";
+if(del)rows+="<dt><kbd>D</kbd></dt><dd>Delete it \u2014 twice, to be sure</dd>";
+keys.insertAdjacentHTML("beforeend",rows);}
 f.addEventListener("submit",function(e){
 e.preventDefault();s.textContent="Saving\\u2026";
 var body={};
@@ -193,7 +216,7 @@ fetch("/_edit",{method:"POST",headers:{"content-type":"application/json"},body:J
 
 /** `heading` is HTML — callers escape whatever they interpolate into it. */
 function panel(heading: string, hidden: string, fields: string, data = ""): string {
-  return `<button type="button" class="edit-open">Edit</button>
+  return `<button type="button" class="edit-open" title="Edit (E)">Edit</button>
 <aside class="edit-panel"${data} hidden>
 <h2>${heading}<button type="button" class="edit-close" aria-label="Close the editor" title="Close (Esc)">&times;</button></h2>
 <form>

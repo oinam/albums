@@ -165,6 +165,12 @@ description and alt on an item; title, dates, location, cover
 and description on an album — prefilled with what is there now. Save writes the
 file, rebuilds, and reloads the page under you.
 
+`E` opens the panel and `D` deletes, both listed in the `?` panel while the editor
+is on. `D` presses the button rather than bypassing it, so it arms and waits for a
+second press exactly as a click does — a key that deleted on the first press would
+be a key that deletes something you were not looking at. Neither fires while you
+are typing in a field or while a dialog is open.
+
 It writes through the same code ingest writes through, so a form edit and a hand
 edit produce the same bytes and neither churns the other's output. Clearing a
 field removes the key rather than storing an empty string. An item's `id` is never
