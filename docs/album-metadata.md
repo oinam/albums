@@ -77,6 +77,16 @@ Comment `date` out and the album shows none — no date on its card, no date on 
 page, and nothing contributed to the archive summary. Undated albums sort after
 every dated one.
 
+Leaving it out is a decision rather than an omission, and it is the right one for
+an album that is a **place rather than an occasion**. A trip has dates and wants
+them. A palace does not: the pictures were taken on some day, but the album is
+about the building, and you will add more the next time you visit. Printing the
+day of the first visit would date the album to a thing that was never the point,
+and it would go stale the moment the album grows.
+
+The folder prefix still carries a date, so the shelf stays ordered either way —
+which is the whole reason ordering and display are separate fields.
+
 ### Dates in `album.md` can be less precise
 
 The folder format is strict; the file it generates is not. Once written you can set
