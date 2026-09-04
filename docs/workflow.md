@@ -173,7 +173,14 @@ part of the form.
 **It is a development tool and it does not ship.** The panel is rendered only when
 the build is in local mode, so `npm run build` emits no markup, no style, no
 script and no `/_edit` reference anywhere in `dist/` — checked on every one of the
-generated pages. The endpoint is equally narrow: it answers only a same-origin
+generated pages.
+
+Which is why the two builds do not share an output directory. `npm run dev` writes
+to `.dev-dist/` and `npm run build` writes to `dist/`; they differ in exactly this
+way, and while they shared `dist/` a production build in another terminal replaced
+every page the running server was holding open with one that had no editor on it.
+Nothing rebuilt until a file under `albums/` happened to change, so the editor
+simply went missing for a while and came back on its own. The endpoint is equally narrow: it answers only a same-origin
 JSON `POST` from the loopback interface, and the album name in the request is
 matched against the directories that actually exist rather than being joined into
 a path.

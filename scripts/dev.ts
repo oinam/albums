@@ -19,7 +19,14 @@ import { contentType } from "./lib/mime.ts";
 import { parseSlug } from "./lib/slug.ts";
 import { removeItem, updateAlbum, updateItem } from "./lib/metadata.ts";
 import { openBucket, remove } from "./lib/r2.ts";
-import { OUT, buildSite } from "./lib/site.ts";
+import { buildSite } from "./lib/site.ts";
+
+/**
+ * The dev server's own output. Not `dist/`: that is production's, and a
+ * `npm run build` in another terminal would otherwise replace every page this
+ * server is holding open with one that has no editor on it.
+ */
+const DEV_OUT = ".dev-dist";
 
 const CACHE = ".dev-cache";
 const RESIZABLE = new Set([".jpg", ".jpeg", ".png", ".webp", ".gif", ".avif"]);
@@ -34,7 +41,7 @@ const staging = stagingDir();
 
 function rebuild(): void {
   try {
-    const { albums, items } = buildSite(cfg);
+    const { albums, items } = buildSite(cfg, DEV_OUT);
     console.log(`  rebuilt — ${albums} album(s), ${items} item page(s)`);
   } catch (error) {
     console.error(
@@ -51,7 +58,7 @@ function within(root: string, candidate: string): string | null {
 }
 
 function readRedirects(): Map<string, string> {
-  const path = join(OUT, "_redirects");
+  const path = join(DEV_OUT, "_redirects");
   const map = new Map<string, string>();
   if (!existsSync(path)) return map;
 
@@ -74,7 +81,7 @@ function mediaPath(pathname: string): string | null {
 }
 
 function sitePath(pathname: string): string | null {
-  const candidate = within(OUT, decodeURIComponent(pathname));
+  const candidate = within(DEV_OUT, decodeURIComponent(pathname));
   if (!candidate) return null;
   if (existsSync(candidate) && statSync(candidate).isDirectory()) {
     return join(candidate, "index.html");

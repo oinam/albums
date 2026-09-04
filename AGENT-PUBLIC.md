@@ -95,4 +95,7 @@ unaffected.
   rejects every modifier, `?` is Shift on most layouts, so it is tested before
   that guard and the unshifted key comes along for free.
 - **The local editor is dev-only and must stay that way.** `npm run build` emits no
-  editor markup, style, script or `/_edit` reference anywhere in `dist/`.
+  editor markup, style, script or `/_edit` reference anywhere in `dist/`. It is
+  also why `npm run dev` builds to `.dev-dist/` rather than `dist/` — the two
+  outputs differ, and sharing a directory let a production build quietly strip the
+  editor out from under a running dev server.

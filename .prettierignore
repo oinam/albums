@@ -9,3 +9,4 @@ README.md
 # Album metadata is content, not source. Left exactly as typed.
 albums
 .dev-cache
+.dev-dist

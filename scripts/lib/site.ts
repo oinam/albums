@@ -23,6 +23,18 @@ import {
 
 export const OUT = "dist";
 
+/**
+ * Where this build is being written. `dist/` is production; the dev server passes
+ * its own, because the two builds differ — one carries the local editor and local
+ * media URLs — and sharing a directory meant whichever ran last won. A production
+ * build while the dev server was up left it serving pages with no editor on them,
+ * and nothing rebuilt until a file under albums/ happened to change.
+ *
+ * A build is a single run, so a module-level value is honest here, the same way
+ * the stylesheet's hashed name is.
+ */
+let outDir: string = OUT;
+
 const STYLESHEET = "assets/site.css";
 
 /**
@@ -40,7 +52,7 @@ function stylesheetHref(): string {
 }
 
 function write(path: string, contents: string): void {
-  const full = join(OUT, path);
+  const full = join(outDir, path);
   mkdirSync(dirname(full), { recursive: true });
   writeFileSync(full, contents);
 }
@@ -101,15 +113,16 @@ interface BuildResult {
   items: number;
 }
 
-export function buildSite(cfg: SiteConfig): BuildResult {
+export function buildSite(cfg: SiteConfig, out: string = OUT): BuildResult {
+  outDir = out;
   const albums = loadAlbums();
   assertUniqueIds(albums);
   assertUniqueAlbumPaths(albums);
 
   configureChrome(stylesheetHref());
 
-  rmSync(OUT, { recursive: true, force: true });
-  mkdirSync(OUT, { recursive: true });
+  rmSync(outDir, { recursive: true, force: true });
+  mkdirSync(outDir, { recursive: true });
 
   write("index.html", renderHome(cfg, albums));
 
@@ -146,9 +159,9 @@ export function buildSite(cfg: SiteConfig): BuildResult {
     ].join("\n")}\n`,
   );
 
-  cpSync("assets", join(OUT, "assets"), { recursive: true });
-  writeFileSync(join(OUT, stylesheetHref().slice(1)), readFileSync(STYLESHEET));
-  if (existsSync("favicon.ico")) cpSync("favicon.ico", join(OUT, "favicon.ico"));
+  cpSync("assets", join(outDir, "assets"), { recursive: true });
+  writeFileSync(join(outDir, stylesheetHref().slice(1)), readFileSync(STYLESHEET));
+  if (existsSync("favicon.ico")) cpSync("favicon.ico", join(outDir, "favicon.ico"));
 
   return { albums: albums.length, items };
 }

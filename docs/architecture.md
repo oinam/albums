@@ -54,6 +54,7 @@ genuinely changes the experience. Media Transformations itself caps at 100 MB an
 scripts/
   build.ts        entry point — loads config, calls buildSite
   dev.ts          local preview server: static files, renditions, watch, /_edit
+                  builds to .dev-dist/, never dist/ — see workflow.md
   ingest.ts       _incoming/ → dimensions + EXIF → R2 → photos.json
   doctor.ts       checks R2, the media domain and transformations end to end
   prune.ts        deletes R2 prefixes no album claims any more
