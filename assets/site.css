@@ -506,9 +506,17 @@ main > .album-grid:first-child {
   width: min(520px, 100%);
 }
 
-/* Title, date, description — centred and kept narrow so it reads as a caption. */
+/*
+ * Title, date, description — a caption block under the picture, centred on the
+ * page and kept to the same 68ch every other run of prose here uses.
+ *
+ * The heading and the date stay centred: they are one short line each, they sit
+ * directly under a centred picture, and centring is what makes them read as a
+ * caption rather than the start of an article. The description does not — see
+ * below.
+ */
 .item-meta {
-  max-width: 640px;
+  max-width: 68ch;
   margin: var(--space) auto 0;
   text-align: center;
 }
@@ -533,9 +541,15 @@ main > .album-grid:first-child {
  * put back between paragraphs rather than around the block, so the common case —
  * a single sentence — sits exactly where a bare <p> used to.
  */
+/*
+ * Left-aligned, alone in this block. Centred text gives every line a different
+ * starting point, so the eye has to hunt for the next one — tolerable for a
+ * title, tiring for a paragraph. The block stays centred on the page; only the
+ * text inside it lines up.
+ */
 .item-description {
-  margin: 0 auto;
-  max-width: 640px;
+  margin: 0;
+  text-align: left;
 }
 
 .item-description > :first-child {

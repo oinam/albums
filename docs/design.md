@@ -39,7 +39,20 @@ shows more photographs rather than more empty margin.
 
 Prose is the exception. Captions and the tagline cap at `68ch`, because a line of
 text three thousand pixels wide is unreadable no matter how much room exists. Grids
-expand; sentences do not.
+expand; sentences do not. `68ch` is the one measure — an album's description, the
+tagline and a picture's caption all use it, and none of them has a width of its own.
+
+## Headings centre; paragraphs do not
+
+A picture's caption block sits centred under the photograph, and its heading and
+date stay centred with it: one short line each, directly below a centred image, and
+centring is what makes them read as a caption rather than the opening of an article.
+
+The description underneath is left-aligned. Centred text starts every line in a
+different place, so the eye has to find the next one instead of returning to a
+known edge — a cost you can absorb across a five-word title and cannot across a
+paragraph. Only the text moves; the block stays centred on the page, so the caption
+still reads as one object under the picture.
 
 ## Two shapes, and only two
 
