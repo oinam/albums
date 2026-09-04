@@ -137,16 +137,16 @@ came out of them — so nothing published earlier breaks.
 `/feed.xml` is RSS 2.0 with two namespaces added, and it carries the picture —
 a subscriber sees the photograph in their reader, not a link promising one.
 
-| Element           | Carries                                                      |
-| ----------------- | ------------------------------------------------------------ |
-| `title` `link`    | The item, at its permalink                                   |
-| `guid`            | The permalink again, `isPermaLink="true"`                    |
-| `pubDate`         | The item's date, else its capture time, else its album's     |
-| `category`        | The album name, with the album URL in `domain`               |
-| `description`     | Plain text. A summary, deliberately not markup               |
-| `content:encoded` | The body a reader renders: the image, the caption, the album |
-| `media:content`   | The media itself, with real dimensions                       |
-| `media:thumbnail` | The 4:3 or 3:4 grid thumbnail                                |
+| Element           | Carries                                                                           |
+| ----------------- | --------------------------------------------------------------------------------- |
+| `title` `link`    | The item, at its permalink                                                        |
+| `guid`            | The permalink again, `isPermaLink="true"`                                         |
+| `pubDate`         | The item's date, else its capture time, else its album's                          |
+| `category`        | The album name, with the album URL in `domain`                                    |
+| `description`     | Plain text. A summary, with the Markdown flattened out of it                      |
+| `content:encoded` | The body a reader renders: the image, the caption as rendered Markdown, the album |
+| `media:content`   | The media itself, with real dimensions                                            |
+| `media:thumbnail` | The 4:3 or 3:4 grid thumbnail                                                     |
 
 `description` stays plain text and `content:encoded` holds the HTML. That is the
 split the spec intends — summary against full content — and it means a reader

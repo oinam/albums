@@ -1,6 +1,6 @@
 import type { SiteConfig } from "./config.ts";
 import type { Album, Item, StreamEntry } from "./albums.ts";
-import { coverOf, formatDate, orientationOf } from "./albums.ts";
+import { coverOf, formatDate, orientationOf, plainText } from "./albums.ts";
 import { albumEditor, itemEditor } from "./editor.ts";
 import {
   originalUrl,
@@ -410,7 +410,9 @@ export function renderNotFound(cfg: SiteConfig): string {
 }
 
 export function renderAlbum(cfg: SiteConfig, album: Album): string {
-  const description = album.description || `${album.meta.title} — ${cfg.site.title}`;
+  const description = album.description
+    ? plainText(album.description)
+    : `${album.meta.title} — ${cfg.site.title}`;
   return layout({
     cfg,
     title: `${album.meta.title} — ${cfg.site.title}`,
@@ -468,7 +470,9 @@ function itemMeta(item: Item): string {
   const rows = [
     item.title ? `<h1>${esc(item.title)}</h1>` : "",
     item.date ? `<p class="item-date">${formatDate(item.date)}</p>` : "",
-    item.description ? `<p class="item-description">${esc(item.description)}</p>` : "",
+    item.descriptionHtml
+      ? `<div class="item-description">${item.descriptionHtml}</div>`
+      : "",
   ].filter(Boolean);
 
   return rows.length === 0 ? "" : `<div class="item-meta">\n${rows.join("\n")}\n</div>`;
@@ -486,7 +490,7 @@ export function renderItem(
     title: item.title
       ? `${item.title} — ${cfg.site.title}`
       : `${album.meta.title} — ${cfg.site.title}`,
-    description: item.description ?? album.meta.title,
+    description: item.description ? plainText(item.description) : album.meta.title,
     path: itemPath(item),
     edit: cfg.media.local === true ? itemEditor(album, item) : "",
     body: `${stage(cfg, album, item)}

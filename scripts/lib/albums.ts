@@ -28,8 +28,12 @@ export interface Item {
   // Anything absent is simply not rendered.
   title?: string;
   date?: string;
+  /** Markdown. Rendered into `descriptionHtml` at load; the source is what is stored. */
   description?: string;
   alt?: string;
+
+  /** Derived from `description` at load, like `kind`. Never stored. */
+  descriptionHtml?: string;
 }
 
 export interface AlbumMeta {
@@ -127,6 +131,9 @@ export function readItems(albumDir: string): Item[] {
   return (parsed.items ?? []).map((item) => ({
     ...item,
     kind: kindFor(item.file) ?? "photo",
+    descriptionHtml: item.description
+      ? marked.parse(item.description, { async: false })
+      : undefined,
   }));
 }
 
@@ -140,6 +147,27 @@ function isoDate(value: unknown): string | undefined {
   if (typeof value === "number" && Number.isInteger(value)) return String(value);
   if (typeof value === "string" && value.trim() !== "") return value.trim();
   return undefined;
+}
+
+/**
+ * Markdown reduced to the words in it — for a `<meta>` tag, or a feed's plain-text
+ * summary, where `[Ada](https://…)` would otherwise be read out verbatim.
+ *
+ * It renders and then strips rather than matching Markdown syntax with a regex,
+ * because the renderer is the only thing that actually knows what is markup here
+ * and what is a stray bracket someone typed.
+ */
+export function plainText(markdown: string): string {
+  return marked
+    .parse(markdown, { async: false })
+    .replace(/<[^>]*>/g, "")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&amp;/g, "&")
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
 function readAlbum(root: string, slug: string): Album | null {

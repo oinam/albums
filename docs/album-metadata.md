@@ -91,6 +91,8 @@ printed exactly as written — `1945-46` for a span across two years, or
 ## `albums/<slug>/album.md`
 
 YAML frontmatter for the structured fields, Markdown below it for the description.
+An item's `description` in `photos.json` is Markdown too, so the two read the same
+way — write `[a link](https://example.com)` rather than an `<a>` tag, in either.
 
 ```markdown
 ---
@@ -177,7 +179,7 @@ All optional. Ingest never touches them, so re-running it is always safe.
 | ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
 | `title`       | Shown above the picture's caption block.                                                                                                        |
 | `date`        | `YYYY-MM-DD`, `YYYY-MM`, `YYYY`, or free text. Also places the item in the feed and in `/random/`; the album page orders by file, newest first. |
-| `description` | A sentence or two under the title.                                                                                                              |
+| `description` | A sentence or two under the title. **Markdown** — links, emphasis, more than one paragraph. Same as an album's.                                 |
 | `alt`         | Screen-reader text. Falls back to `title`, then to empty.                                                                                       |
 
 **Anything absent is not rendered.** An item with none of them is just a picture and

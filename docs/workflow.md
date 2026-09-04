@@ -102,6 +102,11 @@ of four optional fields:
 **Anything you leave out is not rendered.** No heading, no empty row, no placeholder,
 and no falling back to the filename. A photo with no title has no title.
 
+`description` is Markdown, the same as an album's: links, **bold**, _italic_, and a
+blank line for a new paragraph. Write Markdown rather than HTML — a tag typed into
+it survives, but a JSON string is a poor place to be quoting attributes, and the
+Markdown is also what the plain-text summary is flattened from.
+
 `date` overrides the `taken` time ingest read out of the EXIF, which matters for
 scans and for anything whose camera clock was wrong — and it is the only way to
 correct one. It orders the item inside its album; it does not move it to a different

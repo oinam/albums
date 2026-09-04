@@ -1,6 +1,6 @@
 import type { SiteConfig } from "./config.ts";
 import type { Item, StreamEntry } from "./albums.ts";
-import { orientationOf } from "./albums.ts";
+import { orientationOf, plainText } from "./albums.ts";
 import { contentType } from "./mime.ts";
 import {
   originalUrl,
@@ -127,7 +127,8 @@ class Entry {
   /**
    * The body a reader renders. `description` stays plain text — it is the
    * summary, and a reader that shows only that should still get a sentence
-   * rather than markup. This is where the picture goes.
+   * rather than markup, which is why the Markdown is flattened for it. This is
+   * where the picture goes, and where the description keeps its formatting.
    *
    * Audio gets no image: there is nothing to show, on this page or any other,
    * and a placeholder would be worse than the link alone.
@@ -152,11 +153,9 @@ class Entry {
       parts.push(`<a href="${href}"><img src="${escapeXml(src)}" alt="${alt}"></a>`);
     }
 
-    // A blank line in a description is a paragraph break, exactly as it is on the
-    // item page. Emitting the whole string in one <p> would run them together.
-    for (const para of (item.description ?? "").split(/\n\s*\n/)) {
-      if (para.trim()) parts.push(`<p>${escapeXml(para.trim())}</p>`);
-    }
+    // The description is Markdown, and this is the one place a reader is handed
+    // HTML — so it arrives rendered, links and all, rather than as its source.
+    if (item.descriptionHtml) parts.push(item.descriptionHtml);
     // The album, linking to the album — the reader already links the item itself,
     // both as the headline and on the image above.
     parts.push(
@@ -183,7 +182,7 @@ export function renderFeed(cfg: SiteConfig, entries: StreamEntry[]): string {
       // The album is the item's category, and `domain` is a URL by design — so
       // one element carries both halves a consumer needs in order to group.
       `<category domain="${escapeXml(entry.albumLink)}">${escapeXml(album.meta.title)}</category>`,
-      `<description>${escapeXml(item.description ?? album.meta.title)}</description>`,
+      `<description>${escapeXml(item.description ? plainText(item.description) : album.meta.title)}</description>`,
       `<content:encoded>${escapeXml(entry.encoded())}</content:encoded>`,
       entry.content(),
       entry.thumbnail(),

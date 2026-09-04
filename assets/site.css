@@ -528,9 +528,26 @@ main > .album-grid:first-child {
   color: var(--text-muted);
 }
 
+/*
+ * Markdown, so it can hold more than one paragraph. The margins are reset and
+ * put back between paragraphs rather than around the block, so the common case —
+ * a single sentence — sits exactly where a bare <p> used to.
+ */
 .item-description {
   margin: 0 auto;
   max-width: 640px;
+}
+
+.item-description > :first-child {
+  margin-top: 0;
+}
+
+.item-description > :last-child {
+  margin-bottom: 0;
+}
+
+.item-description p {
+  margin-block: var(--space-small);
 }
 
 .caption {
@@ -539,11 +556,12 @@ main > .album-grid:first-child {
 }
 
 /*
- * A link inside an album's description is otherwise invisible: --link-color and
+ * A link written into a description is otherwise invisible: --link-color and
  * --text-color are the same grey, so the underline is the only thing marking it.
  * The chrome's links do not need one — their position says what they are.
  */
-.caption a {
+.caption a,
+.item-description a {
   text-decoration: underline;
   text-decoration-thickness: 1px;
   text-underline-offset: 0.15em;
