@@ -301,6 +301,33 @@ function send(res: ServerResponse, status: number, body: string): void {
   res.end(body);
 }
 
+/**
+ * Range requests, because the edge answers them and a video is unplayable
+ * without: Safari will not start a `<video>` at all on a bare 200, and an mp4
+ * whose `moov` atom sits at the end of the file — where every camera and most
+ * encoders leave it — cannot be scrubbed until the reader can ask for the tail.
+ * A single range is enough; nothing here sends multipart.
+ */
+function parseRange(
+  header: string | undefined,
+  total: number,
+): { start: number; end: number } | "unsatisfiable" | null {
+  if (!header) return null;
+
+  const match = /^bytes=(\d*)-(\d*)$/.exec(header.trim());
+  if (!match) return null;
+  const [, rawStart, rawEnd] = match;
+  if (rawStart === "" && rawEnd === "") return null;
+
+  // `bytes=-500` is the last 500 bytes, not a range starting at zero.
+  const start =
+    rawStart === "" ? Math.max(0, total - Number(rawEnd)) : Number(rawStart);
+  const end = rawStart === "" || rawEnd === "" ? total - 1 : Number(rawEnd);
+
+  if (start >= total || start > end) return "unsatisfiable";
+  return { start, end: Math.min(end, total - 1) };
+}
+
 async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> {
   const url = new URL(req.url ?? "/", "http://localhost");
   const pathname = url.pathname;
@@ -333,9 +360,35 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
     }
   }
 
-  res.writeHead(200, {
+  const headers = {
     "content-type": contentType(file),
     "cache-control": media ? "public, max-age=300" : "no-store",
+  };
+
+  const total = statSync(file).size;
+  const range = parseRange(req.headers.range, total);
+
+  if (range === "unsatisfiable") {
+    res.writeHead(416, { ...headers, "content-range": `bytes */${total}` });
+    res.end();
+    return;
+  }
+
+  if (range) {
+    res.writeHead(206, {
+      ...headers,
+      "accept-ranges": "bytes",
+      "content-range": `bytes ${range.start}-${range.end}/${total}`,
+      "content-length": range.end - range.start + 1,
+    });
+    createReadStream(file, { start: range.start, end: range.end }).pipe(res);
+    return;
+  }
+
+  res.writeHead(200, {
+    ...headers,
+    "accept-ranges": "bytes",
+    "content-length": total,
   });
   createReadStream(file).pipe(res);
 }
