@@ -141,12 +141,14 @@ is not a video: Safari will not start a `<video>` on a whole-file response, and 
 MP4 whose index sits at the end of the file cannot be scrubbed until the browser
 can ask for the tail.
 
-Two things the local preview cannot show you:
+Video posters are pulled with ffmpeg, the same frame the edge would take with
+`mode=frame`, and cached alongside the image renditions. ffmpeg is not a
+dependency of this project: without it on your `PATH` a video tile falls back to
+a neutral play-symbol placeholder, and nothing else changes.
 
-- **Format negotiation.** Locally every rendition is JPEG. `format=auto` only picks
-  AVIF or WebP at the edge, so real-world payloads are smaller than what you see.
-- **Video posters.** `mode=frame` is a Media Transformation. Locally a video tile
-  gets a neutral play-symbol placeholder instead.
+One thing the local preview still cannot show you is **format negotiation**.
+Locally every rendition is JPEG. `format=auto` only picks AVIF or WebP at the
+edge, so real-world payloads are smaller than what you see.
 
 Media only appears for albums you still have staged. `_incoming/` is gitignored, so
 a fresh clone previews with empty tiles until you put something in it — the layout

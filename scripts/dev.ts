@@ -1,3 +1,4 @@
+import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import {
   createReadStream,
@@ -30,6 +31,14 @@ const DEV_OUT = ".dev-dist";
 
 const CACHE = ".dev-cache";
 const RESIZABLE = new Set([".jpg", ".jpeg", ".png", ".webp", ".gif", ".avif"]);
+const FRAMEABLE = new Set([".mp4", ".m4v", ".mov", ".webm"]);
+
+/**
+ * Stands in for a poster that could not be pulled — no ffmpeg on PATH, or a file
+ * it could not decode. A neutral play symbol says "this is a video" without
+ * claiming to be a frame of it.
+ */
+const PLACEHOLDER_POSTER = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 48"><rect width="64" height="48" fill="#e4e4e4"/><path d="M27 17.5v13l11-6.5z" fill="#999"/></svg>`;
 // Content only. Changes under scripts/ are handled by `tsx watch`, which restarts
 // the process — an in-process rebuild would keep running the old modules.
 const WATCHED = ["albums", "assets", "site.config.json"];
@@ -93,16 +102,21 @@ interface Rendition {
   width: number;
   height: number | null;
   cover: boolean;
+  /** Seconds into a video, when this is a poster rather than a resize. */
+  frame: number | null;
 }
 
 function renditionFrom(url: URL): Rendition | null {
   const width = Number(url.searchParams.get("w"));
   if (!Number.isFinite(width) || width <= 0) return null;
   const rawHeight = Number(url.searchParams.get("h"));
+  const rawFrame = url.searchParams.get("frame");
+  const frame = rawFrame === null ? Number.NaN : Number(rawFrame);
   return {
     width,
     height: Number.isFinite(rawHeight) && rawHeight > 0 ? rawHeight : null,
     cover: url.searchParams.get("fit") === "cover",
+    frame: Number.isFinite(frame) && frame >= 0 ? frame : null,
   };
 }
 
@@ -122,6 +136,63 @@ async function render(source: string, r: Rendition): Promise<string> {
   mkdirSync(CACHE, { recursive: true });
   await sharp(source)
     .rotate()
+    .resize({
+      width: r.width,
+      height: r.height ?? undefined,
+      fit: r.cover ? "cover" : "inside",
+      withoutEnlargement: !r.cover,
+    })
+    .jpeg({ quality: 82 })
+    .toFile(target);
+  return target;
+}
+
+/**
+ * The edge pulls a poster out of a video with `mode=frame`; locally that is
+ * ffmpeg. Optional in the same way `probeMedia` is — a machine without it gets
+ * the placeholder rather than a broken page, which is why this returns null on
+ * any failure instead of throwing.
+ */
+async function renderFrame(source: string, r: Rendition): Promise<string | null> {
+  const stat = statSync(source);
+  const key = createHash("sha256")
+    .update(
+      `${source}:${stat.mtimeMs}:frame${r.frame ?? 0}:${r.width}:${r.height ?? 0}:${String(r.cover)}`,
+    )
+    .digest("hex")
+    .slice(0, 16);
+  const target = join(CACHE, `${key}.jpg`);
+  if (existsSync(target)) return target;
+
+  let frame: Buffer;
+  try {
+    frame = execFileSync(
+      "ffmpeg",
+      [
+        "-nostdin",
+        "-v",
+        "error",
+        "-ss",
+        String(r.frame ?? 0),
+        "-i",
+        source,
+        "-frames:v",
+        "1",
+        "-f",
+        "image2pipe",
+        "-vcodec",
+        "mjpeg",
+        "-",
+      ],
+      { maxBuffer: 64 * 1024 * 1024, stdio: ["ignore", "pipe", "ignore"] },
+    );
+  } catch {
+    return null;
+  }
+  if (frame.length === 0) return null;
+
+  mkdirSync(CACHE, { recursive: true });
+  await sharp(frame)
     .resize({
       width: r.width,
       height: r.height ?? undefined,
@@ -352,11 +423,31 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
   }
 
   const rendition = renditionFrom(url);
-  if (media && rendition && RESIZABLE.has(extname(file).toLowerCase())) {
-    try {
-      file = await render(file, rendition);
-    } catch (error) {
-      console.error(`  resize failed for ${pathname}: ${String(error)}`);
+  if (media && rendition) {
+    const ext = extname(file).toLowerCase();
+
+    if (rendition.frame !== null && FRAMEABLE.has(ext)) {
+      let poster: string | null = null;
+      try {
+        poster = await renderFrame(file, rendition);
+      } catch (error) {
+        console.error(`  poster failed for ${pathname}: ${String(error)}`);
+      }
+      if (poster === null) {
+        res.writeHead(200, {
+          "content-type": "image/svg+xml",
+          "cache-control": "no-store",
+        });
+        res.end(PLACEHOLDER_POSTER);
+        return;
+      }
+      file = poster;
+    } else if (RESIZABLE.has(ext)) {
+      try {
+        file = await render(file, rendition);
+      } catch (error) {
+        console.error(`  resize failed for ${pathname}: ${String(error)}`);
+      }
     }
   }
 

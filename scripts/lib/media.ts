@@ -4,8 +4,8 @@ import type { Orientation } from "./albums.ts";
 const QUALITY = 82;
 const CONTACT_QUALITY = 80;
 
-const LOCAL_POSTER =
-  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 48'%3E%3Crect width='64' height='48' fill='%23e4e4e4'/%3E%3Cpath d='M27 17.5v13l11-6.5z' fill='%23999'/%3E%3C/svg%3E";
+/** Where the poster frame is pulled from when nothing says otherwise. */
+const POSTER_SECOND = 1;
 
 export interface Rendition {
   width: number;
@@ -129,11 +129,34 @@ export function srcset(cfg: SiteConfig, slug: string, file: string): string {
     .join(", ");
 }
 
+/**
+ * Local mode asks the dev server for the frame, the same way it asks for a
+ * rendition — `?frame=` alongside the width. It shells out to ffmpeg; if that is
+ * not installed it answers with a placeholder, so this URL is always safe to emit.
+ */
+function localFrame(
+  cfg: SiteConfig,
+  slug: string,
+  file: string,
+  second: number,
+  width: number,
+  height?: number,
+): string {
+  const query = new URLSearchParams({ frame: String(second), w: String(width) });
+  if (height !== undefined) {
+    query.set("h", String(height));
+    query.set("fit", "cover");
+  }
+  return `${originalUrl(cfg, slug, file)}?${query.toString()}`;
+}
+
 /** Still frame pulled from a video via Media Transformations. */
 export function posterUrl(cfg: SiteConfig, slug: string, file: string): string {
-  if (cfg.media.local) return LOCAL_POSTER;
+  if (cfg.media.local) {
+    return localFrame(cfg, slug, file, POSTER_SECOND, cfg.sizes.desktop);
+  }
   const source = originalUrl(cfg, slug, file);
-  return `https://${cfg.media.host}/cdn-cgi/media/mode=frame,time=1s,width=${cfg.sizes.desktop},format=jpg/${source}`;
+  return `https://${cfg.media.host}/cdn-cgi/media/mode=frame,time=${POSTER_SECOND}s,width=${cfg.sizes.desktop},format=jpg/${source}`;
 }
 
 /** Video still cropped to a grid thumbnail. */
@@ -143,8 +166,10 @@ export function posterThumbUrl(
   file: string,
   orientation: Orientation,
 ): string {
-  if (cfg.media.local) return LOCAL_POSTER;
   const { width, height } = thumbSize(cfg, orientation);
+  if (cfg.media.local) {
+    return localFrame(cfg, slug, file, POSTER_SECOND, width, height);
+  }
   const source = originalUrl(cfg, slug, file);
-  return `https://${cfg.media.host}/cdn-cgi/media/mode=frame,time=1s,width=${width},height=${height},fit=cover,format=jpg/${source}`;
+  return `https://${cfg.media.host}/cdn-cgi/media/mode=frame,time=${POSTER_SECOND}s,width=${width},height=${height},fit=cover,format=jpg/${source}`;
 }
