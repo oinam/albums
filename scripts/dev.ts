@@ -268,6 +268,18 @@ async function handleEdit(req: IncomingMessage, res: ServerResponse): Promise<vo
   const text = (key: string): string =>
     typeof body[key] === "string" ? body[key].trim() : "";
 
+  /**
+   * `pruned` clears a string field by turning "" into undefined; a number has to
+   * be read for itself. Empty means remove it, anything that is not a count of
+   * seconds is a mistake worth saying out loud rather than storing as null.
+   */
+  const seconds = (key: string): number | undefined | "invalid" => {
+    const raw = text(key);
+    if (!raw) return undefined;
+    const value = Number(raw);
+    return Number.isFinite(value) && value >= 0 ? value : "invalid";
+  };
+
   const slug = text("slug");
   const albums = readdirSync("albums", { withFileTypes: true })
     .filter((entry) => entry.isDirectory())
@@ -284,11 +296,17 @@ async function handleEdit(req: IncomingMessage, res: ServerResponse): Promise<vo
         plain(res, 400, "Missing item id.");
         return;
       }
+      const posterTime = seconds("poster_time");
+      if (posterTime === "invalid") {
+        plain(res, 400, "Poster time must be a number of seconds.");
+        return;
+      }
       updateItem(slug, id, {
         title: text("title"),
         date: text("date"),
         description: text("description"),
         alt: text("alt"),
+        poster_time: posterTime,
       });
     } else if (body.kind === "delete") {
       const id = text("id");

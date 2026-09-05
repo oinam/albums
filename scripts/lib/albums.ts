@@ -31,6 +31,12 @@ export interface Item {
   /** Markdown. Rendered into `descriptionHtml` at load; the source is what is stored. */
   description?: string;
   alt?: string;
+  /**
+   * Video only: which second the poster frame is pulled from. Without it the
+   * frame comes from one second in, which is a guess — a clip that opens on
+   * black or a title card needs to be told.
+   */
+  poster_time?: number;
 
   /** Derived from `description` at load, like `kind`. Never stored. */
   descriptionHtml?: string;

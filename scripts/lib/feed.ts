@@ -83,7 +83,7 @@ class Entry {
     const { width, height } = thumbSize(this.cfg, orientation);
     const src = this.url(
       item.kind === "video"
-        ? posterThumbUrl(this.cfg, album.slug, item.file, orientation)
+        ? posterThumbUrl(this.cfg, album.slug, item, orientation)
         : thumbUrl(this.cfg, album.slug, item.file, orientation),
     );
     return `<media:thumbnail url="${escapeXml(src)}" width="${width}" height="${height}"/>`;
@@ -149,7 +149,7 @@ class Entry {
         `<a href="${href}"><img src="${escapeXml(src)}" alt="${alt}"${dims}></a>`,
       );
     } else if (item.kind === "video") {
-      const src = this.url(posterUrl(this.cfg, album.slug, item.file));
+      const src = this.url(posterUrl(this.cfg, album.slug, item));
       parts.push(`<a href="${href}"><img src="${escapeXml(src)}" alt="${alt}"></a>`);
     }
 

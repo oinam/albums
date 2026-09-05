@@ -113,10 +113,21 @@ correct one. It orders the item inside its album; it does not move it to a diffe
 place in the feed, because the album's own date decides where the album's run sits.
 See [URLs and sizes](/urls/).
 
-There is a fifth field, `alt`, for screen-reader text when the title alone is not
-descriptive enough. Without it the alt falls back to the title, and then to empty —
-which is correct, because a screen reader announcing "dsc_0142.jpg" is worse than
-announcing nothing.
+Two more, each for one kind of file. `alt` is screen-reader text for when the
+title alone is not descriptive enough; without it the alt falls back to the
+title, and then to empty — which is correct, because a screen reader announcing
+"dsc_0142.jpg" is worse than announcing nothing.
+
+`poster_time` is for video, and says which second the poster frame comes from.
+Left out, it is one second in, which is a guess that suits most clips and fails
+the ones that open on black or on a title card. It is a number of seconds:
+
+```json
+{ "file": "hallway.mp4", "poster_time": 12 }
+```
+
+The frame is pulled at request time, so changing it costs nothing and needs no
+re-upload — the video in R2 is untouched.
 
 Ingest never touches any of these. Re-run it as often as you like.
 
@@ -167,10 +178,10 @@ terminal. The server says so in one line and stops, rather than throwing.
 sits just under the picture, where the title would be — which on an item that has
 no title yet is empty space, and an item with no title is exactly the one you
 opened this for. Next to it is **Delete**. Edit opens a panel holding exactly the
-fields described above — close it with the × in its corner or with `Esc` — — title, date,
-description and alt on an item; title, dates, location, cover
-and description on an album — prefilled with what is there now. Save writes the
-file, rebuilds, and reloads the page under you.
+fields described above — close it with the × in its corner or with `Esc` — title,
+date, description and alt on an item, plus `poster_time` when the item is a
+video; title, dates, location, cover and description on an album — prefilled with
+what is there now. Save writes the file, rebuilds, and reloads the page under you.
 
 `E` opens the panel and `D` deletes, both listed in the `?` panel while the editor
 is on. `D` presses the button rather than bypassing it, so it arms and waits for a

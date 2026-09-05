@@ -1,10 +1,10 @@
 import type { SiteConfig } from "./config.ts";
-import type { Orientation } from "./albums.ts";
+import type { Item, Orientation } from "./albums.ts";
 
 const QUALITY = 82;
 const CONTACT_QUALITY = 80;
 
-/** Where the poster frame is pulled from when nothing says otherwise. */
+/** Where the poster frame is pulled from when the item does not say. */
 const POSTER_SECOND = 1;
 
 export interface Rendition {
@@ -151,25 +151,27 @@ function localFrame(
 }
 
 /** Still frame pulled from a video via Media Transformations. */
-export function posterUrl(cfg: SiteConfig, slug: string, file: string): string {
+export function posterUrl(cfg: SiteConfig, slug: string, item: Item): string {
+  const second = item.poster_time ?? POSTER_SECOND;
   if (cfg.media.local) {
-    return localFrame(cfg, slug, file, POSTER_SECOND, cfg.sizes.desktop);
+    return localFrame(cfg, slug, item.file, second, cfg.sizes.desktop);
   }
-  const source = originalUrl(cfg, slug, file);
-  return `https://${cfg.media.host}/cdn-cgi/media/mode=frame,time=${POSTER_SECOND}s,width=${cfg.sizes.desktop},format=jpg/${source}`;
+  const source = originalUrl(cfg, slug, item.file);
+  return `https://${cfg.media.host}/cdn-cgi/media/mode=frame,time=${second}s,width=${cfg.sizes.desktop},format=jpg/${source}`;
 }
 
 /** Video still cropped to a grid thumbnail. */
 export function posterThumbUrl(
   cfg: SiteConfig,
   slug: string,
-  file: string,
+  item: Item,
   orientation: Orientation,
 ): string {
+  const second = item.poster_time ?? POSTER_SECOND;
   const { width, height } = thumbSize(cfg, orientation);
   if (cfg.media.local) {
-    return localFrame(cfg, slug, file, POSTER_SECOND, width, height);
+    return localFrame(cfg, slug, item.file, second, width, height);
   }
-  const source = originalUrl(cfg, slug, file);
-  return `https://${cfg.media.host}/cdn-cgi/media/mode=frame,time=${POSTER_SECOND}s,width=${width},height=${height},fit=cover,format=jpg/${source}`;
+  const source = originalUrl(cfg, slug, item.file);
+  return `https://${cfg.media.host}/cdn-cgi/media/mode=frame,time=${second}s,width=${width},height=${height},fit=cover,format=jpg/${source}`;
 }

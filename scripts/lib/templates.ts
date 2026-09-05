@@ -277,7 +277,7 @@ b.addEventListener("click",function(){var v=now==="newest"?"oldest":"newest";try
 
 function coverImage(cfg: SiteConfig, album: Album, item: Item): string {
   return item.kind === "video"
-    ? posterThumbUrl(cfg, album.slug, item.file, "wide")
+    ? posterThumbUrl(cfg, album.slug, item, "wide")
     : thumbUrl(cfg, album.slug, item.file, "wide");
 }
 
@@ -302,7 +302,7 @@ function tile(cfg: SiteConfig, album: Album, item: Item, index: number): string 
   const { width, height } = thumbSize(cfg, orientation);
   const src =
     item.kind === "video"
-      ? esc(posterThumbUrl(cfg, album.slug, item.file, orientation))
+      ? esc(posterThumbUrl(cfg, album.slug, item, orientation))
       : esc(thumbUrl(cfg, album.slug, item.file, orientation));
   const badge = item.kind === "video" ? `<span class="badge">Video</span>` : "";
 
@@ -445,7 +445,7 @@ function stage(cfg: SiteConfig, album: Album, item: Item): string {
       item.width && item.height ? ` width="${item.width}" height="${item.height}"` : "";
     return `<div class="stage">
 <video controls preload="metadata" playsinline${dims}
-       poster="${esc(posterUrl(cfg, album.slug, item.file))}"
+       poster="${esc(posterUrl(cfg, album.slug, item))}"
        src="${esc(source)}"></video>
 </div>`;
   }

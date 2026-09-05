@@ -23,6 +23,7 @@ function forFile(item: Item): Record<string, unknown> {
     "date",
     "description",
     "alt",
+    "poster_time",
     "taken",
     "width",
     "height",

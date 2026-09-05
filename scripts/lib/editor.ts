@@ -230,6 +230,13 @@ ${fields}
 }
 
 export function itemEditor(album: Album, item: Item): string {
+  // Only a video has a frame to choose, and a field that does nothing on a
+  // photograph is a field you have to learn to ignore.
+  const poster =
+    item.kind === "video"
+      ? `\n${field("poster_time", "Poster at (seconds)", item.poster_time?.toString(), "1")}`
+      : "";
+
   return panel(
     `Item &middot; ${esc(item.file)}`,
     `<input type="hidden" name="kind" value="item">
@@ -238,7 +245,7 @@ export function itemEditor(album: Album, item: Item): string {
     `${field("title", "Title", item.title)}
 ${field("date", "Date", item.date, "2005-06-14, 2005-06, 2005")}
 ${area("description", "Description", item.description)}
-${field("alt", "Alt text", item.alt)}`,
+${field("alt", "Alt text", item.alt)}${poster}`,
     ` data-slug="${esc(album.slug)}" data-delete="${esc(item.id)}"`,
   );
 }

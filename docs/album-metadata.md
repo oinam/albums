@@ -191,6 +191,7 @@ All optional. Ingest never touches them, so re-running it is always safe.
 | `date`        | `YYYY-MM-DD`, `YYYY-MM`, `YYYY`, or free text. Also places the item in the feed and in `/random/`; the album page orders by file, newest first. |
 | `description` | A sentence or two under the title. **Markdown** — links, emphasis, more than one paragraph. Same as an album's.                                 |
 | `alt`         | Screen-reader text. Falls back to `title`, then to empty.                                                                                       |
+| `poster_time` | Video only. Which second the poster frame is pulled from. Default 1.                                                                            |
 
 **Anything absent is not rendered.** An item with none of them is just a picture and
 its navigation, which is usually the right answer.
