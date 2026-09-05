@@ -137,19 +137,13 @@ Two kinds of field: what ingest reads off the file, and what you choose to write
     {
       "id": "7hKp2mQ4x",
       "file": "dsc_0142.jpg",
-      "kind": "photo",
-      "bytes": 2795847,
       "width": 6000,
       "height": 4000,
       "taken": "2005-06-14T11:23:05",
-      "camera": "NIKON D70",
-      "lens": "18-70mm f/3.5-4.5",
-      "settings": "35mm · f/5.6 · 1/125s · ISO 200",
 
       "title": "The Lego wall, half finished",
       "description": "Built over three afternoons and dismantled the following Monday.",
-      "date": "2005-06-14",
-      "location": "San Francisco, CA"
+      "date": "2005-06-14"
     }
   ]
 }
@@ -195,6 +189,11 @@ All optional. Ingest never touches them, so re-running it is always safe.
 
 **Anything absent is not rendered.** An item with none of them is just a picture and
 its navigation, which is usually the right answer.
+
+There is no `location` on an item — it is a field on the album. Nothing in a photo
+file supplies a place name to fill one with: what EXIF carries is GPS, which is
+what `metadata=none` strips from every rendition and what the `Original` link is
+there to gate. See the privacy note in [URLs and sizes](/urls/).
 
 ## About the id
 

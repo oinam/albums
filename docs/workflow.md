@@ -86,7 +86,7 @@ Nothing is generated for you. Every item works with no words at all — the phot
 appears, and the page shows only what the file itself supplies.
 
 When you do want to add something, open `albums/<slug>/photos.json` and fill in any
-of four optional fields:
+of three optional fields:
 
 ```json
 {
@@ -94,10 +94,16 @@ of four optional fields:
   "file": "dsc_0142.jpg",
   "title": "The Lego wall, half finished",
   "description": "Built over three afternoons and dismantled the following Monday.",
-  "date": "2005-06-14",
-  "location": "San Francisco, CA"
+  "date": "2005-06-14"
 }
 ```
+
+**Where a picture was taken belongs to the album, not the item.** `location` is a
+field on `album.md` and there is none on an item. Half the photographs here carry
+GPS in their EXIF and none carry a place name, so the only thing ingest could fill
+an item's location with is a pair of coordinates — which is precisely what every
+rendition strips and what the `Original` link exists to gate. See the privacy note
+in [URLs and sizes](/urls/).
 
 **Anything you leave out is not rendered.** No heading, no empty row, no placeholder,
 and no falling back to the filename. A photo with no title has no title.
