@@ -37,6 +37,7 @@
       "id": "159TD1p1c",
       "file": "brajeshwar-powered-by-detroit-hyatt-2005-apr-10.jpeg",
       "title": "First ever Public Speaking, Detroit, USA",
+      "date": "2005-04-09",
       "description": "[My first ever Public Speaking](https://brajeshwar.com/2005/powered-by-detroit-2005/) was at the Powered by Detroit Conference in Apr 9, 2005. Of course, the battery died before my presentation ends but I was able to show some futuristic web application.",
       "taken": "2005-05-25T16:24:47",
       "width": 1001,
@@ -319,8 +320,10 @@
     {
       "id": "1DfU1nF2E",
       "file": "the-good-the-bad-and-the-ugly-when-you-have-to-shoot-shoot-dont-talk-1966.mp4",
+      "title": "When you have to Shoot; Shoot, Don’t Talk",
+      "date": "1966-12-23",
       "width": 1920,
-      "height": 820
+      "height": 1080
     }
   ]
 }
