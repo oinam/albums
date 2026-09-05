@@ -1,5 +1,6 @@
 ---
 title: "Tipu Sultan Summer Palace"
+date: "2011-09-10"
 location: "Bangalore, India"
 cover: "Tipu Sultan 8.jpeg"
 ---

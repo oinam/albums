@@ -1,5 +1,6 @@
 ---
 title: "Bangalore Palace"
+date: "2012-09-01"
 location: "Karnataka, India"
 cover: "Bangalore Palace 33.jpeg"
 ---
