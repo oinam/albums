@@ -1,7 +1,7 @@
 ---
-title: Startup Bootcamp
-cover: DSC04906-147.jpeg
-# Optional: date, date_end, location. Anything below this block is the
-# album's description. See docs/album-metadata.md
+title: "Startup Bootcamp"
+date: "2024-02-29"
+date_end: "2024-06-21"
+location: "Amsterdam, Netherlands"
+cover: "IMG_0112.jpeg"
 ---
-

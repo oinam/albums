@@ -1,7 +1,7 @@
 ---
-title: The Next Web
-cover: DSC08281.jpeg
-# Optional: date, date_end, location. Anything below this block is the
-# album's description. See docs/album-metadata.md
+title: "The Next Web"
+date: "2024-06-20"
+date_end: "2024-06-21"
+location: "Amsterdam, Netherlands"
+cover: "DSC09143.jpeg"
 ---
-
