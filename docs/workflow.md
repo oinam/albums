@@ -132,9 +132,14 @@ pages, the album pages, and the redirects — with live rebuilds when you edit
 
 **Media works offline.** Production reads renditions from `/cdn-cgi/image/` on
 Cloudflare, which does not exist on your machine, so the dev server stands in for
-it: `/media/...` maps to your staged originals in `_incoming/`, and the same three
+it: `/_media/...` maps to your staged originals in `_incoming/`, and the same three
 widths are rendered on demand with sharp and cached in `.dev-cache/`. A grid tile
 arrives at about 14 KB rather than dragging a 5 MB original over the wire.
+
+Range requests are answered too, because R2 answers them and a video without one
+is not a video: Safari will not start a `<video>` on a whole-file response, and an
+MP4 whose index sits at the end of the file cannot be scrubbed until the browser
+can ask for the tail.
 
 Two things the local preview cannot show you:
 
