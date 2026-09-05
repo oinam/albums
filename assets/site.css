@@ -392,10 +392,6 @@ main > .album-grid:first-child {
   width: 100%;
 }
 
-.audio-tile {
-  aspect-ratio: 4 / 3;
-}
-
 /* Album covers are always wide, whatever the cover picture's own shape. */
 .album-item .tile {
   aspect-ratio: 4 / 3;
@@ -431,6 +427,41 @@ main > .album-grid:first-child {
   opacity: 0.85;
 }
 
+/*
+ * The stand-in picture for a sound. It is drawn rather than fetched, so it
+ * follows the theme like everything else on the page and costs no request.
+ */
+.audio-art {
+  display: block;
+  width: 100%;
+  height: 100%;
+  transition: opacity 0.15s ease;
+}
+
+.tile:hover .audio-art,
+.tile:focus-visible .audio-art {
+  opacity: 0.85;
+}
+
+.audio-art-bg {
+  fill: var(--bg-subtle);
+}
+
+.audio-art-wave {
+  fill: var(--text-muted);
+  opacity: 0.4;
+}
+
+.audio-art-disc {
+  fill: var(--bg);
+  stroke: var(--text-muted);
+  stroke-width: 1.5;
+}
+
+.audio-art-play {
+  fill: var(--text-muted);
+}
+
 .tile .badge {
   position: absolute;
   inset-block-end: var(--space-small);
@@ -442,29 +473,6 @@ main > .album-grid:first-child {
   font-size: 0.7rem;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-}
-
-.audio-tile {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  gap: var(--space-small);
-  padding: var(--space-small);
-  width: 100%;
-  height: 100%;
-  border: 1px solid var(--border-color);
-  border-radius: var(--border-radius);
-  background: var(--bg-subtle);
-}
-
-.audio-tile span {
-  font-size: 0.8rem;
-  color: var(--text-muted);
-  overflow-wrap: anywhere;
-}
-
-.audio-tile audio {
-  width: 100%;
 }
 
 .stage {

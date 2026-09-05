@@ -281,6 +281,25 @@ function coverImage(cfg: SiteConfig, album: Album, item: Item): string {
     : thumbUrl(cfg, album.slug, item.file, "wide");
 }
 
+/**
+ * Audio has no picture of its own, so every clip shares one. A waveform says
+ * what it is at a glance and the play disc says it goes somewhere — the tile is
+ * a link to the item page, not a player. Inline rather than a file in `assets/`
+ * because it is drawn in the page's own colours, and the theme toggle is a
+ * `data-theme` attribute an `<img>` would never see.
+ */
+const AUDIO_ART = `<svg class="audio-art" viewBox="0 0 64 48" aria-hidden="true" focusable="false" preserveAspectRatio="xMidYMid slice">
+<rect class="audio-art-bg" width="64" height="48"/>
+<g class="audio-art-wave">${[8, 15, 22, 30, 19, 26, 36, 26, 19, 30, 22, 15, 8]
+  .map(
+    (h, i) =>
+      `<rect x="${6 + i * 4}" y="${24 - h / 2}" width="2" height="${h}" rx="1"/>`,
+  )
+  .join("")}</g>
+<circle class="audio-art-disc" cx="32" cy="24" r="10"/>
+<path class="audio-art-play" d="M29 18.5v11l9-5.5z"/>
+</svg>`;
+
 function tile(cfg: SiteConfig, album: Album, item: Item, index: number): string {
   const href = itemPath(item);
   const alt = esc(altFor(item));
@@ -292,11 +311,10 @@ function tile(cfg: SiteConfig, album: Album, item: Item, index: number): string 
   const cell = `class="cell" style="--ar:${orientation === "wide" ? "1.3333" : "0.75"}"`;
 
   if (item.kind === "audio") {
-    return `<li ${cell}><div class="audio-tile">
-<span>${esc(item.title ?? item.file)}</span>
-<audio controls preload="none" src="${esc(originalUrl(cfg, album.slug, item.file))}"></audio>
-<a href="${href}">Details</a>
-</div></li>`;
+    return `<li ${cell}><a class="tile" href="${href}" aria-label="${esc(item.title ?? item.file)}">
+${AUDIO_ART}
+<span class="badge">Audio</span>
+</a></li>`;
   }
 
   const { width, height } = thumbSize(cfg, orientation);
@@ -363,9 +381,13 @@ function albumSubtitle(album: Album): string {
 function albumCard(cfg: SiteConfig, album: Album, index: number): string {
   const cover = coverOf(album);
   const href = albumPath(album);
-  const art = cover
-    ? `<img src="${esc(coverImage(cfg, album, cover))}" alt="${esc(cover.alt ?? album.meta.title)}" width="${thumbSize(cfg, "wide").width}" height="${thumbSize(cfg, "wide").height}"${loadingAttrs(index)} decoding="async">`
-    : "";
+  // An album whose cover is a sound has no picture to crop, so it wears the same
+  // artwork its tile does rather than asking the edge to resize an mp3.
+  const art = !cover
+    ? ""
+    : cover.kind === "audio"
+      ? AUDIO_ART
+      : `<img src="${esc(coverImage(cfg, album, cover))}" alt="${esc(cover.alt ?? album.meta.title)}" width="${thumbSize(cfg, "wide").width}" height="${thumbSize(cfg, "wide").height}"${loadingAttrs(index)} decoding="async">`;
 
   return `<li class="album-item">
 <a class="tile" href="${href}">${art}</a>

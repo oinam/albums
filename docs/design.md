@@ -64,6 +64,24 @@ always wide. See [URLs and sizes](/urls/) for the rendition sizes behind them.
 
 Two shapes is also what makes the layout below possible without JavaScript.
 
+## A sound gets a picture, not a player
+
+A video has a frame to show for itself and a photograph is the thing itself. Audio
+has neither, so every clip shares one drawn tile: a waveform with a play disc in
+the middle of it, linking to the item page like every other tile does.
+
+The grid used to put a working `<audio>` element in the cell instead. It was the
+literal answer and the wrong one. A row of transport controls among photographs
+reads as a form rather than a wall, the control is too small to use at thumbnail
+size, and a tile that plays where every neighbouring tile navigates teaches the
+wrong thing about the grid. The player belongs on the item page, which is where
+the tile now goes.
+
+It is drawn in the page's own colours rather than fetched as a file, because the
+theme toggle sets `data-theme` on the document and an `<img>` would never see it —
+an external SVG can follow the system preference but not a choice made on the
+page. Inline, it also costs no request, and there is only one of it per album.
+
 ## One spacing value
 
 `--gap` is the distance between two thumbnails **and** the distance from a
